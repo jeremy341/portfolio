@@ -57,10 +57,10 @@ Die Musik ist nicht von mir. Sie stammt von Dritten und ist offen lizenziert, di
 
 ## Abbildungen
 
-- ![Poorups Social Card: der Pixel-Art-Titel, die Zeile Roll. Buy. Trade. Bankrupt your friends. und eine schräge Ansicht des Spielbretts.](poorup/social-card.png) Die Social Card. Poorup ist kostenlos, läuft im Browser und braucht kein Konto.
-- ![Ein Poorup-Raum auf dem Standard-40-Brett. Links steht die Spielerliste, in der Mitte die Würfel und der Knopf Roll Dice, rechts die Tabs Holdings, Deals und Activity.](poorup/board.png) Ein frischer Tisch auf dem Brett mit 40 Feldern und zwei Testspielern: links die Spielerliste, in der Mitte der Würfelknopf, rechts Besitz, Angebote und Verlauf. Der Server entscheidet jeden Zug, und der Bildschirm zeigt nur seinen Zustand.
-- ![Poorups Startbildschirm im Wintermotiv: ein Pixel-Art-Dorf unter einem Mond, mit den Knöpfen Play, Create Room und Join Room.](poorup/theme-winter.png) Der Startbildschirm im Wintermotiv. Die Pixel-Art für alle sechs Themenwelten habe ich selbst gemacht.
-- ![Eine Poorup-Profilseite auf dem Tab History, oben mit Spielen, Siegen und Siegquote und darunter eine Liste abgeschlossener Runden, eine davon aufgeklappt.](poorup/profile-history.png) Ein Profil mit seinem Spielverlauf. Der Server speichert eine Runde, sobald sie endet. Das ist ein Testkonto.
+- ![Poorups Social Card: der Pixel-Art-Titel, die Zeile Roll. Buy. Trade. Bankrupt your friends. und eine schräge Ansicht des Spielbretts.](poorup/social-card.png) Die Social Card: kostenlos, im Browser, ohne Konto.
+- ![Ein Poorup-Raum auf dem Standard-40-Brett. Links steht die Spielerliste, in der Mitte die Würfel und der Knopf Roll Dice, rechts die Tabs Holdings, Deals und Activity.](poorup/board.png) Ein Testtisch auf dem Brett mit 40 Feldern. Der Server entscheidet jeden Zug.
+- ![Poorups Startbildschirm im Wintermotiv: ein Pixel-Art-Dorf unter einem Mond, mit den Knöpfen Play, Create Room und Join Room.](poorup/theme-winter.png) Der Startbildschirm im Wintermotiv.
+- ![Eine Poorup-Profilseite auf dem Tab History, oben mit Spielen, Siegen und Siegquote und darunter eine Liste abgeschlossener Runden, eine davon aufgeklappt.](poorup/profile-history.png) Ein Profil mit Spielverlauf. Das ist ein Testkonto.
 
 ## Aktueller Stand
 

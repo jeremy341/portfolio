@@ -65,9 +65,9 @@ EXP-020 is training now. It's meant to combine the two directions: the clean, ba
 
 ## Figures
 
-- ![Line chart of validation mAP50 for the YOLO11n runs EXP-013 to EXP-019. The first five runs lie between 55 and 61 percent, the last two at 90.6 percent.](mira/detector-history.en.png) Validation mAP50 across the YOLO11n runs. The jump comes from a cleaner, class-balanced dataset, not from a bigger model. The last two runs use a TrashNet-based validation split of 415 images, so they aren't strictly comparable with the earlier ones.
-- ![Bar chart of mAP50 per class, comparing the earlier dataset with the clean one: glass 50.2 to 90.8, metal 71.3 to 94.8, paper 82.9 to 88.7, plastic 72.1 to 81.1, trash 26.9 to 97.5.](mira/class-map.en.png) mAP50 per class before and after the dataset was rebuilt. Trash rising from 27 to 97.5 percent mostly reflects a well-represented trash class in an easy tabletop validation set. It isn't a promise about real sorting.
-- ![Bar chart of the file size of the final model: PyTorch 5.47 MB, ONNX 10.61 MB, LiteRT at 320 pixels 3.02 MB and at 640 pixels 3.04 MB.](mira/export-sizes.en.png) File size of the final model by export format. About 3 MB is small enough for a Raspberry Pi class device, but I haven't measured it on one yet.
+- ![Line chart of validation mAP50 for the YOLO11n runs EXP-013 to EXP-019. The first five runs lie between 55 and 61 percent, the last two at 90.6 percent.](mira/detector-history.en.png) Validation mAP50 across the YOLO11n runs. The last two use a different split, so they aren't strictly comparable.
+- ![Bar chart of mAP50 per class, comparing the earlier dataset with the clean one: glass 50.2 to 90.8, metal 71.3 to 94.8, paper 82.9 to 88.7, plastic 72.1 to 81.1, trash 26.9 to 97.5.](mira/class-map.en.png) mAP50 per class, before and after the dataset was rebuilt. Trash is high on an easy tabletop set, not on real sorting.
+- ![Bar chart of the file size of the final model: PyTorch 5.47 MB, ONNX 10.61 MB, LiteRT at 320 pixels 3.02 MB and at 640 pixels 3.04 MB.](mira/export-sizes.en.png) File size of the final model by export format.
 
 ## Where it stands
 

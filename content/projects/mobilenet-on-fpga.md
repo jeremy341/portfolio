@@ -43,8 +43,8 @@ An FPGA implementation is outside the scope of this repository. There's no HDL o
 
 ## Figures
 
-- ![Bar chart of CIFAR-10 test accuracy: MobileNetV1 76.72 percent as Float32 and 76.35 as INT8, MobileNetV2 77.93 as Float32 and 77.94 as INT8.](mobilenet-on-fpga/accuracy.en.png) Test accuracy before and after INT8 quantization. V1 drops by 0.37 points. V2 moves by 0.01 points, which is a single test image. V2 is also about 28% smaller in parameters. These are single runs with one seed.
-- ![Bar chart of the TFLite file size: MobileNetV1 3.29 MB as Float32 and 0.99 MB as INT8, MobileNetV2 2.35 MB and 0.85 MB.](mobilenet-on-fpga/size.en.png) File size of the TFLite models. INT8 makes the files 2.8 to 3.3 times smaller, which is what lets the weights fit into the small memories an FPGA has.
+- ![Bar chart of CIFAR-10 test accuracy: MobileNetV1 76.72 percent as Float32 and 76.35 as INT8, MobileNetV2 77.93 as Float32 and 77.94 as INT8.](mobilenet-on-fpga/accuracy.en.png) Test accuracy before and after INT8 quantization. Single runs with one seed.
+- ![Bar chart of the TFLite file size: MobileNetV1 3.29 MB as Float32 and 0.99 MB as INT8, MobileNetV2 2.35 MB and 0.85 MB.](mobilenet-on-fpga/size.en.png) TFLite file size: INT8 makes the files 2.8 to 3.3 times smaller.
 
 ## Where it stands
 

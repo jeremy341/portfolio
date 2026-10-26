@@ -43,7 +43,7 @@ Next.js 16 with the App Router and server actions, React 19 and TypeScript. Cler
 
 ## Figures
 
-- ![AbiVault's overview page in dark mode: key figures, a cash register card, the latest transaction, a goals panel and a receipt waiting for review.](abivault/dashboard.png) The overview of the public demo, with sample data. It still shows the older name, Abi Manager, in some places, and the amounts are made up.
+- ![AbiVault's overview page in dark mode: key figures, a cash register card, the latest transaction, a goals panel and a receipt waiting for review.](abivault/dashboard.png) The public demo with sample data. Some screens still say Abi Manager.
 
 ## Where it stands
 

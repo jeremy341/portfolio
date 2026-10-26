@@ -57,10 +57,10 @@ The music isn't mine. It's third-party and openly licensed, and the credits are 
 
 ## Figures
 
-- ![Poorup's social card: the pixel-art title, the line Roll. Buy. Trade. Bankrupt your friends., and an angled view of the board.](poorup/social-card.png) The social card. It's free, runs in the browser and needs no account.
-- ![A Poorup room on the Standard-40 board. The player list is on the left, the dice and the Roll Dice button are in the middle, and the Holdings, Deals and Activity tabs are on the right.](poorup/board.png) A fresh table on the 40-tile board with two test players. The server decides every move, and the screen only shows what the server says.
-- ![Poorup's start screen in the winter theme: a pixel-art village under a moon, with the Play, Create Room and Join Room buttons.](poorup/theme-winter.png) The start screen in the winter theme. I made the pixel art for all six theme worlds.
-- ![A Poorup profile page on the History tab, with games, wins and win rate on top and a list of completed rounds, one of them expanded.](poorup/profile-history.png) A profile and its match history. The server records a round when it ends. This is a test account.
+- ![Poorup's social card: the pixel-art title, the line Roll. Buy. Trade. Bankrupt your friends., and an angled view of the board.](poorup/social-card.png) The social card: free, in the browser, no account needed.
+- ![A Poorup room on the Standard-40 board. The player list is on the left, the dice and the Roll Dice button are in the middle, and the Holdings, Deals and Activity tabs are on the right.](poorup/board.png) A test table on the 40-tile board. The server decides every move.
+- ![Poorup's start screen in the winter theme: a pixel-art village under a moon, with the Play, Create Room and Join Room buttons.](poorup/theme-winter.png) The start screen in the winter theme.
+- ![A Poorup profile page on the History tab, with games, wins and win rate on top and a list of completed rounds, one of them expanded.](poorup/profile-history.png) A profile with its match history. This is a test account.
 
 ## Where it stands
 

@@ -65,9 +65,9 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 
 ## Abbildungen
 
-- ![Liniendiagramm der Validierungs-mAP50 für die YOLO11n-Läufe EXP-013 bis EXP-019. Die ersten fünf Läufe liegen zwischen 55 und 61 Prozent, die letzten beiden bei 90,6 Prozent.](mira/detector-history.de.png) Validierungs-mAP50 über die YOLO11n-Läufe. Der Sprung kommt von einem saubereren, klassenausgeglichenen Datensatz und nicht von einem größeren Modell. Die letzten beiden Läufe nutzen einen Validierungssplit mit 415 Bildern aus TrashNet und sind deshalb mit den früheren nicht streng vergleichbar.
-- ![Balkendiagramm der mAP50 pro Klasse, früherer Datensatz gegen sauberen Datensatz: Glas 50,2 zu 90,8, Metall 71,3 zu 94,8, Papier 82,9 zu 88,7, Plastik 72,1 zu 81,1, Trash 26,9 zu 97,5.](mira/class-map.de.png) mAP50 pro Klasse vor und nach dem Neubau des Datensatzes. Dass Trash von 27 auf 97,5 Prozent steigt, liegt vor allem daran, dass die Klasse im einfachen Tischaufbau jetzt gut vertreten ist. Das ist kein Versprechen für echtes Sortieren.
-- ![Balkendiagramm der Dateigröße des endgültigen Modells: PyTorch 5,47 MB, ONNX 10,61 MB, LiteRT mit 320 Pixeln 3,02 MB und mit 640 Pixeln 3,04 MB.](mira/export-sizes.de.png) Dateigröße des endgültigen Modells nach Exportformat. Etwa 3 MB sind klein genug für ein Gerät der Raspberry-Pi-Klasse, gemessen habe ich das aber noch nicht.
+- ![Liniendiagramm der Validierungs-mAP50 für die YOLO11n-Läufe EXP-013 bis EXP-019. Die ersten fünf Läufe liegen zwischen 55 und 61 Prozent, die letzten beiden bei 90,6 Prozent.](mira/detector-history.de.png) Validierungs-mAP50 über die YOLO11n-Läufe. Die letzten beiden nutzen einen anderen Split und sind nicht direkt vergleichbar.
+- ![Balkendiagramm der mAP50 pro Klasse, früherer Datensatz gegen sauberen Datensatz: Glas 50,2 zu 90,8, Metall 71,3 zu 94,8, Papier 82,9 zu 88,7, Plastik 72,1 zu 81,1, Trash 26,9 zu 97,5.](mira/class-map.de.png) mAP50 pro Klasse, vor und nach dem Neubau des Datensatzes. Trash ist auf dem einfachen Tischaufbau hoch, nicht beim echten Sortieren.
+- ![Balkendiagramm der Dateigröße des endgültigen Modells: PyTorch 5,47 MB, ONNX 10,61 MB, LiteRT mit 320 Pixeln 3,02 MB und mit 640 Pixeln 3,04 MB.](mira/export-sizes.de.png) Dateigröße des endgültigen Modells nach Exportformat.
 
 ## Aktueller Stand
 
