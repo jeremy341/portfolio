@@ -12,7 +12,7 @@ Jede Urkunde und jede Bescheinigung nennt, wer sie ausgestellt hat. Wo ein Dokum
 - Bild: certificates/stardance.png
 - Bildbeschreibung: Urkunde der Hack Club Stardance Challenge für Jeremy Darko, unterschrieben von Zach Latta, dem Gründer von Hack Club. Sie nennt ein veröffentlichtes Projekt und 159 Stunden Arbeit.
 
-Hack Club hat sie für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Die Urkunde beziffert die Arbeit mit 159 Stunden, und unterschrieben hat sie Zach Latta, der Gründer von Hack Club. Zum Prüfen gibt man die Kennung auf der Stardance-Website ein.
+Hack Club hat mir die Urkunde für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Sie beziffert die Arbeit mit 159 Stunden, und unterschrieben hat sie Zach Latta, der Gründer von Hack Club. Zum Prüfen gibst du die Kennung auf der Stardance-Website ein.
 
 ## Praktikum an der Universität Duisburg-Essen
 
@@ -22,14 +22,14 @@ Hack Club hat sie für Poorup verliehen, das ich in der Stardance-Challenge ver�
 - Bild: certificates/ude-internship.jpg
 - Bildbeschreibung: Zweite Seite des Praktikumszeugnisses der Universität Duisburg-Essen für Jeremy Darko, unterschrieben von Prof. Dr.-Ing. Karsten Seidl. Die Zeile mit Geburtsdatum und Geburtsort ist durch einen schwarzen Balken abgedeckt.
 
-Das Praktikum war vier Wochen lang, freiwillig und im Fachgebiet EBS, und dort habe ich an einem Steuerungs- und Bildanalysesystem für tröpfchenbasierte mikrofluidische Systeme mitgearbeitet. Mein Anteil sah so aus:
+Das Praktikum war freiwillig und dauerte vier Wochen im Fachgebiet EBS. Dort habe ich an einem Steuerungs- und Bildanalysesystem für tröpfchenbasierte mikrofluidische Systeme mitgearbeitet. Mein Anteil war:
 
 - verschiedene Hard- und Softwarekomponenten zu einem Gesamtsystem integrieren und die grafische Benutzeroberfläche zur Steuerung und Auswertung bauen
 - Versuche durchführen und bei Inbetriebnahme, Validierung und Optimierung des Systems helfen
 - Methoden zur automatischen Bildanalyse entwickeln, besonders zur Erkennung und Auswertung von Mikrotröpfchen
 - Software, Systemintegration und Versuche dokumentieren und die Ergebnisse auswerten
 
-Aus dieser Arbeit ist [FluidicStudio](projects/fluidicstudio.md) geworden. Gezeigt wird nur die Zeugnisseite, denn das Anschreiben enthält Adresse und Bankverbindung, also habe ich es weggelassen. Die Zeile mit Geburtsdatum und Geburtsort ist durch einen Balken abgedeckt, der Teil des Bildes selbst ist.
+Aus dieser Arbeit ist [FluidicStudio](projects/fluidicstudio.md) geworden. Ich zeige nur die Zeugnisseite, weil das Anschreiben Adresse und Bankverbindung enthält. Deshalb habe ich es weggelassen. Die Zeile mit Geburtsdatum und Geburtsort ist durch einen Balken abgedeckt, der Teil des Bildes selbst ist.
 
 ## Nancy Grace Roman Space Telescope: ein adoptiertes Pixel
 
@@ -40,4 +40,4 @@ Aus dieser Arbeit ist [FluidicStudio](projects/fluidicstudio.md) geworden. Gezei
 - Bild: certificates/nasa-roman-pixel.jpg
 - Bildbeschreibung: NASA-Urkunde, nach der Jeremy Darko ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope offiziell adoptiert hat, mit der eindeutigen Pixelnummer 00828475.
 
-Die Urkunde besagt, dass ich ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope adoptiert habe. Sie ist ein Andenken und keine Qualifikation, aber sie steht hier, weil sie mir gefällt.
+Die Urkunde besagt, dass ich ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope adoptiert habe. Sie ist ein Andenken und keine Qualifikation, aber sie steht hier, weil ich sie mag. Also keine Sorge.

@@ -31,7 +31,7 @@ AbiVault ersetzt die Tabelle des Komitees durch eine Anwendung, die mit Geld sor
 
 ### Der Stack
 
-Next.js 16 mit App Router und Server Actions, React 19 und TypeScript. Clerk übernimmt Anmeldung und Organisationen, und Supabase liefert PostgreSQL, Row Level Security und Dateispeicher. Zod prüft Eingaben, Recharts zeichnet die Berichte und Tailwind 4 übernimmt das Styling. Vitest führt die Unit-Tests aus. Die Row-Level-Security-Regeln bekommen aber einen eigenen SQL-Test, denn genau dort wollte ich am wenigsten Fehler machen.
+Next.js 16 mit App Router und Server Actions, React 19 und TypeScript. Clerk übernimmt Anmeldung und Organisationen, und Supabase liefert PostgreSQL, Row Level Security und Dateispeicher. Zod prüft Eingaben, Recharts zeichnet die Berichte und Tailwind 4 übernimmt das Styling. Vitest führt die Unit-Tests aus. Die Row-Level-Security-Regeln bekommen aber einen eigenen SQL-Test, weil genau dort am wenigsten Fehler passieren sollten.
 
 ## In Zahlen
 

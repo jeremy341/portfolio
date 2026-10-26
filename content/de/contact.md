@@ -1,8 +1,8 @@
 # Kontakt
 
-Eine Projektfrage, eine Idee zum Ausprobieren oder ein Gespräch über ein Praktikum.
+Eine Frage zu einem Projekt, eine Idee, die man ausprobieren könnte, oder ein Gespräch über ein Praktikum.
 
-Ich wohne in Nordrhein-Westfalen und suche praktische Erfahrung in den Schulferien. Am schnellsten erreichst du mich per E-Mail, während mein Lebenslauf und meine öffentlichen Profile den Rest zeigen.
+Ich wohne in Nordrhein-Westfalen und suche praktische Erfahrung in den Schulferien. Am schnellsten erreichst du mich per E-Mail. Mein Lebenslauf und meine öffentlichen Profile zeigen den Rest.
 
 ## Direkt
 
@@ -17,4 +17,4 @@ Ich wohne in Nordrhein-Westfalen und suche praktische Erfahrung in den Schulferi
 
 ## Veröffentlichungsgrenzen
 
-Die E-Mail-Adresse oben und die Lebenslauf-Seite sind öffentlich. Die Lebenslauf-Seite lässt Telefonnummer, Wohnadresse und Noten absichtlich weg; bitte nicht ergänzen. Keine unbestätigten Profile hinzufügen.
+Die E-Mail-Adresse oben und die Lebenslauf-Seite sind öffentlich. Die Lebenslauf-Seite lässt Telefonnummer, Wohnadresse und Noten absichtlich weg, bitte nicht ergänzen. Keine unbestätigten Profile hinzufügen.

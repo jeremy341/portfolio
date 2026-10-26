@@ -2,6 +2,8 @@
 
 My personal site: projects, articles, certificates, a CV, about and contact. It's built with [Astro](https://astro.build), and the text lives in Markdown files, so most changes happen in `content/`.
 
+Live at https://jeremydarko.me.
+
 ## Getting started
 
 You need Node.js. Then:
@@ -11,7 +13,7 @@ npm install
 npm run dev
 ```
 
-The site runs at http://localhost:5173. The dev server also serves a local writing page at `/write/`, which is not included in the build.
+While you're developing, the site runs at http://localhost:5173. The dev server also serves a local writing page at `/write/`, which is not included in the build.
 
 ## Commands
 
