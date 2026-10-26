@@ -43,8 +43,8 @@ Eine FPGA-Implementierung gehört nicht zum Umfang des Repositorys. Es gibt kein
 
 ## Abbildungen
 
-- ![Balkendiagramm der CIFAR-10-Testgenauigkeit: MobileNetV1 76,72 Prozent als Float32 und 76,35 als INT8, MobileNetV2 77,93 als Float32 und 77,94 als INT8.](mobilenet-on-fpga/accuracy.de.png) Testgenauigkeit vor und nach der INT8-Quantisierung. Einzelläufe mit einem Seed.
-- ![Balkendiagramm der TFLite-Dateigröße: MobileNetV1 3,29 MB als Float32 und 0,99 MB als INT8, MobileNetV2 2,35 MB und 0,85 MB.](mobilenet-on-fpga/size.de.png) Dateigröße der TFLite-Modelle: INT8 macht sie 2,8- bis 3,3-mal kleiner.
+- ![Balkendiagramm der CIFAR-10-Testgenauigkeit: MobileNetV1 76,72 Prozent als Float32 und 76,35 als INT8, MobileNetV2 77,93 als Float32 und 77,94 als INT8.](mobilenet-on-fpga/accuracy.de.png) Testgenauigkeit vor und nach der INT8-Quantisierung.
+- ![Balkendiagramm der TFLite-Dateigröße: MobileNetV1 3,29 MB als Float32 und 0,99 MB als INT8, MobileNetV2 2,35 MB und 0,85 MB.](mobilenet-on-fpga/size.de.png) Dateigröße der TFLite-Modelle, Float32 und INT8.
 
 ## Aktueller Stand
 

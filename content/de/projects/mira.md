@@ -65,9 +65,9 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 
 ## Abbildungen
 
-- ![Liniendiagramm der Validierungs-mAP50 für die YOLO11n-Läufe EXP-013 bis EXP-019. Die ersten fünf Läufe liegen zwischen 55 und 61 Prozent, die letzten beiden bei 90,6 Prozent.](mira/detector-history.de.png) Validierungs-mAP50 über die YOLO11n-Läufe. Die letzten beiden nutzen einen anderen Split und sind nicht direkt vergleichbar.
-- ![Balkendiagramm der mAP50 pro Klasse, früherer Datensatz gegen sauberen Datensatz: Glas 50,2 zu 90,8, Metall 71,3 zu 94,8, Papier 82,9 zu 88,7, Plastik 72,1 zu 81,1, Trash 26,9 zu 97,5.](mira/class-map.de.png) mAP50 pro Klasse, vor und nach dem Neubau des Datensatzes. Trash ist auf dem einfachen Tischaufbau hoch, nicht beim echten Sortieren.
-- ![Balkendiagramm der Dateigröße des endgültigen Modells: PyTorch 5,47 MB, ONNX 10,61 MB, LiteRT mit 320 Pixeln 3,02 MB und mit 640 Pixeln 3,04 MB.](mira/export-sizes.de.png) Dateigröße des endgültigen Modells nach Exportformat.
+- ![Liniendiagramm der Validierungs-mAP50 für die YOLO11n-Läufe EXP-013 bis EXP-019. Die ersten fünf Läufe liegen zwischen 55 und 61 Prozent, die letzten beiden bei 90,6 Prozent.](mira/detector-history.de.png) Validierungs-mAP50 über die YOLO11n-Läufe.
+- ![Balkendiagramm der mAP50 pro Klasse, früherer Datensatz gegen sauberen Datensatz: Glas 50,2 zu 90,8, Metall 71,3 zu 94,8, Papier 82,9 zu 88,7, Plastik 72,1 zu 81,1, Trash 26,9 zu 97,5.](mira/class-map.de.png) mAP50 pro Klasse, vor und nach dem Neubau der Daten.
+- ![Balkendiagramm der Dateigröße des endgültigen Modells: PyTorch 5,47 MB, ONNX 10,61 MB, LiteRT mit 320 Pixeln 3,02 MB und mit 640 Pixeln 3,04 MB.](mira/export-sizes.de.png) Dateigröße des Modells nach Exportformat.
 
 ## Aktueller Stand
 

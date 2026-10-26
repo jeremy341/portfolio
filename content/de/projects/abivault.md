@@ -43,7 +43,7 @@ Next.js 16 mit App Router und Server Actions, React 19 und TypeScript. Clerk üb
 
 ## Abbildungen
 
-- ![Die Übersichtsseite von AbiVault im dunklen Modus: Kennzahlen, eine Kassenkarte, die letzte Buchung, ein Zielbereich und ein Beleg, der auf Prüfung wartet.](abivault/dashboard.png) Die öffentliche Demo mit Beispieldaten. Manche Stellen zeigen noch den alten Namen Abi Manager.
+- ![Die Übersichtsseite von AbiVault im dunklen Modus: Kennzahlen, eine Kassenkarte, die letzte Buchung, ein Zielbereich und ein Beleg, der auf Prüfung wartet.](abivault/dashboard.png) Die öffentliche Demo mit Beispieldaten.
 
 ## Aktueller Stand
 
