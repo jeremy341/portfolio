@@ -13,7 +13,7 @@ web
 
 ## Product Purpose
 
-The personal site of Jeremy Darko, a student builder in North Rhine-Westphalia, Germany. It shows six projects across software and hardware, articles that are being written again, a Certificates page, a short About and a Contact list (email, CV and the three approved public profiles), a German CV page, and nothing else: no decorative icons or pixel art. Small line icons appear only in the phone header, for the theme and search buttons. Project pages carry real screenshots and result charts. Success: a builder finds a project worth opening and follows it to source, a demo or an article.
+The personal site of Jeremy Darko, a student builder in North Rhine-Westphalia, Germany. It shows six projects across software and hardware, articles that are being written again, a Certificates page, a short About and a Contact list (email, CV and the three approved public profiles), a German CV page, and nothing else: no icons or pixel art. Project pages carry real screenshots and result charts. Success: a builder finds a project worth opening and follows it to source, a demo or an article.
 
 ## Positioning
 
@@ -37,7 +37,7 @@ His own line: "Curiosity takes me from software down to the hardware underneath.
 ## Brand Commitments
 
 These were set by Jeremy during this rebuild:
-- Plain, clean typography. Projects, posts and certificates are the content; no sprites, illustrations or decorative elements. The one exception is small line icons (theme, search) in the phone header, where words don’t fit. Pictures are allowed only when they are real (a screenshot of the actual software, a chart of the project's own numbers, a certificate) and carry a caption that says what they do and do not show.
+- Plain, clean typography. Projects, posts and certificates are the content; no icons, sprites, illustrations or decorative elements. Pictures are allowed only when they are real (a screenshot of the actual software, a chart of the project's own numbers, a certificate) and carry a caption that says what they do and do not show.
 - Follows the visitor's light or dark system theme on the first visit. A light/dark switch sits in the top bar and the status line, and the choice is saved in the browser.
 - No "JD" logo. No modals.
 

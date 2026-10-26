@@ -18,7 +18,7 @@ const isCurrent = (href: string) => path.startsWith(href);
   <nav class="site-nav" aria-label={t.mainNav}>
     <span class="nav-cur" aria-hidden="true"></span>
     {navFor(lang).map((item) => <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>)}
-    <button type="button" class="find-btn" data-find><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" /><path d="M10.5 10.5 14 14" /></svg><span class="btn-text">{t.search}</span> <kbd>/</kbd></button>
+    <button type="button" class="find-btn" data-find>{t.search} <kbd>/</kbd></button>
     <div class="lang" role="group" aria-label={t.language} data-on={lang}>
       <span class="lang-cur" aria-hidden="true"></span>
       {langs.map((code) => (
@@ -31,6 +31,6 @@ const isCurrent = (href: string) => path.startsWith(href);
         >{code.toUpperCase()}</a>
       ))}
     </div>
-    <button type="button" class="theme-btn" data-theme-switch><svg class="ico ico-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" /><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.3 3.3l1.3 1.3M11.4 11.4l1.3 1.3M3.3 12.7l1.3-1.3M11.4 4.6l1.3-1.3" /></svg><svg class="ico ico-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1Z" /></svg><span class="btn-text">{t.themeLight}</span></button>
+    <button type="button" class="theme-btn" data-theme-switch>{t.themeLight}</button>
   </nav>
 </header>
