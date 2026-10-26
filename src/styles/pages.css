@@ -1068,3 +1068,21 @@ html[data-retype] .page-title {
     break-inside: avoid;
   }
 }
+
+/* Phone pass: inputs at 16px so iPhones don't zoom in on focus, captions and figure spacing
+   a little roomier, and the search and command fields keep their size. */
+@media (max-width: 559px) {
+  .f-bar input,
+  .vim-cmd input {
+    font-size: 16px;
+  }
+
+  .fig figcaption {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .figs {
+    gap: 36px;
+  }
+}
