@@ -1210,3 +1210,55 @@ html[data-intro] .dash-hero .w {
     overflow-x: clip;
   }
 }
+
+/* Icons: small line glyphs drawn in currentColor. They only show on phones, where the header
+   has no room for words; the words stay for screen readers through aria-label. */
+.ico {
+  display: none;
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 559px) {
+  .ico {
+    display: inline-block;
+    vertical-align: -0.18em;
+  }
+
+  /* Touch targets: at least 40px tall, so the header is easy to hit with a thumb. */
+  .site-nav > a,
+  .site-nav .find-btn,
+  .site-nav .theme-btn,
+  .site-nav .lang a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  .find-btn,
+  .theme-btn {
+    gap: 0.4em;
+  }
+
+  /* The theme button is just the icon on a phone; the label is still read out. */
+  .theme-btn .btn-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Show the switch you would get by pressing: a sun on dark pages, a moon on light ones. */
+  html[data-theme="light"] .ico-sun,
+  html:not([data-theme="light"]) .ico-moon {
+    display: none;
+  }
+}
