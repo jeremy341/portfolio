@@ -1189,6 +1189,17 @@ html[data-intro] .dash-hero .w {
     padding-bottom: 48px;
   }
 
+  /* Phones: the navigation is two even rows of four, instead of a ragged wrap. */
+  .site-nav {
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+    justify-content: space-between;
+    gap: 14px 8px;
+    width: 100%;
+    margin-left: 0;
+    font-size: 0.875em;
+  }
+
   /* The header sits closer to the page on a phone, so the content starts higher. */
   .site-header {
     padding-block: 18px 6px;
