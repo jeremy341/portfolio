@@ -1178,3 +1178,24 @@ html[data-intro] .dash-hero .w {
 .link-preview img[hidden] { display: none; }
 .link-preview strong { display: block; margin-bottom: 4px; font-weight: 600; }
 .link-preview p { margin: 0; color: var(--muted); }
+
+/* Phones: the status line stays inside the screen, and the last lines of a page clear it. */
+@media (max-width: 559px) {
+  .vim-status {
+    overflow: hidden;
+  }
+
+  body {
+    padding-bottom: 48px;
+  }
+
+  /* The header sits closer to the page on a phone, so the content starts higher. */
+  .site-header {
+    padding-block: 18px 6px;
+  }
+
+  /* The home name is sized to the screen; its last cell can reach a few pixels past the edge. */
+  .dash-hero {
+    overflow-x: clip;
+  }
+}
