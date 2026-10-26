@@ -1,0 +1,67 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Figure from "../../../components/Figure.astro";
+import { getContent, renderMarkdown } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs } from "../../../lib/seo";
+import { canonical, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { certificates, certificatesIntro } = getContent(lang);
+const f = t.certFacts;
+const schema = [
+  {
+    "@type": "CollectionPage",
+    name: t.certificatesTitle,
+    url: canonical(url(lang, "/certificates/")),
+    inLanguage: t.htmlLang,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: certificates.map((cert, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: { "@type": "CreativeWork", name: cert.title, publisher: { "@type": "Organization", name: cert.issuer } },
+      })),
+    },
+  },
+  breadcrumbs(lang, [{ name: t.certificatesTitle, path: url(lang, "/certificates/") }]),
+];
+---
+
+<Base title={t.certificatesTitle} description={t.certificatesDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{t.certificatesTitle}</h1>
+  <p class="page-lead">{certificatesIntro || t.certificatesLead(certificates.length)}</p>
+
+  <section class="index flush certs" aria-label={t.certificatesAria}>
+    {certificates.map((cert) => (
+      <article class="block cert" id={cert.id} aria-labelledby={`${cert.id}-title`}>
+        <h2 id={`${cert.id}-title`}>{cert.title}</h2>
+        <dl class="facts">
+          <div><dt>{f.issuer}</dt><dd>{cert.issuer}</dd></div>
+          <div><dt>{f.kind}</dt><dd>{cert.kind}</dd></div>
+          <div><dt>{f.date}</dt><dd>{cert.date}</dd></div>
+          {cert.reference && <div><dt>{f.reference}</dt><dd>{cert.reference}</dd></div>}
+          {cert.verify && (
+            <div>
+              <dt>{f.verify}</dt>
+              <dd><a href={cert.verify.href} rel="noreferrer">{cert.verify.label}</a></dd>
+            </div>
+          )}
+        </dl>
+        <Fragment set:html={renderMarkdown(cert.text, lang)} />
+        {cert.image && (
+          <>
+            <p class="cert-open"><a href={`#${cert.id}-image`}>{t.inspectCertificate}</a></p>
+            <div class="cert-image" id={`${cert.id}-image`} tabindex="-1">
+              <Figure src={cert.image.src} alt={cert.image.alt} lang={lang} />
+              <p class="cert-close"><a href={`#${cert.id}`}>{t.hideCertificate}</a></p>
+            </div>
+          </>
+        )}
+      </article>
+    ))}
+  </section>
+</Base>

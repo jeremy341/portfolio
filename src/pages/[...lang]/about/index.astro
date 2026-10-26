@@ -1,0 +1,42 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent, renderMarkdown } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs, personNode } from "../../../lib/seo";
+import { canonical, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { about } = getContent(lang);
+const heads = t.aboutHeadings;
+const schema = [
+  { "@type": "ProfilePage", name: t.aboutTitle, url: canonical(url(lang, "/about/")), inLanguage: t.htmlLang, mainEntity: personNode(lang) },
+  breadcrumbs(lang, [{ name: t.aboutTitle, path: url(lang, "/about/") }]),
+];
+---
+
+<Base title={t.aboutTitle} description={t.aboutDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{t.aboutTitle}</h1>
+  <p class="page-lead">{about.profile}</p>
+
+  <section class="index" aria-label={t.aboutTitle}>
+    <div class="prose wide">
+      <h2>{heads.biography}</h2>
+      <Fragment set:html={renderMarkdown(about.biography, lang)} />
+      <h2>{heads.ude}</h2>
+      <Fragment set:html={renderMarkdown(about.ude, lang)} />
+      <h2>{heads.community}</h2>
+      <Fragment set:html={renderMarkdown(about.community, lang)} />
+      <h2>{heads.facts}</h2>
+      <Fragment set:html={renderMarkdown(about.facts, lang)} />
+      <h2>{heads.topics}</h2>
+      <Fragment set:html={renderMarkdown(about.topics, lang)} />
+      <h2>{heads.mira}</h2>
+      <Fragment set:html={renderMarkdown(about.mira, lang)} />
+      <h2>{heads.profiles}</h2>
+      <Fragment set:html={renderMarkdown(about.profiles, lang)} />
+    </div>
+  </section>
+</Base>

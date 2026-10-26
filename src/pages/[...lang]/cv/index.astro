@@ -1,0 +1,37 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent, renderMarkdown } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs, personNode } from "../../../lib/seo";
+import { canonical, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { contact, cv } = getContent(lang);
+
+const email = contact.direct.find((row) => row.href.startsWith("mailto:"));
+const github = contact.profiles.find((row) => row.host === "github.com");
+const schema = [
+  { "@type": "ProfilePage", name: cv.title, url: canonical(url(lang, "/cv/")), inLanguage: t.htmlLang, mainEntity: personNode(lang) },
+  breadcrumbs(lang, [{ name: cv.title, path: url(lang, "/cv/") }]),
+];
+---
+
+<Base title={cv.title} description={t.cvDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{cv.title}</h1>
+  <p class="page-lead">{site.fullName}. {cv.tagline}</p>
+
+  <p class="cv-actions">
+    <a href="/lebenslauf-jeremy-darko.pdf" download>{t.cvPdf}</a>
+    {email && <a href={email.href}>{email.host}</a>}
+    {github && <a href={github.href} rel="noreferrer">{github.href.replace(/^https?:[/][/]/, "")}</a>}
+  </p>
+
+  <section class="index" aria-label={cv.title}>
+    <div class="prose cv">
+      <Fragment set:html={renderMarkdown(cv.body, lang)} />
+    </div>
+  </section>
+</Base>

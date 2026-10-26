@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { ui, type Lang } from "../lib/i18n";
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  number?: number;
+  lang: Lang;
+  /** The first picture on a page loads at once; the rest wait until they are near the screen. */
+  eager?: boolean;
+}
+
+const { src, alt, caption, number, lang, eager = false } = Astro.props;
+const t = ui[lang];
+---
+
+<figure class="fig">
+  <a class="fig-img" href={src.src} target="_blank" rel="noopener" aria-label={`${t.figureOpen}: ${alt}`}>
+    <Image
+      src={src}
+      alt={alt}
+      widths={[640, 1000, 1400, 1920]}
+      sizes="(min-width: 760px) 70vw, 100vw"
+      format="webp"
+      quality={86}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+    />
+  </a>
+  {caption && (
+    <figcaption>
+      {number !== undefined && <span class="fig-n">{t.figureNo(number)}</span>}
+      <span>{caption}</span>
+    </figcaption>
+  )}
+</figure>

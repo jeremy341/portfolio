@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro";
+import { ui } from "../lib/i18n";
+
+// The server shows one 404 page for every address, so it speaks both languages.
+const en = ui.en;
+const de = ui.de;
+---
+
+<Base title={en.notFoundTitle} description={en.notFoundDescription} noindex lang="en">
+  <h1 class="page-title">{en.notFoundTitle}</h1>
+  <p class="page-lead">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+  <p class="page-lead" lang="de">{de.notFoundTitle}. {de.notFoundText} <a href="/de/work/">{de.notFoundBack}</a>.</p>
+</Base>

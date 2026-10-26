@@ -1,0 +1,27 @@
+---
+// Decides before first paint whether the home intro runs. The intro is a courtesy for a
+// first visit: it never replays on back/forward, with a hash, with reduced motion or
+// data saving, or twice in one tab (a reload or /?intro plays it again).
+---
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var nav = performance.getEntriesByType("navigation")[0];
+    var type = nav && nav.type;
+    var forced = /[?&]intro\b/.test(location.search);
+    var seen = false;
+    try {
+      seen = !!sessionStorage.getItem("jd:intro");
+    } catch (e) {}
+    var calm =
+      matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      (navigator.connection && navigator.connection.saveData);
+    if (calm) return;
+    if (!forced && (location.hash || type === "back_forward" || (seen && type !== "reload"))) return;
+    root.setAttribute("data-intro", "");
+    try {
+      sessionStorage.setItem("jd:intro", "1");
+    } catch (e) {}
+  })();
+</script>

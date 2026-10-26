@@ -1,0 +1,1070 @@
+/* The Work list, the project page and the finder. Loaded after global.css, which holds the
+   tokens and the parts every page shares. */
+
+/* Tags: small boxed words for technologies ---------------------------------------------------- */
+
+.tag {
+  display: inline-block;
+  padding: 0 0.6em;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  white-space: nowrap;
+  transition: color 150ms var(--ease), border-color 150ms var(--ease);
+}
+
+/* Header: the language switch. EN and DE sit side by side with a block cursor under the one in
+   use, like a cursor resting on a word. Switching is a plain link; the block glides to the other
+   letter as a shared view transition (global.css), and the new page's title is retyped (lang.ts). */
+
+.lang {
+  position: relative;
+  display: inline-flex;
+}
+
+.lang a {
+  position: relative;
+  z-index: 1;
+  width: 3ch;
+  color: var(--muted);
+  text-align: center;
+  transition: color 150ms var(--ease);
+}
+
+.site-nav .lang a[aria-current="true"] {
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.lang-cur {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3ch;
+  background: var(--accent);
+  view-transition-name: lang-cursor;
+}
+
+.lang[data-on="de"] .lang-cur {
+  transform: translateX(3ch);
+}
+
+/* Header: the search button. It is hidden only when the page's inline script did not run (Base.astro),
+   so it is already there when a page change captures the header. */
+
+html:not([data-js]) .find-btn {
+  display: none;
+}
+
+.find-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 150ms var(--ease);
+}
+
+.find-btn kbd {
+  margin-left: 0.4em;
+  padding: 0 0.45em;
+  border: 1px solid var(--line);
+  font: inherit;
+  font-size: 0.8em;
+}
+
+.find-btn:hover {
+  color: var(--accent);
+}
+
+@media (hover: none) {
+  .find-btn kbd {
+    display: none;
+  }
+}
+
+/* Work: category chips and a ruled list ----------------------------------------------------- */
+
+.filters {
+  margin-top: 36px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 2px 12px;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 150ms var(--ease), border-color 150ms var(--ease), background-color 150ms var(--ease);
+}
+
+.chip span {
+  margin-left: 0.4em;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip:hover {
+  border-color: var(--muted);
+  color: var(--fg);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.chip:active {
+  transform: translateY(1px);
+}
+
+.filters-note {
+  min-height: 1.7em;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Rules between the visible rows only, so a filtered list still starts and ends cleanly. */
+.entries.ruled > li:not([hidden]) ~ li:not([hidden]) {
+  border-top: 1px dashed var(--line);
+}
+
+.entries.ruled > li > .entry,
+.entries.ruled > li:first-child > .entry {
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+.ruled .entry-name {
+  font-size: 1.3rem;
+}
+
+.ruled .entry-sub {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.entry-tags {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.entry:is(:hover, :focus-visible) .tag {
+  border-color: var(--muted);
+  color: var(--fg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ruled .entry-name {
+    transition: color 150ms var(--ease), transform 220ms var(--ease);
+  }
+
+  .ruled .entry:hover .entry-name {
+    transform: translateX(0.6ch);
+  }
+}
+
+/* Project page: the record and outline stay beside the text ---------------------------------- */
+
+.rail {
+  display: grid;
+  gap: 28px;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+.rail-n {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.record {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px var(--gap);
+}
+
+.record dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.record dd {
+  margin-top: 2px;
+}
+
+.record-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.outline {
+  display: none;
+}
+
+.outline-title {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.outline ol {
+  position: relative;
+  counter-reset: o;
+  border-left: 1px solid var(--line);
+}
+
+/* The marker beside the section on screen. project.ts sets --y and --h; it slides there
+   once the page has painted, and sits still on load. */
+.outline ol::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -1px;
+  width: 1px;
+  height: var(--h, 0);
+  background: var(--accent);
+  transform: translateY(var(--y, 0));
+}
+
+.outline ol[data-ready]::before {
+  transition: transform 220ms var(--ease), height 220ms var(--ease);
+}
+
+.outline li {
+  counter-increment: o;
+}
+
+.outline a {
+  display: block;
+  padding: 4px 0 4px 14px;
+  color: var(--muted);
+  transition: color 150ms var(--ease);
+}
+
+.outline a::before {
+  content: counter(o, decimal-leading-zero) "  ";
+}
+
+.outline a:hover {
+  color: var(--fg);
+}
+
+.outline a[aria-current="true"] {
+  color: var(--accent);
+}
+
+.project-body {
+  margin-top: 56px;
+}
+
+.block {
+  max-width: 110ch;
+  scroll-margin-top: 24px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.block p {
+  text-wrap: pretty;
+}
+
+.block + .block {
+  margin-top: 44px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+
+.block h2 {
+  margin-top: 1.4em;
+  margin-bottom: 0.6em;
+}
+
+/* Longer text in a section: paragraphs, lists, small headings and code, set like the articles. */
+
+.block > :not(h2) + :not(h2) {
+  margin-top: 1.1em;
+}
+
+.block h3 {
+  margin-top: 1.9em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.block h3::before {
+  content: "### ";
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.block li + li {
+  margin-top: 0.45em;
+}
+
+.block code {
+  padding: 0.1em 0.3em;
+  background: var(--panel);
+  font-size: 0.86em;
+}
+
+.block pre {
+  overflow-x: auto;
+  padding: 1.1em 1.2em;
+  background: var(--panel);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.block pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+/* Where to find the project: GitHub, website, models, in one row under the summary. */
+
+.linkbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  margin-bottom: 40px;
+  font-size: 0.95rem;
+}
+
+.linkbar a {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 1.2ch;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--line);
+  transition: border-color 150ms var(--ease);
+}
+
+.lb-k {
+  transition: color 150ms var(--ease);
+}
+
+.lb-v {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.linkbar a:is(:hover, :focus-visible) {
+  border-bottom-color: var(--accent);
+}
+
+.linkbar a:is(:hover, :focus-visible) .lb-k {
+  color: var(--accent);
+}
+
+/* Pictures: a thin frame, a numbered caption under it, a click opens the full-size file. */
+
+.fig {
+  max-width: 110ch;
+}
+
+.project-body > .fig {
+  margin-bottom: 56px;
+}
+
+.fig-img {
+  display: block;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  transition: border-color 150ms var(--ease);
+}
+
+.fig-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.fig-img:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+}
+
+.fig figcaption {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 2ch;
+  max-width: 96ch;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.fig-n {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.figs {
+  display: grid;
+  gap: 52px;
+}
+
+/* In numbers (and the facts of a certificate): a label, a value, a dashed rule between. */
+
+.facts {
+  display: grid;
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(12ch, 26ch) minmax(0, 1fr);
+  gap: 4px var(--gap);
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 559px) {
+  .facts > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Certificates: each one is a section with its facts, a few words and the document itself. */
+
+.cert .fig {
+  max-width: 760px;
+  margin-top: 28px;
+}
+
+/* The picture stays hidden until its own link points at it (#<id>-image), so it opens without script. */
+
+.cert-open {
+  margin-top: 20px;
+}
+
+.cert:has(.cert-image:target) .cert-open {
+  display: none;
+}
+
+.cert-image {
+  display: none;
+  scroll-margin-top: 24px;
+}
+
+.cert-image:target {
+  display: block;
+}
+
+.cert-close {
+  margin-top: 12px;
+}
+
+.link-rows {
+  margin-top: 4px;
+}
+
+/* The links are rows of their own, so they do not get the dash a Markdown list has. */
+.block .link-rows > li {
+  padding-left: 0;
+}
+
+.block .link-rows > li::before {
+  content: none;
+}
+
+.link-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px var(--gap);
+  margin-inline: -12px;
+  padding: 14px 12px;
+  border-bottom: 1px dashed var(--line);
+  transition: background-color 150ms var(--ease);
+}
+
+.link-row:is(:hover, :focus-visible) {
+  background: var(--hover);
+}
+
+.lr-label {
+  transition: color 150ms var(--ease);
+}
+
+.link-row:is(:hover, :focus-visible) .lr-label {
+  color: var(--accent);
+}
+
+.lr-where {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-top: clamp(56px, 8vw, 96px);
+  padding-top: 20px;
+  border-top: 1px dashed var(--line);
+}
+
+.pager-a {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  margin-inline: -12px;
+  padding: 14px 12px;
+  transition: background-color 150ms var(--ease);
+}
+
+.pager-a:is(:hover, :focus-visible) {
+  background: var(--hover);
+}
+
+.pager-next {
+  text-align: right;
+}
+
+.pager-k,
+.pager-s {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.pager-t {
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: color 150ms var(--ease);
+}
+
+.pager-a:is(:hover, :focus-visible) .pager-t {
+  color: var(--accent);
+}
+
+@media (max-width: 559px) {
+  .pager {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .pager-next {
+    text-align: left;
+  }
+
+  .link-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lr-where {
+    text-align: left;
+  }
+}
+
+@media (min-width: 760px) {
+  .project {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: start;
+  }
+
+  .project > .page-title {
+    grid-column: 4 / -1;
+    grid-row: 1;
+  }
+
+  .project > .page-lead {
+    grid-column: 4 / -1;
+    grid-row: 2;
+  }
+
+  .project-body {
+    grid-column: 4 / -1;
+    grid-row: 3;
+  }
+
+  .rail {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 3;
+    position: sticky;
+    top: 24px;
+    margin-top: clamp(52px, 8vw, 100px);
+  }
+
+  .record {
+    grid-template-columns: 1fr;
+  }
+
+  .outline {
+    display: block;
+  }
+}
+
+/* Finder: a floating window with the matches on the left and a preview on the right ------------ */
+
+.finder {
+  width: min(920px, calc(100vw - 24px));
+  max-width: none;
+  max-height: none;
+  margin: 12vh auto auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.finder::backdrop {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+
+.f-bar {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 150ms var(--ease);
+}
+
+.f-bar:focus-within {
+  border-bottom-color: var(--accent);
+}
+
+.f-prompt {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.f-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  caret-color: var(--accent);
+  caret-shape: block;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.f-bar input::placeholder {
+  color: var(--muted);
+}
+
+.f-count {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.f-main {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  height: min(420px, 56vh);
+}
+
+.f-list {
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 6px;
+  border-right: 1px solid var(--line);
+}
+
+/* The selection bar: one block behind the rows. finder.ts sets --sy and --sh; it slides when
+   you move with the keys or the mouse, and is placed without sliding when the list changes. */
+.f-list::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--sh, 0);
+  background: var(--hover);
+  transform: translateY(var(--sy, 0));
+}
+
+.f-list[data-glide]::before {
+  transition: transform 110ms var(--ease);
+}
+
+.f-row {
+  position: relative;
+  display: flex;
+  gap: 1.5ch;
+  padding: 5px 16px 5px 8px;
+  cursor: pointer;
+}
+
+.f-row::before {
+  content: " ";
+  flex: none;
+  width: 1ch;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.f-row.on::before {
+  content: ">";
+}
+
+.f-kind {
+  flex: none;
+  width: 5ch;
+  color: var(--muted);
+}
+
+.f-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.finder b {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.f-empty {
+  padding: 12px 16px;
+  color: var(--muted);
+}
+
+.f-preview {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 22px;
+}
+
+.f-path,
+.f-meta,
+.f-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.f-title {
+  margin-top: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.f-meta {
+  margin-top: 4px;
+}
+
+.f-sum {
+  margin-top: 14px;
+}
+
+.f-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.f-note {
+  margin-top: 16px;
+}
+
+.f-label {
+  color: var(--accent);
+  white-space: pre;
+}
+
+.f-keys {
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  white-space: pre;
+}
+
+@media (max-width: 759px) {
+  .finder {
+    margin-top: 8vh;
+  }
+
+  .f-main {
+    grid-template-columns: 1fr;
+    height: min(360px, 60vh);
+  }
+
+  .f-list {
+    border-right: 0;
+  }
+
+  .f-preview,
+  .f-keys {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .finder[open] {
+    animation: finder-in 140ms var(--ease);
+  }
+}
+
+@keyframes finder-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Phones: the header keeps to one line of links, and the mode chip never gets squeezed. */
+@media (max-width: 559px) {
+  .site-nav {
+    column-gap: 16px;
+  }
+
+  .find-btn kbd {
+    display: none;
+  }
+
+  .vs-mode {
+    flex: none;
+  }
+}
+
+/* The category chips become one row you swipe, instead of four stacked ones. */
+@media (max-width: 559px) {
+  .chips {
+    flex-wrap: nowrap;
+    margin-inline: calc(var(--pad) * -1);
+    padding-inline: var(--pad);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .chip {
+    flex: none;
+  }
+}
+
+/* The list cursor (src/scripts/lists.ts): a block on the first letter of the focused row's name.
+   While the smear carries it between rows, the row waits without one. */
+.entry:focus-visible .lc {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.entry.fly:focus-visible .lc {
+  background: none;
+  color: inherit;
+}
+
+/* Page travel (src/scripts/travel.ts): the title's cursor waits for the smear to arrive. */
+html[data-travel] .page-title .cur,
+html[data-retype] .page-title .cur {
+  animation: none;
+  background: none;
+  color: inherit;
+}
+
+/* Language switch: the title waits, hidden, until lang.ts overwrites it in the new language, and
+   the underline marks the cell about to be typed. */
+html[data-retype] .page-title {
+  visibility: hidden;
+}
+
+.page-title .ht.ul {
+  box-shadow: inset 0 -0.24em 0 var(--accent);
+}
+
+/* The title's cursor blinks like a text caret: hard on, hard off, 530ms each (the Windows
+   default). It is solid after every move and for the first moments of a page, and the blink
+   starts over each time it lands on a new letter. */
+@media (prefers-reduced-motion: no-preference) {
+  .page-title .cur {
+    animation: cursor-blink 1060ms step-end 530ms infinite;
+  }
+}
+
+@keyframes cursor-blink {
+  0% {
+    background-color: var(--accent);
+    color: var(--bg);
+  }
+
+  50% {
+    background-color: transparent;
+    color: var(--fg);
+  }
+}
+
+/* The yank flash (src/scripts/yank.ts): the copied heading lights up, then fades. */
+::highlight(yank) {
+  background-color: var(--accent);
+  color: var(--bg);
+}
+
+::highlight(yank-fade) {
+  background-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  color: var(--fg);
+}
+
+/* CV: a German page, set like the rest. Dates sit under the entry, and it prints on white. */
+.cv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: 20px;
+}
+
+.cv-actions a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  transition: color 150ms var(--ease), text-decoration-color 150ms var(--ease);
+}
+
+.cv-actions a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+.prose.cv {
+  max-width: 100ch;
+  font-size: 1rem;
+}
+
+.cv h2 {
+  font-size: 1.4rem;
+}
+
+.cv h3 {
+  font-size: 1.15rem;
+}
+
+.cv h2:first-child {
+  margin-top: 0;
+}
+
+.cv h3 {
+  margin-top: 1.8em;
+}
+
+.cv h3 + p {
+  margin-top: 0.2em;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cv h3 + p + ul {
+  margin-top: 0.7em;
+}
+
+@page {
+  margin: 16mm 15mm;
+}
+
+@media print {
+  /* :root[data-theme] matches the light-mode block's specificity, so print wins over it. */
+  :root,
+  :root[data-theme] {
+    --bg: #fff;
+    --fg: #111;
+    --muted: #555;
+    --line: #bbb;
+    --accent: #1b3fa0;
+    --panel: #f2f2f2;
+  }
+
+  html {
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  .skip-link,
+  .site-header,
+  .vim-status,
+  .vim-row,
+  .cv-actions a[download],
+  .smear {
+    display: none !important;
+  }
+
+  .cv-actions {
+    margin-top: 6pt;
+  }
+
+  .cv-actions a {
+    text-decoration: none;
+  }
+
+  main {
+    display: block;
+    padding-bottom: 0;
+  }
+
+  .page-title {
+    margin-top: 0;
+    font-size: 24pt;
+  }
+
+  .page-title .cur {
+    animation: none;
+    background: none;
+    color: inherit;
+  }
+
+  .index {
+    margin-top: 18pt;
+  }
+
+  .prose.cv {
+    max-width: none;
+  }
+
+  .cv h2 {
+    margin-top: 1.6em;
+    break-after: avoid;
+  }
+
+  .cv h3 {
+    margin-top: 1.2em;
+    break-after: avoid;
+  }
+
+  .cv li {
+    break-inside: avoid;
+  }
+}

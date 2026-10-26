@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+# Local tool state: design research holds a browser profile, so it never goes in the repo.
+.impeccable/
+.claude/
+.DS_Store
+Thumbs.db

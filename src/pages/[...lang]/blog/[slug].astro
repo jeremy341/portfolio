@@ -1,0 +1,79 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent, type Post } from "../../../lib/content";
+import { langOf, langs, ui, url, type Lang } from "../../../lib/i18n";
+import { breadcrumbs, personRef } from "../../../lib/seo";
+import { canonical, formatDate, isoDate } from "../../../lib/site";
+
+export function getStaticPaths() {
+  return langs.flatMap((code) => {
+    const { posts } = getContent(code);
+    return posts.map((post, i) => ({
+      params: { lang: code === "en" ? undefined : code, slug: post.slug },
+      props: { post, newer: posts[i - 1], older: posts[i + 1] },
+    }));
+  });
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const lang: Lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { post, newer, older } = Astro.props;
+const schema = [
+  {
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    url: canonical(url(lang, `/blog/${post.slug}/`)),
+    mainEntityOfPage: canonical(url(lang, `/blog/${post.slug}/`)),
+    datePublished: isoDate(post.publishedAt),
+    ...(post.updatedAt ? { dateModified: isoDate(post.updatedAt) } : {}),
+    keywords: post.tags.join(", "),
+    inLanguage: lang,
+    wordCount: post.text.split(" ").length,
+    timeRequired: `PT${post.minutes}M`,
+    author: personRef(lang),
+    publisher: personRef(lang),
+  },
+  breadcrumbs(lang, [
+    { name: t.writingTitle, path: url(lang, "/blog/") },
+    { name: post.title, path: url(lang, `/blog/${post.slug}/`) },
+  ]),
+];
+---
+
+<Base
+  title={post.title}
+  description={post.description}
+  type="article"
+  article={{ published: isoDate(post.publishedAt), modified: post.updatedAt ? isoDate(post.updatedAt) : undefined, tags: post.tags }}
+  schema={schema}
+  lang={lang}
+>
+  <article>
+    <header>
+      <h1 class="page-title">{post.title}</h1>
+      <p class="page-lead">{post.description}</p>
+      <p class="article-meta">
+        <time datetime={isoDate(post.publishedAt)}>{formatDate(post.publishedAt, lang)}</time>
+        {post.updatedAt && <span>, {t.updated} <time datetime={isoDate(post.updatedAt)}>{formatDate(post.updatedAt, lang)}</time></span>}
+        <span>, {t.minRead(post.minutes)}</span>
+      </p>
+    </header>
+
+    <div class="prose article-body" set:html={post.html} />
+
+    <footer class="article-foot">
+      <p class="article-tags">{post.tags.join(", ")}</p>
+      <nav class="article-nav" aria-label={t.moreWriting}>
+        {older && <a href={url(lang, `/blog/${older.slug}/`)}>{t.older} {older.title}</a>}
+        {newer && <a href={url(lang, `/blog/${newer.slug}/`)}>{t.newer} {newer.title}</a>}
+      </nav>
+    </footer>
+  </article>
+</Base>

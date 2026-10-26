@@ -1,0 +1,39 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent, renderMarkdown } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs, personNode } from "../../../lib/seo";
+import { canonical, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { contact } = getContent(lang);
+const schema = [
+  { "@type": "ContactPage", name: t.contactTitle, url: canonical(url(lang, "/contact/")), inLanguage: t.htmlLang, mainEntity: personNode(lang) },
+  breadcrumbs(lang, [{ name: t.contactTitle, path: url(lang, "/contact/") }]),
+];
+---
+
+<Base title={t.contactTitle} description={t.contactDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{t.contactTitle}</h1>
+
+  <section class="index" aria-label={t.contactTitle}>
+    <div>
+      <div class="prose contact-intro">
+        <Fragment set:html={renderMarkdown(contact.intro, lang)} />
+      </div>
+      <ul class="entries contact-list">
+        {[...contact.direct, ...contact.profiles].map((row) => (
+          <li>
+            <a class="entry" href={row.href} rel={row.href.startsWith("http") ? "noreferrer" : undefined}>
+              <span class="entry-name">{row.label}</span>
+              <span class="entry-aside">{row.host}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

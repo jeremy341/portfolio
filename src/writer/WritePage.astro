@@ -1,0 +1,116 @@
+---
+// Local writing desk. Only routed during `astro dev`; never part of the build.
+// Drafts stay in this browser and leave only through the Markdown export.
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Writing desk" description="Local drafting tool." noindex lang="en">
+  <h1 class="page-title">Writing desk</h1>
+  <p class="page-lead">Local only. Nothing here is uploaded or published.</p>
+
+  <form class="desk" data-desk novalidate>
+    <div class="desk-fields">
+      <div class="desk-field desk-wide">
+        <label for="desk-title">Title</label>
+        <input id="desk-title" name="title" type="text" autocomplete="off" required />
+      </div>
+      <div class="desk-field desk-wide">
+        <label for="desk-description">Summary</label>
+        <input id="desk-description" name="description" type="text" autocomplete="off" />
+      </div>
+      <div class="desk-field">
+        <label for="desk-slug">Slug</label>
+        <input id="desk-slug" name="slug" type="text" autocomplete="off" spellcheck="false" aria-describedby="slug-help" />
+        <span class="desk-help" id="slug-help">Leave empty to use the title.</span>
+      </div>
+      <div class="desk-field">
+        <label for="desk-tags">Tags</label>
+        <input id="desk-tags" name="tags" type="text" autocomplete="off" aria-describedby="tags-help" />
+        <span class="desk-help" id="tags-help">Separate with commas.</span>
+      </div>
+    </div>
+
+    <div class="desk-panes">
+      <div class="desk-field desk-editor">
+        <label for="desk-body">Markdown</label>
+        <textarea id="desk-body" name="body" rows="24" spellcheck="true"></textarea>
+      </div>
+      <div class="desk-field desk-preview">
+        <span id="preview-label">Preview</span>
+        <div class="prose" aria-labelledby="preview-label" data-preview></div>
+      </div>
+    </div>
+
+    <div class="desk-actions">
+      <button class="btn btn-solid" type="button" data-export>Export Markdown</button>
+      <button class="btn" type="button" data-clear>Clear draft</button>
+      <p class="desk-status" role="status" data-desk-status></p>
+    </div>
+  </form>
+</Base>
+
+<script>
+  import { initDesk } from "./desk";
+  initDesk();
+</script>
+
+<style>
+  .desk {
+    display: grid;
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .desk-fields,
+  .desk-panes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+  }
+  .desk-field {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .desk-wide {
+    grid-column: 1 / -1;
+  }
+  .desk-field input,
+  .desk-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: inherit;
+  }
+  .desk-field textarea {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .desk-preview .prose {
+    margin: 0;
+    max-width: none;
+    color: var(--fg);
+  }
+  .desk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .desk-status {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  @media (max-width: 760px) {
+    .desk-fields,
+    .desk-panes {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

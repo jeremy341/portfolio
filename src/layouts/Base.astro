@@ -1,0 +1,216 @@
+---
+import "@fontsource-variable/geist-mono";
+import fontUrl from "@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2?url";
+import "../styles/global.css";
+import "../styles/pages.css";
+import Header from "../components/Header.astro";
+import { getContent, routesFor } from "../lib/content";
+import { otherPath, ui, url as localizedUrl, type Lang } from "../lib/i18n";
+import { profilesOf } from "../lib/seo";
+import { canonical, site } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description: string;
+  type?: "website" | "article";
+  /** An article's dates and tags, for the article: meta tags that link previews and crawlers read. */
+  article?: { published: string; modified?: string; tags: string[] };
+  schema?: (Record<string, unknown> | undefined)[] | Record<string, unknown>;
+  home?: boolean;
+  noindex?: boolean;
+  lang: Lang;
+}
+
+const { title, description, type = "website", article, schema, home = false, noindex = false, lang } = Astro.props;
+const t = ui[lang];
+// Hover cards: a project's title and summary with its first figure, plus the outside links that have one.
+const { projects } = getContent(lang);
+// Screenshots for cards whose first figure is a chart or missing.
+const projectImages: Record<string, string> = {
+  mira: "/previews/mira-dashboard.png",
+  fluidicstudio: "/previews/fluidicstudio.png",
+};
+const previews = Object.fromEntries([
+  ...projects.map((p) => [
+    localizedUrl(lang, `/work/${p.slug}/`),
+    { title: p.name, text: p.summary, image: projectImages[p.slug] ?? p.figures[0]?.src.src },
+  ]),
+  ["/cv/", { title: "CV", text: "Experience, education, skills and personal projects." }],
+  // Outside links are keyed by their full origin and path.
+  ["https://poorup.tech/", { title: "Poorup live demo", text: "The real-time multiplayer property game, playable in the browser without an account.", image: "/previews/poorup-demo.png" }],
+  ["https://github.com/jeremy341/Poorup", { title: "Poorup source", text: "The source code for Poorup, the real-time multiplayer property game." }],
+  ["https://github.com/jeremy341/MIRA-AI", { title: "MIRA source", text: "The source code for MIRA, the waste-sorting computer vision project." }],
+  ["https://huggingface.co/Jeremy341/MIRA-AI", { title: "MIRA model files", text: "The MIRA models on Hugging Face. The download counter counts fetches, not people." }],
+  ["https://huggingface.co/Jeremy341", { title: "Hugging Face profile", text: "Jeremy's Hugging Face profile, with the MIRA models." }],
+  ["https://pypi.org/project/mira-ai/", { title: "mira-ai on PyPI", text: "The mira-ai Python package, which bundles the MIRA models." }],
+  ["https://mira-vision.vercel.app/", { title: "MIRA website", text: "The MIRA project website.", image: "/previews/mira-site.png" }],
+  ["https://github.com/jeremy341/abi-vault", { title: "AbiVault source", text: "The source code for AbiVault, a shared money workspace for school committees." }],
+  ["https://abi-vault-demo.vercel.app/", { title: "AbiVault demo", text: "A live demo of AbiVault with sample data. It isn't meant for real financial data.", image: "/previews/abivault-demo.png" }],
+  ["https://github.com/jeremy341/TorchVK", { title: "TorchVK source", text: "The source code for TorchVK, an early research plan for PyTorch training through Vulkan." }],
+  ["https://github.com/jeremy341/Mobilenet-fpga", { title: "Mobilenet-fpga source", text: "The source code for the MobileNet quantization work. It has no FPGA code yet." }],
+  ["https://github.com/jeremy341/microdroplets-ui", { title: "Microdroplets UI source", text: "The source code for Microdroplets UI, which contains FluidicStudio." }],
+  ["https://github.com/jeremy341/esp32-alarm-clock", { title: "ESP32 alarm clock source", text: "The source code for the ESP32 alarm clock, my first real project." }],
+  ["https://github.com/jeremy341", { title: "GitHub profile", text: "Jeremy's GitHub profile." }],
+  ["https://de.linkedin.com/in/jeremy-darko-a0a850413", { title: "LinkedIn profile", text: "Jeremy's LinkedIn profile." }],
+  ["https://www.uni-due.de/ebs/", { title: "EBS chair", text: "The Chair of Electronic Components and Circuits at the University of Duisburg-Essen, where I did my internship.", image: "/previews/ebs-chair.png" }],
+  ["https://stardance.space/certificate", { title: "Certificate check", text: "The Stardance certificate page, where you enter a reference code to verify a certificate.", image: "/previews/stardance-certificate.png" }],
+  ["https://hackclub.com/", { title: "Hack Club", text: "A nonprofit movement of teenagers making cool projects. Stardance and Loadout are both Hack Club programs.", image: "/previews/hackclub.webp" }],
+  ["https://stardance.hackclub.com/", { title: "Stardance", text: "A free online summer program for teens 13 to 18. Build a project, log your hours and earn prizes.", image: "/previews/stardance.webp" }],
+  ["https://project.hackclub.com/overview/info/", { title: "YSWS", text: "You Ship, We Ship: a Hack Club model where you build and ship a project and get a reward back.", image: "/previews/ysws.webp" }],
+  ["https://loadout.dino.icu/", { title: "LOADOUT", text: "A proposal YSWS that would let people come to Germany for free for a three-day hackathon if they create enough projects.", image: "/previews/loadout.webp" }],
+  ["https://bambulab.com/", { title: "Bambu Lab", text: "A 3D printer maker. Jeremy got a Bambu Lab printer for free because of Poorup.", image: "/previews/bambulab.webp" }],
+]);
+const fullTitle = title ? `${title} | ${site.name}` : site.name;
+const url = canonical(Astro.url.pathname);
+const english = canonical(otherPath(Astro.url.pathname, "en"));
+const alternates = (["en", "de"] as const).map((code) => ({ code, href: canonical(otherPath(Astro.url.pathname, code)) }));
+const other = lang === "de" ? "en" : "de";
+// The share card in the page's language. Link previews need an absolute address, so it exists only with a domain.
+const shareImage = canonical(lang === "de" ? "/og-card-de.png" : "/og-card.png");
+// Every page's structured data is one @graph; a missing node (no domain, so no breadcrumbs) is dropped.
+const nodes = (Array.isArray(schema) ? schema : [schema]).filter((node) => node !== undefined);
+
+// What the status line shows, and what `:e` can open. Every page is a file in ~/jeremy-darko.
+const path = Astro.url.pathname.replace(/\/$/, "") || "/index";
+const file = `~/jeremy-darko${path}.md`;
+const routes = routesFor(lang);
+
+// Browsers that support it fetch a page's HTML when the pointer rests on a link to it, so the
+// click lands on a page that is already there. Prefetch only: nothing on a page runs early.
+const speculation = {
+  prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/*search.json" } }] }, eagerness: "moderate" }],
+};
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
+    {import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION && <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION} />}
+    {import.meta.env.PUBLIC_BING_SITE_VERIFICATION && <meta name="msvalidate.01" content={import.meta.env.PUBLIC_BING_SITE_VERIFICATION} />}
+    {url && <link rel="canonical" href={url} />}
+    {url && alternates.map((alt) => <link rel="alternate" hreflang={alt.code} href={alt.href} />)}
+    {url && <link rel="alternate" hreflang="x-default" href={english} />}
+    {url && <link rel="alternate" type="application/rss+xml" title={t.feedTitle} href={canonical(lang === "de" ? "/de/rss.xml" : "/rss.xml")} />}
+    {profilesOf(lang).map((href) => <link rel="me" href={href} />)}
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    {article && <meta property="article:published_time" content={article.published} />}
+    {article?.modified && <meta property="article:modified_time" content={article.modified} />}
+    {article?.tags.map((tag) => <meta property="article:tag" content={tag} />)}
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={t.ogLocale} />
+    <meta property="og:locale:alternate" content={ui[other].ogLocale} />
+    {url && <meta property="og:url" content={url} />}
+    {shareImage && <meta property="og:image" content={shareImage} />}
+    {shareImage && <meta property="og:image:width" content="1200" />}
+    {shareImage && <meta property="og:image:height" content="630" />}
+    {shareImage && <meta property="og:image:alt" content={t.shareAlt} />}
+    <meta name="twitter:card" content={shareImage ? "summary_large_image" : "summary"} />
+    {shareImage && <meta name="twitter:image" content={shareImage} />}
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#1a1b26" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e6e7ed" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+    {nodes.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": nodes }).replace(/</g, "\\u003c")} />
+    )}
+    <script is:inline>
+      // Scripts run here, so the header search button can show. It is in the first paint, not
+      // waiting for finder.ts, so a page change does not capture the header without it (pages.css).
+      document.documentElement.dataset.js = "";
+      // Light or dark before the first paint: the saved choice, else the system setting.
+      // theme.ts keeps the status-line switch in step with it.
+      try {
+        var theme = localStorage.getItem("jd:theme");
+        if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <script is:inline>
+      // Page travel: when the last page left a cursor position a moment ago, hold the title's own
+      // cursor back until the smear arrives (travel.ts). The timer is the fallback if it never does.
+      try {
+        var travel = JSON.parse(sessionStorage.getItem("travel") || "null");
+        var nav = performance.getEntriesByType("navigation")[0];
+        if (travel && Date.now() - travel.at < 2500 && nav && nav.type === "navigate") {
+          var html = document.documentElement;
+          html.setAttribute("data-travel", "");
+          setTimeout(function () {
+            html.removeAttribute("data-travel");
+          }, 1500);
+        }
+      } catch (error) {}
+    </script>
+    <script is:inline>
+      // Language switch: when the last page was left through the EN / DE switch a moment ago, the
+      // title waits (hidden) to be overwritten letter by letter in the new language (lang.ts).
+      try {
+        var flip = Number(sessionStorage.getItem("jd:lang"));
+        var entry = performance.getEntriesByType("navigation")[0];
+        if (flip && Date.now() - flip < 2500 && entry && entry.type === "navigate") {
+          document.documentElement.setAttribute("data-retype", "");
+          setTimeout(function () {
+            document.documentElement.removeAttribute("data-retype");
+          }, 1500);
+        }
+      } catch (error) {}
+    </script>
+    <script type="speculationrules" set:html={JSON.stringify(speculation)} />
+    <script type="application/json" id="link-previews" set:html={JSON.stringify(previews).replace(/</g, "\\u003c")} />
+  </head>
+  <body data-home={home ? "" : undefined}>
+    <a class="skip-link" href="#main">{t.skip}</a>
+    <Header home={home} lang={lang} />
+    <main id="main" class="frame" tabindex="-1">
+      <slot />
+    </main>
+
+    <div class="vim-status">
+      <span class="vs-left">
+        <b class="vs-mode" data-vs-mode aria-hidden="true">NORMAL</b>
+        <span class="vs-file" aria-hidden="true">{file}</span>
+      </span>
+      <span class="vs-right">
+        <button type="button" class="vs-sound" data-vs-sound>{t.soundOn}</button>
+        <button type="button" class="vs-keys" data-vs-keys>{t.keysOn}</button>
+        <button type="button" class="vs-theme" data-theme-switch>{t.themeLight}</button>
+        <span class="vs-enc" aria-hidden="true">utf-8</span>
+        <span class="vs-pct" data-vs-pct aria-hidden="true">Top</span>
+        <b class="vs-pos" data-vs-pos aria-hidden="true">1:1</b>
+      </span>
+    </div>
+
+    <div class="vim-row" data-routes={JSON.stringify(routes)}>
+      <form class="vim-cmd" hidden>
+        <span aria-hidden="true">:</span>
+        <input type="text" aria-label={t.commandLine} autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" />
+      </form>
+      <p class="vim-msg" role="status"></p>
+    </div>
+
+    <script>
+      import "../scripts/editor";
+      import "../scripts/headings";
+      import "../scripts/lang";
+      import "../scripts/navblock";
+      import "../scripts/scramble";
+      import "../scripts/travel";
+      import "../scripts/finder";
+      import "../scripts/lists";
+      import "../scripts/yank";
+      import "../scripts/smooth-scroll";
+      import "../scripts/link-preview";
+      import "../scripts/external-links";
+    </script>
+  </body>
+</html>

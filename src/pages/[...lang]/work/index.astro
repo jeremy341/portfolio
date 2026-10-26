@@ -1,0 +1,69 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs } from "../../../lib/seo";
+import { canonical, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { categories, projects } = getContent(lang);
+const counts = categories.map((category) => ({ ...category, count: projects.filter((p) => p.category === category.id).length }));
+const schema = [
+  {
+    "@type": "CollectionPage",
+    name: t.workTitle,
+    url: canonical(url(lang, "/work/")),
+    inLanguage: t.htmlLang,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: projects.map((project, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: project.name,
+        url: canonical(url(lang, `/work/${project.slug}/`)),
+      })),
+    },
+  },
+  breadcrumbs(lang, [{ name: t.workTitle, path: url(lang, "/work/") }]),
+];
+---
+
+<Base title={t.workTitle} description={t.workDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{t.workTitle}</h1>
+  <p class="page-lead">{t.workLead(projects.length)}</p>
+
+  <div class="filters" data-filters hidden>
+    <div class="chips" role="group" aria-label={t.filterBy}>
+      <button type="button" class="chip" data-cat="all" aria-pressed="true">{t.all} <span>{projects.length}</span></button>
+      {counts.map((category) => (
+        <button type="button" class="chip" data-cat={category.id} aria-pressed="false">{category.label} <span>{category.count}</span></button>
+      ))}
+    </div>
+    <p class="filters-note" role="status" data-filter-note></p>
+  </div>
+
+  <section class="index flush" aria-label={t.projectsAria}>
+    <ol class="entries ruled">
+      {projects.map((project, i) => (
+        <li style={`--i:${i}`} data-cat={project.category}>
+          <a class="entry" href={url(lang, `/work/${project.slug}/`)}>
+            <span class="entry-name"><span class="hit">{project.name}</span></span>
+            <span class="entry-aside">
+              {project.status}
+              <span class="entry-sub">{project.categoryLabel}</span>
+            </span>
+            <span class="entry-text">{project.summary}</span>
+            <span class="entry-tags">{project.tech.map((tech) => <span class="tag">{tech}</span>)}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<script>
+  import "../../../scripts/work";
+</script>

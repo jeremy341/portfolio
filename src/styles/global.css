@@ -1,0 +1,1180 @@
+/* Stand-in while Geist Mono loads: Courier New has the same 0.6em advance, so the
+   page does not move when the real face arrives (the 250px name least of all). */
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src: local("Courier New"), local("Courier");
+  size-adjust: 100%;
+}
+
+/* Tokens: one palette, Tokyo Night, set in monospace like an editor ----------- */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #1a1b26;
+  --fg: #c0caf5;
+  --muted: #8a93bd;
+  --line: #2f334d;
+  --accent: #7aa2f7;
+  --panel: #16161e;
+  --hover: #292e42;
+  --error: #f7768e;
+  --search: #e0af68;
+  --status: #a9b1d6;
+
+  --font-mono: "Geist Mono Variable", "Geist Mono Fallback", ui-monospace, monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --pad: clamp(20px, 4vw, 48px);
+  --wide: 1200px;
+  --gap: 24px;
+}
+
+/* Light mode: the same tokens, in Tokyo Night's day ink on paper. Base.astro picks the theme
+   before the first paint (saved choice, else the system); the status line switches it. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #e6e7ed;
+  --fg: #1a1b26;
+  --muted: #4c5577;
+  --line: #b4b9cf;
+  --accent: #2552b8;
+  --panel: #d6d9e4;
+  --hover: #c8cde0;
+  --error: #a8234a;
+  --search: #7a5a1c;
+  --status: #2b3150;
+}
+
+/* Base -------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-color: var(--line) var(--bg);
+}
+
+body {
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--pad);
+  top: 0;
+  padding: 8px 12px;
+  background: var(--fg);
+  color: var(--bg);
+  transform: translateY(-130%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* Frame -------------------------------------------------------------------- */
+
+.frame {
+  width: 100%;
+  max-width: calc(var(--wide) + 2 * var(--pad));
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+/* Every page but the home page uses nearly the whole window. */
+body:not([data-home]) {
+  --wide: 1840px;
+}
+
+main {
+  padding-bottom: clamp(96px, 14vw, 176px);
+}
+
+/* Header ------------------------------------------------------------------- */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px var(--gap);
+  padding-block: 28px;
+}
+
+/* The home page is the name; the header brand would repeat it. */
+.brand[data-home] {
+  display: none;
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-left: auto;
+}
+
+.site-nav {
+  position: relative;
+}
+
+.site-nav a {
+  color: var(--muted);
+  transition: color 150ms var(--ease);
+}
+
+/* Hover block: one block (src/scripts/navblock.ts) follows the pointer from link to link, the
+   same accent block as under EN / DE. The links get a character of room on each side for it,
+   which their negative margin takes back, so nothing moves. Without the script the links just
+   turn blue as before. */
+.site-nav > a {
+  position: relative;
+  z-index: 1;
+  margin-inline: -1ch;
+  padding-inline: 1ch;
+}
+
+.nav-cur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 0;
+  height: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-cur[data-on] {
+  opacity: 1;
+}
+
+.site-nav[data-block] > a:is(:hover, :focus-visible) {
+  color: var(--bg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-cur {
+    transition:
+      transform 300ms var(--ease),
+      width 300ms var(--ease),
+      height 300ms var(--ease),
+      opacity 150ms var(--ease);
+  }
+
+  /* The first appearance lands where it is going instead of sliding in from the last place. */
+  .nav-cur.snap {
+    transition: opacity 150ms var(--ease);
+  }
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--fg);
+}
+
+.brand:hover,
+.site-nav a:hover {
+  color: var(--accent);
+}
+
+/* Light and dark switch in the top bar, set like the links beside it (theme.ts). */
+.theme-btn {
+  margin-inline: -1ch;
+  padding-inline: 1ch;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition: color 150ms var(--ease);
+}
+
+.theme-btn:hover,
+.theme-btn:focus-visible {
+  color: var(--accent);
+}
+
+/* Headings and lead --------------------------------------------------------- */
+
+.page-title {
+  margin-top: clamp(40px, 7vw, 88px);
+  font-size: clamp(2rem, 1rem + 3.4vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.page-title::before {
+  content: "# ";
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Normal mode: the script puts a block on the first letter of the title (.cur). */
+.cur {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* The hero's hover on the page title (src/scripts/headings.ts): a text cursor, and a hollow
+   block where a click would put the real one. */
+@media (hover: hover) and (pointer: fine) {
+  .page-title {
+    cursor: text;
+  }
+
+  .ht.hv:not(.cur) {
+    box-shadow: inset 0 0 0 0.04em var(--accent);
+  }
+}
+
+.page-lead {
+  margin-top: 24px;
+  max-width: 80ch;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Links in running text: a faint rule underneath, and an accent one that draws in from the
+   left on hover and leaves to the right. Only the size is transitioned; the position flips
+   at once, which is what makes it enter and leave from different sides. */
+.page-lead a,
+.prose a,
+.block :is(p, li, dd) a,
+.article-nav a {
+  background:
+    linear-gradient(var(--accent), var(--accent)) 100% 100% / 0 1px no-repeat,
+    linear-gradient(color-mix(in srgb, currentColor 35%, transparent), color-mix(in srgb, currentColor 35%, transparent)) 0 100% / 100% 1px no-repeat;
+  padding-bottom: 0.12em;
+  transition: color 150ms var(--ease);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-lead a,
+  .prose a,
+  .block :is(p, li, dd) a,
+  .article-nav a {
+    transition: color 150ms var(--ease), background-size 380ms var(--ease);
+  }
+}
+
+.page-lead a:is(:hover, :focus-visible),
+.prose a:is(:hover, :focus-visible),
+.block :is(p, li, dd) a:is(:hover, :focus-visible),
+.article-nav a:is(:hover, :focus-visible) {
+  color: var(--accent);
+  background-position: 0 100%, 0 100%;
+  background-size: 100% 1px, 100% 1px;
+}
+
+/* Index: a title on the left, entries on the right --------------------------- */
+
+.index {
+  margin-top: clamp(64px, 9vw, 120px);
+  padding-top: 20px;
+  border-top: 1px dashed var(--line);
+}
+
+/* A list that starts right under what is above it (Work): the rows bring their own space. */
+.index.flush {
+  margin-top: 32px;
+  padding-top: 0;
+}
+
+.index-title {
+  padding-top: 0.5em;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--gap);
+  row-gap: 6px;
+  margin-inline: -12px;
+  padding: var(--row, 22px) 12px;
+  transition: background-color 150ms var(--ease);
+}
+
+.entry:is(:hover, :focus-visible) {
+  background: var(--hover);
+}
+
+/* The first row has the same padding as the rest, so its hover bar is as tall as theirs; the
+   list moves up by that padding so the text still starts where the heading above ends. */
+.entries:not(.ruled) {
+  margin-top: calc(-1 * var(--row, 22px));
+}
+
+.entries {
+  counter-reset: e;
+}
+
+.entries > li {
+  counter-increment: e;
+}
+
+.entries > li > .entry .entry-name::before {
+  content: counter(e, decimal-leading-zero) "  ";
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.entry-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  transition: color 150ms var(--ease);
+}
+
+.entry-aside {
+  align-self: baseline;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.entry-text {
+  grid-column: 1 / -1;
+  max-width: 140ch;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.entry-meta {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.entry:hover .entry-name,
+.entry:focus-visible .entry-name {
+  color: var(--accent);
+}
+
+/* Search highlight: hovering a row sweeps a hlsearch-style highlight over its name, the way
+   Vim marks the match for /name. The number in front of the name is left out of it. The name
+   is a grid item, so the highlight sits on the inner .hit, which is as wide as the text. */
+.entry-name .hit {
+  margin-inline: -0.3ch;
+  padding-inline: 0.3ch;
+  background: linear-gradient(var(--search), var(--search)) 0 0 / 0 100% no-repeat;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .entry:hover .entry-name .hit {
+    background-size: 100% 100%;
+    color: var(--bg);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .entry-name .hit {
+    transition: background-size 220ms var(--ease), color 90ms linear 50ms;
+  }
+}
+
+.entries.contact-list {
+  --row: 14px;
+  margin-top: 14px;
+}
+
+.note {
+  margin-top: 24px;
+  color: var(--muted);
+}
+
+/* Prose ------------------------------------------------------------------------ */
+
+.prose {
+  max-width: 62ch;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+/* About reads wider than an article: the page has nothing else beside it. */
+.prose.wide {
+  max-width: 140ch;
+}
+
+.prose > * + * {
+  margin-top: 1.2em;
+}
+
+/* Gutter: on About and the articles every block has a line number in the left margin, faint
+   until the pointer is over it; then the number warms up and a bar runs down the block, like
+   the sign column in an editor. It needs the margin, so it is for a wide window and a mouse. */
+@media (min-width: 1000px) and (hover: hover) and (pointer: fine) {
+  :is(.prose.wide, article > .prose) {
+    counter-reset: ln;
+  }
+
+  :is(.prose.wide, article > .prose) > * {
+    position: relative;
+    counter-increment: ln;
+  }
+
+  /* Not on code blocks: they scroll sideways and would clip it. */
+  :is(.prose.wide, article > .prose) > *:not(pre)::after {
+    content: counter(ln);
+    content: counter(ln) / "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(100% + 6px);
+    padding-right: 6px;
+    border-right: 2px solid transparent;
+    color: var(--line);
+    font-size: 0.8rem;
+    line-height: 2.2;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    transition: color 150ms var(--ease), border-color 150ms var(--ease);
+  }
+
+  :is(.prose.wide, article > .prose) > *:not(pre):hover::after {
+    color: var(--search);
+    border-right-color: var(--accent);
+  }
+}
+
+.prose p {
+  text-wrap: pretty;
+}
+
+:is(.prose, .block) h2 {
+  margin-top: 2.4em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.prose > h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Markdown-style heading marks, like a buffer in an editor. */
+.index-title::before,
+:is(.prose, .block) h2::before {
+  content: "## ";
+}
+
+.prose h3::before {
+  content: "### ";
+}
+
+:is(.index-title, .prose h2, .block h2, .prose h3)::before {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.prose ol {
+  padding-left: 1.3em;
+}
+
+/* Bullets are written the way Markdown writes them: a dash in front of each item. */
+:is(.prose, .block) ul > li {
+  position: relative;
+  padding-left: 2ch;
+}
+
+:is(.prose, .block) ul > li::before {
+  content: "-";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-top: 0.5em;
+}
+
+.prose blockquote {
+  position: relative;
+  padding-left: 2ch;
+  color: var(--muted);
+}
+
+.prose blockquote::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+}
+
+.prose code {
+  padding: 0.1em 0.3em;
+  background: var(--panel);
+  font-size: 0.86em;
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 1.1em 1.2em;
+  background: var(--panel);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+/* Article ------------------------------------------------------------------------ */
+
+.article-meta {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+article > .prose {
+  max-width: 140ch;
+  margin-top: 64px;
+}
+
+.article-foot {
+  display: grid;
+  gap: 24px;
+  margin-top: 96px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.article-tags {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.article-nav {
+  display: grid;
+  gap: 12px;
+}
+
+/* Desk buttons (dev-only writing desk) ------------------------------------------------- */
+
+.btn {
+  padding: 10px 16px;
+  border: 1px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-solid {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+
+@media (max-width: 759px) {
+  .index-title {
+    padding-top: 0;
+    margin-bottom: 18px;
+  }
+}
+
+/* Layout: a 12-column grid above 760px ---------------------------------------------------- */
+
+@media (min-width: 760px) {
+  main {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gap);
+    align-content: start;
+  }
+
+  /* Everything spans the full width; project pages keep a left rail for the outline. */
+  main > * {
+    grid-column: 1 / -1;
+  }
+
+  .index {
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .index-title {
+    grid-column: 1 / span 1;
+  }
+
+  .index > :not(.index-title) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Motion: one entrance on load, then the page is still ------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-title {
+    animation: rise 700ms var(--ease) backwards;
+  }
+
+  .entries li {
+    animation: rise 700ms var(--ease) backwards;
+    animation-delay: calc(120ms + var(--i, 0) * 45ms);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Status line and command line, rendered by Base.astro and driven by src/scripts/editor.ts --- */
+
+.vim-status {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--status);
+  font-size: 13px;
+  line-height: 28px;
+  white-space: pre;
+}
+
+.vs-left,
+.vs-right {
+  display: flex;
+  min-width: 0;
+}
+
+/* The keys and the position stay whole; the file name gives way. */
+.vs-right {
+  flex: none;
+}
+
+.vs-mode,
+.vs-pos {
+  background: var(--accent);
+  color: var(--panel);
+  font-weight: 700;
+  text-align: center;
+}
+
+.vs-mode {
+  min-width: 10ch;
+  padding-inline: 1ch;
+}
+
+.vs-pos {
+  min-width: 9ch;
+  padding-inline: 1ch;
+}
+
+.vs-file {
+  min-width: 0;
+  padding-left: 2ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vs-enc,
+.vs-pct {
+  padding-right: 2ch;
+}
+
+.vs-keys,
+.vs-sound,
+.vs-theme {
+  padding: 0 2ch 0 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+.vs-keys:hover,
+.vs-keys:focus-visible,
+.vs-sound:hover,
+.vs-sound:focus-visible,
+.vs-theme:hover,
+.vs-theme:focus-visible {
+  color: var(--fg);
+}
+
+.vs-keys:focus-visible,
+.vs-sound:focus-visible,
+.vs-theme:focus-visible {
+  outline-offset: -3px;
+}
+
+.vim-row {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 51;
+  height: 28px;
+  padding-inline: 1ch;
+  background: var(--bg);
+  font-size: 13px;
+  line-height: 28px;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+.vim-row[data-open] {
+  transform: none;
+  pointer-events: auto;
+}
+
+html[data-row] .vim-status {
+  bottom: 28px;
+}
+
+.vim-cmd {
+  display: flex;
+}
+
+.vim-cmd[hidden] {
+  display: none;
+}
+
+.vim-cmd input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  caret-color: var(--accent);
+  caret-shape: block;
+  color: var(--fg);
+  font: inherit;
+}
+
+.vim-msg {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.vim-msg[data-error] {
+  color: var(--error);
+}
+
+.vim-cmd:not([hidden]) + .vim-msg {
+  display: none;
+}
+
+@media (max-width: 559px) {
+  .vs-enc,
+  .vs-pct,
+  .vs-keys,
+  .vs-theme {
+    display: none;
+  }
+
+  .vs-mode {
+    min-width: 0;
+  }
+}
+
+.c {
+  display: block;
+  flex: none;
+  width: 0.6em;
+  height: 1.2em;
+  white-space: pre;
+}
+
+.c.ul {
+  box-shadow: inset 0 -0.24em 0 var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-cells {
+    cursor: text;
+  }
+
+  /* A hollow block where a click would put the cursor. */
+  .c.hv:not(.cur) {
+    box-shadow: inset 0 0 0 0.04em var(--accent);
+  }
+}
+
+
+/* Hero B, "Start screen": the whole home on one screen, like a dashboard ------------------ */
+
+.dash {
+  container-type: inline-size;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+/* The first screen is the name alone; the rows start just below the fold. */
+.dash-hero {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: calc(100svh - 111px);
+}
+
+.dash-name {
+  font-size: min(100cqi / 7.4, 30svh);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+/* The same cells as the home hero (.c), centred. The end cell is where Replace mode finishes;
+   its negative margin keeps it from pushing the name off centre. */
+.dash-cells {
+  display: flex;
+  justify-content: center;
+}
+
+.dash-cells .end {
+  margin-right: -0.6em;
+}
+
+.dash-rows {
+  width: 100%;
+  text-align: left;
+  margin-top: clamp(24px, 6svh, 56px);
+  border-top: 1px dashed var(--line);
+}
+
+.dash-rows a {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto 4ch;
+  align-items: baseline;
+  column-gap: var(--gap);
+  padding-block: clamp(16px, 2.6vw, 28px);
+  border-bottom: 1px dashed var(--line);
+  transition: color 150ms var(--ease);
+}
+
+.dash-n,
+.dash-d,
+.dash-k {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.dash-k {
+  text-align: right;
+}
+
+.dash-t {
+  font-size: clamp(2.2rem, 1rem + 4.6vw, 4.6rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 559px) {
+  .dash-rows a {
+    grid-template-columns: 2.4rem minmax(0, 1fr) 2ch;
+  }
+
+  .dash-d {
+    display: none;
+  }
+}
+
+/* The first frame of the intro, before the script takes over ------------------------------- */
+
+html[data-intro]:not([data-playing]) .c.cur:not(.first) {
+  background: none;
+  color: inherit;
+}
+
+html[data-intro]:not([data-playing]) .c.first {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+html[data-intro] .dash-hero .w:not(.done) {
+  font-weight: 200;
+}
+
+html[data-intro] .dash-hero .w {
+  transition: font-weight 160ms var(--ease);
+  /* If the script never finishes, the name still ends up bold after 2.5s. */
+  animation: hero-open 0s 2.5s forwards;
+}
+
+@keyframes hero-open {
+  to {
+    font-weight: 700;
+  }
+}
+
+/* The cursor smear drawn between two cursor boxes (src/scripts/smear.ts) ------------------- */
+
+.smear {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+.smear[hidden] {
+  display: none;
+}
+
+/* Buffer switch: moving between pages swaps the text, the editor chrome stays put ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .site-header {
+    view-transition-name: tabline;
+  }
+
+  .vim-status {
+    view-transition-name: statusline;
+  }
+
+  ::view-transition-group(tabline),
+  ::view-transition-group(statusline) {
+    animation: none;
+  }
+
+  /* The language switch's block rides from EN to DE (or back) while the page behind it swaps. */
+  ::view-transition-group(lang-cursor) {
+    animation-duration: 320ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  ::view-transition-old(lang-cursor) {
+    display: none;
+  }
+
+  ::view-transition-new(lang-cursor) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  /* The bars are fixed chrome whose words change with the language ("Work" / "Projekte"), so
+     the new one replaces the old at once; cross-fading them would print both words on top
+     of each other. */
+  ::view-transition-old(tabline),
+  ::view-transition-old(statusline) {
+    display: none;
+  }
+
+  ::view-transition-new(tabline),
+  ::view-transition-new(statusline) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 90ms;
+  }
+}
+
+/* Section rows (home and start screen): they write themselves in as they scroll into view,
+   and light up under the mouse. The rows are plain and fully visible wherever scroll-driven
+   animation is not supported. ----------------------------------------------------------- */
+
+.dash-rows a {
+  position: relative;
+  isolation: isolate;
+}
+
+/* The glow: a soft spot at the pointer on a --hover base. Hidden until the row is lit. */
+.dash-rows a::before {
+  content: "";
+  position: absolute;
+  inset: 0 -12px;
+  z-index: -1;
+  background: radial-gradient(
+    280px circle at var(--mx, 30%) 50%,
+    color-mix(in srgb, var(--accent) 12%, var(--hover)),
+    var(--hover) 75%
+  );
+  opacity: 0;
+  transition: opacity 160ms var(--ease);
+}
+
+.dash-rows a:focus-visible::before {
+  opacity: 1;
+}
+
+.dash-t {
+  display: inline-block;
+  transition: transform 220ms var(--ease);
+}
+
+.dash-rows a:focus-visible :is(.dash-n, .dash-d, .dash-k) {
+  color: var(--fg);
+}
+
+/* The cursor block sits on the first letter, and the word steps in by one cell. */
+.dash-l {
+  transition: none;
+}
+
+.dash-rows a:focus-visible .dash-l {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.dash-rows a:focus-visible .dash-t {
+  transform: translateX(0.6ch);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-rows a:hover::before {
+    opacity: 1;
+  }
+
+  .dash-rows a:hover :is(.dash-n, .dash-d, .dash-k) {
+    color: var(--fg);
+  }
+
+  .dash-rows a:hover .dash-l {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .dash-rows a:hover .dash-t {
+    transform: translateX(0.6ch);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .dash-rows li {
+      animation: row-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+
+/* Link preview: a plain card with a project's or article's title and summary, shown on hover or focus. */
+.link-preview {
+  position: fixed;
+  z-index: 50;
+  width: min(22rem, calc(100vw - 16px));
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  pointer-events: none;
+}
+.link-preview[hidden] { display: none; }
+.link-preview img { display: block; width: 100%; height: auto; margin-bottom: 8px; }
+.link-preview img[hidden] { display: none; }
+.link-preview strong { display: block; margin-bottom: 4px; font-weight: 600; }
+.link-preview p { margin: 0; color: var(--muted); }

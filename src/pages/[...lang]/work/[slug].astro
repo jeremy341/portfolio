@@ -1,0 +1,198 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Figure from "../../../components/Figure.astro";
+import { getContent, renderInline, renderMarkdown, type Project } from "../../../lib/content";
+import { langOf, langs, ui, url, type Lang } from "../../../lib/i18n";
+import { breadcrumbs, personRef } from "../../../lib/seo";
+import { canonical } from "../../../lib/site";
+
+export function getStaticPaths() {
+  return langs.flatMap((code) => {
+    const { projects } = getContent(code);
+    return projects.map((project, i) => ({
+      params: { lang: code === "en" ? undefined : code, slug: project.slug },
+      props: {
+        project,
+        prev: projects[(i - 1 + projects.length) % projects.length],
+        next: projects[(i + 1) % projects.length],
+        number: i + 1,
+        total: projects.length,
+      },
+    }));
+  });
+}
+
+interface Props {
+  project: Project;
+  prev: Project;
+  next: Project;
+  number: number;
+  total: number;
+}
+
+const lang: Lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { project, prev, next, number, total } = Astro.props;
+const [hero, ...more] = project.figures;
+const sections = [
+  { id: "why", title: t.why, text: project.context },
+  { id: "how", title: t.how, text: project.inside },
+  { id: "where", title: t.where, text: project.standing },
+];
+const outline = [
+  { id: "why", title: t.why },
+  { id: "how", title: t.how },
+  ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
+  ...(more.length ? [{ id: "figures", title: t.figures }] : []),
+  { id: "where", title: t.where },
+  { id: "links", title: t.links },
+];
+// Where to find the project, shown right under the summary (the articles stay in the list at the end).
+const findIt = project.links.filter((link) => link.kind !== "article");
+
+/** What a link shows next to its label: the address it goes to (without https://), or the article's path. */
+const where = (href: string) => {
+  if (!href.startsWith("http")) return href;
+  const { host, pathname } = new URL(href);
+  return host.replace(/^www\./, "") + pathname.replace(/\/$/, "");
+};
+
+const source = project.links.find((link) => link.kind === "source");
+const schema = [
+  {
+    "@type": source ? "SoftwareSourceCode" : "CreativeWork",
+    name: project.name,
+    description: project.summary,
+    url: canonical(url(lang, `/work/${project.slug}/`)),
+    creativeWorkStatus: project.status,
+    keywords: project.tech.join(", "),
+    inLanguage: lang,
+    author: personRef(lang),
+    ...(source ? { codeRepository: source.href } : {}),
+    ...(hero ? { image: canonical(hero.src.src) } : {}),
+  },
+  breadcrumbs(lang, [
+    { name: t.workTitle, path: url(lang, "/work/") },
+    { name: project.name, path: url(lang, `/work/${project.slug}/`) },
+  ]),
+];
+---
+
+<Base title={project.name} description={t.projectDescription(project.name, project.summary, project.status)} schema={schema} lang={lang}>
+  <div class="project">
+    <h1 class="page-title">{project.name}</h1>
+    <p class="page-lead">{project.summary}</p>
+
+    <aside class="rail" aria-label={t.projectRecord}>
+      <p class="rail-n">{String(number).padStart(2, "0")} / {String(total).padStart(2, "0")}</p>
+      <dl class="record">
+        <div>
+          <dt>{t.status}</dt>
+          <dd>{project.status}</dd>
+        </div>
+        <div>
+          <dt>{t.category}</dt>
+          <dd>{project.categoryLabel}</dd>
+        </div>
+        <div>
+          <dt>{t.builtWith}</dt>
+          <dd class="record-tags">{project.tech.map((tech) => <span class="tag">{tech}</span>)}</dd>
+        </div>
+      </dl>
+      <nav class="outline" aria-label={t.onThisPage}>
+        <p class="outline-title">{t.onThisPage}</p>
+        <ol>
+          {outline.map((entry) => (
+            <li><a href={`#${entry.id}`} data-spy={entry.id}>{entry.title}</a></li>
+          ))}
+        </ol>
+      </nav>
+    </aside>
+
+    <div class="project-body">
+      {findIt.length > 0 && (
+        <ul class="linkbar" aria-label={t.linksAria}>
+          {findIt.map((link) => (
+            <li>
+              <a href={link.href} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
+                <span class="lb-k">{t.linkShort[link.kind]}</span>
+                <span class="lb-v">{where(link.href)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {hero && <Figure src={hero.src} alt={hero.alt} caption={hero.caption} number={1} lang={lang} eager />}
+
+      {[sections[0], sections[1]].map((section) => (
+        <section class="block" id={section.id} aria-labelledby={`${section.id}-title`}>
+          <h2 id={`${section.id}-title`}>{section.title}</h2>
+          <Fragment set:html={renderMarkdown(section.text, lang)} />
+        </section>
+      ))}
+
+      {project.facts.length > 0 && (
+        <section class="block" id="numbers" aria-labelledby="numbers-title">
+          <h2 id="numbers-title">{t.numbers}</h2>
+          <dl class="facts">
+            {project.facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd set:html={renderInline(fact.value, lang)} />
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {more.length > 0 && (
+        <section class="block" id="figures" aria-labelledby="figures-title">
+          <h2 id="figures-title">{t.figures}</h2>
+          <div class="figs">
+            {more.map((figure, i) => (
+              <Figure src={figure.src} alt={figure.alt} caption={figure.caption} number={i + 2} lang={lang} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section class="block" id={sections[2].id} aria-labelledby={`${sections[2].id}-title`}>
+        <h2 id={`${sections[2].id}-title`}>{sections[2].title}</h2>
+        <Fragment set:html={renderMarkdown(sections[2].text, lang)} />
+      </section>
+
+      <section class="block" id="links" aria-labelledby="links-title">
+        <h2 id="links-title">{t.links}</h2>
+        <ul class="link-rows">
+          {project.links.map((link) => (
+            <li>
+              <a class="link-row" href={link.href} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
+                <span class="lr-label">{link.label}</span>
+                <span class="lr-where">{where(link.href)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        {project.note && <p class="note">{project.note}</p>}
+      </section>
+
+      <nav class="pager" aria-label={t.moreProjects}>
+        <a class="pager-a" rel="prev" href={url(lang, `/work/${prev.slug}/`)} data-prev>
+          <span class="pager-k">{t.previous}</span>
+          <span class="pager-t">{prev.name}</span>
+          <span class="pager-s">{prev.status}</span>
+        </a>
+        <a class="pager-a pager-next" rel="next" href={url(lang, `/work/${next.slug}/`)} data-next>
+          <span class="pager-k">{t.next}</span>
+          <span class="pager-t">{next.name}</span>
+          <span class="pager-s">{next.status}</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import "../../../scripts/project";
+</script>

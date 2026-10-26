@@ -1,0 +1,66 @@
+---
+import Base from "../../layouts/Base.astro";
+import IntroGate from "../../components/IntroGate.astro";
+import { getContent } from "../../lib/content";
+import { homeDetail, homeKeys } from "../../lib/home";
+import { langOf, langParams, ui } from "../../lib/i18n";
+import { personNode, websiteNode } from "../../lib/seo";
+import { navFor, site } from "../../lib/site";
+
+export const getStaticPaths = langParams;
+
+// The home page: the name alone on the first screen, the four sections below it.
+// The name plays a replace pass, one cell per character (src/scripts/hero.ts).
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const detail = homeDetail(lang);
+const keys = homeKeys(lang);
+const chars = [...site.name];
+
+// Old links such as /#mira pointed at a project on the home page.
+const legacy = Object.fromEntries(getContent("en").projects.map((p) => [p.legacyId, p.slug]));
+const base = lang === "de" ? "/de" : "";
+---
+
+<Base title={t.homeTitle} description={t.description} schema={[websiteNode(lang), personNode(lang)]} home lang={lang}>
+  <script is:inline define:vars={{ legacy, base }}>
+    const id = location.hash.slice(1);
+    if (legacy[id]) location.replace(`${base}/work/${legacy[id]}/`);
+  </script>
+
+  <div class="dash">
+    <div class="dash-hero">
+      <h1 class="dash-name">
+        <span class="sr-only">{site.name}</span>
+        <span class="dash-cells" aria-hidden="true">{chars.map((ch, i) => (
+          <span
+            class:list={["c", "w", { first: i === 0, cur: i === chars.length - 1 }]}
+            data-l={ch === " " ? undefined : ""}
+            data-col={i + 1}
+          >{ch}</span>
+        ))}<span class="c end"> </span></span>
+      </h1>
+    </div>
+
+    <nav class="dash-rows" aria-label={t.sections}>
+      <ol>
+        {navFor(lang).map((item, i) => (
+          <li>
+            <a href={item.href}>
+              <span class="dash-n">{String(i + 1).padStart(2, "0")}</span>
+              <span class="dash-t"><span class="dash-l">{item.label[0]}</span>{item.label.slice(1)}</span>
+              <span class="dash-d">{detail[i]}</span>
+              <span class="dash-k">{keys[i]}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </div>
+  <IntroGate />
+</Base>
+
+<script>
+  import "../../scripts/hero";
+  import "../../scripts/rows";
+</script>

@@ -1,0 +1,36 @@
+---
+import { langs, otherPath, ui, url, type Lang } from "../lib/i18n";
+import { navFor, site } from "../lib/site";
+
+interface Props {
+  home?: boolean;
+  lang: Lang;
+}
+
+const { home = false, lang } = Astro.props;
+const t = ui[lang];
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path.startsWith(href);
+---
+
+<header class="site-header frame">
+  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined} tabindex={home ? -1 : undefined} aria-hidden={home ? "true" : undefined}>{site.name}</a>
+  <nav class="site-nav" aria-label={t.mainNav}>
+    <span class="nav-cur" aria-hidden="true"></span>
+    {navFor(lang).map((item) => <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>)}
+    <button type="button" class="find-btn" data-find>{t.search} <kbd>/</kbd></button>
+    <div class="lang" role="group" aria-label={t.language} data-on={lang}>
+      <span class="lang-cur" aria-hidden="true"></span>
+      {langs.map((code) => (
+        <a
+          href={/404(\.html|\/)$/.test(path) ? url(code, "/") : otherPath(path, code)}
+          lang={code}
+          hreflang={code}
+          title={ui[code].languageName[code]}
+          aria-current={code === lang ? "true" : undefined}
+        >{code.toUpperCase()}</a>
+      ))}
+    </div>
+    <button type="button" class="theme-btn" data-theme-switch>{t.themeLight}</button>
+  </nav>
+</header>

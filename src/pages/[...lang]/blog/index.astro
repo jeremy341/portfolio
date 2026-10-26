@@ -1,0 +1,47 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getContent } from "../../../lib/content";
+import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { breadcrumbs } from "../../../lib/seo";
+import { canonical, formatDate, isoDate, site } from "../../../lib/site";
+
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { posts } = getContent(lang);
+const schema = [
+  {
+    "@type": "Blog",
+    name: t.writingTitle,
+    url: canonical(url(lang, "/blog/")),
+    inLanguage: t.htmlLang,
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: canonical(url(lang, `/blog/${post.slug}/`)),
+      datePublished: isoDate(post.publishedAt),
+    })),
+  },
+  breadcrumbs(lang, [{ name: t.writingTitle, path: url(lang, "/blog/") }]),
+];
+---
+
+<Base title={t.writingTitle} description={t.writingDescription(site.name)} schema={schema} lang={lang}>
+  <h1 class="page-title">{t.writingTitle}</h1>
+
+  <section class="index" aria-label={t.articlesAria}>
+    <ol class="entries">
+      {posts.map((post, i) => (
+        <li style={`--i:${i}`}>
+          <a class="entry" href={url(lang, `/blog/${post.slug}/`)}>
+            <span class="entry-name"><span class="hit">{post.title}</span></span>
+            <time class="entry-aside" datetime={isoDate(post.publishedAt)}>{formatDate(post.publishedAt, lang)}</time>
+            <span class="entry-text">{post.description}</span>
+            <span class="entry-meta">{t.minRead(post.minutes)}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
