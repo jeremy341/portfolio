@@ -24,7 +24,7 @@ Der Server besitzt das Spiel. Der Browser schickt nur, was der Spieler tun will,
 ### Was im Spiel steckt
 
 - Es gibt zwei Spielbretter, Standard-40 und Metro-52. Beide sind als Daten beschrieben und nicht als zwei getrennte Regelwerke.
-- Räume gibt es öffentlich mit Suche oder privat mit Code. Dazu kommen Gasteinstieg, Chat, Wiederverbinden nach einem Abbruch, das Entfernen inaktiver Spieler und ein Rauswurf per Abstimmung.
+- Räume gibt es öffentlich oder privat mit Code. Dazu kommen Gasteinstieg, Chat, Wiederverbinden nach einem Abbruch, das Entfernen inaktiver Spieler und ein Rauswurf per Abstimmung.
 - Beim Grundstücksspiel geht es um Kaufen, Miete kassieren, gleichmäßiges Bauen innerhalb einer Farbgruppe, Beleihen, Versteigern und Handeln.
 - Geld zwischen Spielern geht über die Grundlagen hinaus: Handels- und Finanzierungsangebote auch außerhalb des eigenen Zugs, Bankkredite und Kredite zwischen Spielern mit Sicherheiten und festen Regeln für den Ausfall. Dazu kommen gesponserte Käufe, bei denen ein Spieler das Grundstück eines anderen gegen einen vereinbarten Anteil bezahlt.
 - Es gibt eine optionale Börse in Spielgeld mit gemeinsamen Kursen. Globale Ereignisse bewegen den Markt und können sogar die Regeln für eine Runde ändern. Ein optionales Casino, ebenfalls in Spielgeld, ist auch dabei.

@@ -7,13 +7,13 @@
 
 ## Zusammenfassung
 
-Ich bringe einer Kamera bei, Abfall auseinanderzuhalten. Es ist Computer Vision an einem Recyclingproblem, das ich wirklich anfassen kann.
+Ich bringe einer Kamera bei, Abfall auseinanderzuhalten. Es ist Computer Vision, angewendet auf ein Recyclingproblem, das ich wirklich anfassen kann.
 
 ## Kontext und Motivation
 
 MIRA steht für Machine Intelligence for Recycling Automation. Es begann mit einer einfachen Frage: Kann eine günstige Kamera mit einem kleinen Modell verschiedene Abfallarten gut genug unterscheiden, um beim Sortieren zu helfen? Das langfristige Ziel ist automatisches Sortieren. Das kurzfristige Ziel ist bescheidener, dafür aber nützlicher: Ich will herausfinden, wie nah die aktuellen Modelle daran wirklich sind.
 
-Das ist auch der Grund, warum ich beim Schreiben so genau bin. Das Projekt ist als deutsche Forschungsarbeit für Jugend forscht aufgeschrieben, und ich versuche, Arbeit und Code aufeinander abgestimmt zu halten. Deshalb muss alles, was ich über ein Ergebnis schreibe, sagen, was gemessen wurde, auf welchen Daten und was das nicht zeigt.
+Deshalb bin ich beim Schreiben so genau. Das Projekt ist als deutsche Forschungsarbeit für Jugend forscht aufgeschrieben, und ich versuche, Arbeit und Code aufeinander abgestimmt zu halten. Alles, was ich über ein Ergebnis schreibe, muss deshalb sagen, was gemessen wurde, auf welchen Daten und was es nicht zeigt.
 
 ## Im Projekt
 
@@ -29,13 +29,13 @@ Das zeigte, dass sich die Materialien unterscheiden lassen, aber es blieb eine L
 
 Stufe B ist der Wechsel von der Klassifikation zur Detektion. Ich habe mit YOLOv8n angefangen und dann auf YOLO11n gewechselt. Trainiert habe ich mit Ultralytics auf Kaggle und auf Colab-GPUs vom Typ T4, 120 Epochen bei 640 Pixeln.
 
-Es gibt fünf Klassen: Glas, Metall, Papier, Plastik und Trash. Die Trainingsdaten kommen aus vier Quellen: TACO, TrashNet (mit SAM beschriftet), dem Trash-Detection-Datensatz von Roboflow und einem Datensatz von dmedhi. Ein Skript baut daraus den endgültigen Satz mit festem Seed, SHA-256-Prüfung gegen Duplikate und einem Herkunftsnachweis, damit ich bei jedem Bild sagen kann, woher es stammt. Am Ende stehen 6.898 Bilder mit 12.832 Boxen, klassenausgeglichen. Eine Quelle, WaRP, habe ich wieder herausgenommen, weil sie die Ergebnisse verschlechtert hat. Den größten Sprung bei der Genauigkeit hat die Datenarbeit gebracht, nicht eine Änderung am Modell.
+Es gibt fünf Klassen: Glas, Metall, Papier, Plastik und Trash. Die Trainingsdaten kommen aus vier Quellen: TACO, TrashNet (mit SAM beschriftet), dem Trash-Detection-Datensatz von Roboflow und einem Datensatz von dmedhi. Ein Skript baut daraus den endgültigen Satz mit festem Seed, SHA-256-Prüfung gegen Duplikate und einem Herkunftsnachweis. So kann ich bei jedem Bild sagen, woher es stammt. Am Ende stehen 6.898 Bilder mit 12.832 Boxen, klassenausgeglichen. Eine Quelle, WaRP, habe ich wieder herausgenommen, weil sie die Ergebnisse verschlechtert hat. Den größten Sprung bei der Genauigkeit hat die Datenarbeit gebracht, nicht eine Änderung am Modell.
 
 ### Zwei gute Läufe, zwei verschiedene Antworten
 
 Welches Modell das beste ist, hängt davon ab, wie man es misst. Das war die wichtigste Erkenntnis aus Stufe B.
 
-EXP-019 hat die besten Validierungswerte. Es wiederholt EXP-018 auf dem sauberen, klassenausgeglichenen Datensatz und erreicht 90,6 % mAP50 auf dem Split mit 415 Bildern vom Tisch. Beim zweiten Mal kam fast genau dasselbe heraus. Das sind aber saubere Fotos auf einem schlichten Tisch. Der Wert zeigt deshalb, dass das Modell diesen Datensatz gut gelernt hat, aber nicht, wie es sich auf einem echten Sortierband verhält. Auf echten Fotos hat es nicht schlecht abgeschnitten, war dort aber auch nicht das beste Modell.
+EXP-019 hat die besten Validierungswerte. Es wiederholt EXP-018 auf dem sauberen, klassenausgeglichenen Datensatz und erreicht 90,6 % mAP50 auf dem Split mit 415 Bildern vom Tisch. Beim zweiten Mal kam fast genau dasselbe heraus. Das sind aber saubere Fotos auf einem schlichten Tisch. Der Wert zeigt, dass das Modell diesen Datensatz gut gelernt hat, aber nicht, wie es sich auf einem echten Sortierband verhält. Auf echten Fotos hat es nicht schlecht abgeschnitten, war dort aber auch nicht das beste Modell.
 
 EXP-014 war im Feld-Benchmark am besten, und das hat mich am meisten überrascht. Es wurde auf der älteren Mischung aus TACO, TrashNet und Roboflow trainiert. Auf seinem eigenen Validierungssplit kam es nur auf 60,7 % mAP50. Im Benchmark mit 805 Bildern, der Fotos aus der freien Natur und vom Tisch mischt, erreichte es 85,8 % F1 bei der Klassenpräsenz pro Bild. Das war der beste Wert von 11 getesteten Modellen. Ich führe das auf die wilden Fotos mit gemischtem Hintergrund zurück, mit denen es trainiert wurde. Der F1-Wert für Trash war mit 54 % trotzdem der schwächste. EXP-019 war nicht Teil dieses Benchmarks, und die Benchmark-Bilder sind nicht dieselben wie die 415 Bilder des Splits. Deshalb kann ich die beiden nicht direkt gegeneinander einordnen.
 
