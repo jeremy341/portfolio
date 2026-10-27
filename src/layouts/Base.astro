@@ -118,6 +118,9 @@ const speculation = {
     <meta name="theme-color" content="#1a1b26" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#e6e7ed" media="(prefers-color-scheme: light)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     {nodes.length > 0 && (
       <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": nodes }).replace(/</g, "\\u003c")} />

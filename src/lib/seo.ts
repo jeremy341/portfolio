@@ -27,6 +27,7 @@ export function personNode(lang: Lang) {
     jobTitle: t.jobTitle,
     description: t.personDescription(site.name),
     url: canonical(url(lang, "/")),
+    image: canonical("/favicon-512.png"),
     email: email?.href.slice("mailto:".length),
     address: { "@type": "PostalAddress", addressRegion: t.region, addressCountry: "DE" },
     knowsAbout: about.topics
