@@ -176,7 +176,7 @@ const de: Strings = {
   htmlLang: "de",
   dateLocale: "de-DE",
   ogLocale: "de_DE",
-  description: "Projekte, Texte und Notizen von Jeremy Darko, einem Schüler, der in Machine Learning, GPU-Computing und Hardware baut.",
+  description: "Jeremy Darko, Schüler aus NRW: Projekte, Artikel und Zertifikate zu Machine Learning, GPU-Computing und Hardware, mit Quellcode, Demos und Ergebnissen.",
   homeTitle: "Schüler und Entwickler für Machine Learning, GPU-Computing und Hardware",
   jobTitle: "Schüler und Entwickler",
   personDescription: (name: string) => `${name} ist ${summary.de}`,
