@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: torch
 - Kategorie: Systeme & Rechnen
 - Status: Frühe Forschung
-- Technologien und Themen: [Vulkan](https://www.vulkan.org/), [PyTorch](https://pytorch.org/), GPU-Computing
+- Technologien und Themen: Vulkan, PyTorch, GPU-Computing
 
 ## Zusammenfassung
 

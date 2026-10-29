@@ -3,7 +3,7 @@
 - Original content ID: fpga
 - Category: Hardware & embedded
 - Status: Work in progress
-- Technologies and topics: MobileNet, Quantization, [TFLite](https://www.tensorflow.org/lite), FPGA
+- Technologies and topics: MobileNet, Quantization, TFLite, FPGA
 
 ## Summary
 

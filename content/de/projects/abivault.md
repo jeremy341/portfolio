@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: abi
 - Kategorie: Spiele & Software
 - Status: Privates Projekt
-- Technologien und Themen: [Next.js](https://nextjs.org/), TypeScript, [Supabase](https://supabase.com/)
+- Technologien und Themen: Next.js, TypeScript, Supabase
 
 ## Zusammenfassung
 

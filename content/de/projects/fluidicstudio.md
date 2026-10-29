@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: fluid
 - Kategorie: Hardware & Embedded
 - Status: Experimentelle Werkzeuge
-- Technologien und Themen: Python, [PyQt6](https://riverbankcomputing.com/software/pyqt/), Hardwaresteuerung, Messungen
+- Technologien und Themen: Python, PyQt6, Hardwaresteuerung, Messungen
 
 ## Zusammenfassung
 

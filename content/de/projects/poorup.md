@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: poorup
 - Kategorie: Spiele & Software
 - Status: Spielbares Projekt
-- Technologien und Themen: Node.js, Express, [Socket.IO](https://socket.io/), JavaScript
+- Technologien und Themen: Node.js, Express, Socket.IO, JavaScript
 
 ## Zusammenfassung
 

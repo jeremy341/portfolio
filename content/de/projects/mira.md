@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: mira
 - Kategorie: Maschinelles Lernen
 - Status: Experiment
-- Technologien und Themen: Computer Vision, Python, [YOLO](https://docs.ultralytics.com/), [ONNX](https://onnx.ai/)
+- Technologien und Themen: Computer Vision, Python, YOLO, ONNX
 
 ## Zusammenfassung
 

@@ -3,7 +3,7 @@
 - Original content ID: fluid
 - Category: Hardware & embedded
 - Status: Experimental tooling
-- Technologies and topics: Python, [PyQt6](https://riverbankcomputing.com/software/pyqt/), Hardware control, Measurements
+- Technologies and topics: Python, PyQt6, Hardware control, Measurements
 
 ## Summary
 

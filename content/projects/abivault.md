@@ -3,7 +3,7 @@
 - Original content ID: abi
 - Category: Games & software
 - Status: Personal project
-- Technologies and topics: [Next.js](https://nextjs.org/), TypeScript, [Supabase](https://supabase.com/)
+- Technologies and topics: Next.js, TypeScript, Supabase
 
 ## Summary
 
