@@ -55,8 +55,8 @@ export const outside: Record<string, Entry> = {
     de: { title: "AbiVault Quellcode", text: "Der Quellcode von AbiVault, einem gemeinsamen Geldbereich für Schulkomitees.", image: "/previews/terms/repo-abivault.png" },
   },
   "https://abi-vault-demo.vercel.app/": {
-    en: { title: "AbiVault demo", text: "A live demo of AbiVault with sample data. It isn't meant for real financial data.", image: "/previews/abivault-demo.png" },
-    de: { title: "AbiVault-Demo", text: "Eine Live-Demo von AbiVault mit Beispieldaten. Sie ist nicht für echte Finanzdaten gedacht.", image: "/previews/abivault-demo.png" },
+    en: { title: "AbiVault demo", text: "A live demo of AbiVault with sample data. It isn't meant for real financial data.", image: "/previews/abivault-dashboard-1920.png" },
+    de: { title: "AbiVault-Demo", text: "Eine Live-Demo von AbiVault mit Beispieldaten. Sie ist nicht für echte Finanzdaten gedacht.", image: "/previews/abivault-dashboard-1920.png" },
   },
   "https://github.com/jeremy341/TorchVK": {
     en: { title: "TorchVK source", text: "The source code for TorchVK, an early research plan for PyTorch training through Vulkan.", image: "/previews/terms/repo-torchvk.png" },
