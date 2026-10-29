@@ -3,15 +3,15 @@
 - Ursprüngliche Inhalts-ID: torch
 - Kategorie: Systeme & Rechnen
 - Status: Frühe Forschung
-- Technologien und Themen: Vulkan, PyTorch, GPU-Computing
+- Technologien und Themen: [Vulkan](https://www.vulkan.org/), [PyTorch](https://pytorch.org/), GPU-Computing
 
 ## Zusammenfassung
 
-Ich will PyTorch-Training auf GPU-Compute über Vulkan ausprobieren, auf einer Consumer-Karte, mit der die üblichen Stacks nicht gut zurechtkommen.
+Ich will PyTorch-Training auf GPU-Compute über [Vulkan](https://www.vulkan.org/) ausprobieren, auf einer Consumer-Karte, mit der die üblichen Stacks nicht gut zurechtkommen.
 
 ## Kontext und Motivation
 
-Die meisten Deep-Learning-Anwendungen auf GPUs setzen auf CUDA von NVIDIA oder ROCm von AMD. Bei manchen Consumer-Karten sind diese Stacks aber schwach oder fehlen ganz. Dann hat man eine schnelle Grafikkarte, die nur für Spiele taugt. Genau dieses Problem ist der Ausgangspunkt für TorchVK. Ich will einen anderen Weg finden: PyTorch-Training und allgemeines GPU-Computing über Vulkan, das auf fast jeder modernen Grafikkarte läuft.
+Die meisten Deep-Learning-Anwendungen auf GPUs setzen auf CUDA von NVIDIA oder ROCm von AMD. Bei manchen Consumer-Karten sind diese Stacks aber schwach oder fehlen ganz. Dann hat man eine schnelle Grafikkarte, die nur für Spiele taugt. Genau dieses Problem ist der Ausgangspunkt für TorchVK. Ich will einen anderen Weg finden: PyTorch-Training und allgemeines GPU-Computing über [Vulkan](https://www.vulkan.org/), das auf fast jeder modernen Grafikkarte läuft.
 
 Ich habe mir bewusst ein konkretes Ziel ausgesucht, eine Radeon RX 5600 XT mit 6 GB Speicher unter Windows. Wer für alle GPUs gleichzeitig schreibt, bleibt vage. Eine Karte, die mir gehört, gibt mir dagegen eine Frage, die ich tatsächlich beantworten kann.
 
@@ -21,15 +21,15 @@ TorchVK steckt noch in der Planung. Das öffentliche Repository enthält Dokumen
 
 ### Die Frage
 
-Kann PyTorch-Training auf einer Consumer-GPU über Vulkan Compute laufen, auf einer Karte, die CUDA und ROCm schlecht unterstützen? Die Experimente sollen das mit Messungen beantworten. Die Antwort kann auch „noch nicht“ lauten, und das würde ich trotzdem aufschreiben.
+Kann PyTorch-Training auf einer Consumer-GPU über [Vulkan](https://www.vulkan.org/) Compute laufen, auf einer Karte, die CUDA und ROCm schlecht unterstützen? Die Experimente sollen das mit Messungen beantworten. Die Antwort kann auch „noch nicht“ lauten, und das würde ich trotzdem aufschreiben.
 
 ### Verwandte Arbeiten, und warum das keine Premiere ist
 
-Vulkan-Backends für PyTorch gibt es bereits, TorchVK behauptet also nicht, das erste zu sein. torchvulkan dokumentiert ein PrivateUse1-Gerät, auf dem MNIST-Training und ein winziges GPT laufen. Dazu kommen torch-vulkan und das ältere Vulkan-Backend von PyTorch selbst. Die Lücke, die ich testen will, ist enger. Ich möchte Training, das sich nachprüfen lässt und wirklich nur auf der GPU läuft, ohne stillen Rückfall auf die CPU. Außerdem möchte ich Kompatibilität mit einer RDNA1-Karte unter Windows, ein kleines CNN mit wenig Grafikspeicher trainieren und Benchmarks, die andere auf ihrem eigenen Rechner nachvollziehen können.
+Vulkan-Backends für [PyTorch](https://pytorch.org/) gibt es bereits, TorchVK behauptet also nicht, das erste zu sein. torchvulkan dokumentiert ein PrivateUse1-Gerät, auf dem MNIST-Training und ein winziges [GPT](https://openai.com/) laufen. Dazu kommen torch-vulkan und das ältere Vulkan-Backend von [PyTorch](https://pytorch.org/) selbst. Die Lücke, die ich testen will, ist enger. Ich möchte Training, das sich nachprüfen lässt und wirklich nur auf der GPU läuft, ohne stillen Rückfall auf die CPU. Außerdem möchte ich Kompatibilität mit einer RDNA1-Karte unter Windows, ein kleines CNN mit wenig Grafikspeicher trainieren und Benchmarks, die andere auf ihrem eigenen Rechner nachvollziehen können.
 
 ### Der geplante Entwurf
 
-PyTorch spricht mit einem eigenen PrivateUse1-Gerät. Das ist eine C++-Erweiterung, die Vulkan ansteuert. Die Shader werden in GLSL oder Slang geschrieben und zu SPIR-V kompiliert.
+[PyTorch](https://pytorch.org/) spricht mit einem eigenen PrivateUse1-Gerät. Das ist eine C++-Erweiterung, die [Vulkan](https://www.vulkan.org/) ansteuert. Die Shader werden in GLSL oder Slang geschrieben und zu SPIR-V kompiliert.
 
 ```text
 PyTorch  ->  PrivateUse1-Gerät  ->  TorchVK-C++-Erweiterung

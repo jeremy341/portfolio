@@ -5,6 +5,7 @@ import "../styles/global.css";
 import "../styles/pages.css";
 import Header from "../components/Header.astro";
 import { getContent, routesFor } from "../lib/content";
+import { outsidePreviews } from "../lib/glossary";
 import { otherPath, ui, url as localizedUrl, type Lang } from "../lib/i18n";
 import { profilesOf } from "../lib/seo";
 import { canonical, site } from "../lib/site";
@@ -30,38 +31,16 @@ const projectImages: Record<string, string> = {
   mira: "/previews/mira-dashboard.png",
   fluidicstudio: "/previews/fluidicstudio.png",
 };
-const previews = Object.fromEntries([
+const previews = {
+  ...Object.fromEntries([
   ...projects.map((p) => [
     localizedUrl(lang, `/work/${p.slug}/`),
     { title: p.name, text: p.summary, image: projectImages[p.slug] ?? p.figures[0]?.src.src },
   ]),
   ["/cv/", { title: "CV", text: "Experience, education, skills and personal projects." }],
-  // Outside links are keyed by their full origin and path.
-  ["https://huggingface.co/", { title: "Hugging Face", text: "A website where people share machine learning models, datasets and demos. Each model page counts how often its files are requested, not how many people use the model.", image: "/previews/huggingface.png" }],
-  ["https://en.wikipedia.org/wiki/Overfitting", { title: "Benchmaxxed", text: "A model tuned so hard for one test that it scores well there but does worse in real use. The term comes from benchmark plus maxxing, and Wikipedia calls the general idea overfitting." }],
-  ["https://poorup.tech/",{ title: "Poorup live demo", text: "The real-time multiplayer property game, playable in the browser without an account.", image: "/previews/poorup-demo.png" }],
-  ["https://github.com/jeremy341/Poorup", { title: "Poorup source", text: "The source code for Poorup, the real-time multiplayer property game." }],
-  ["https://github.com/jeremy341/MIRA-AI", { title: "MIRA source", text: "The source code for MIRA, the waste-sorting computer vision project." }],
-  ["https://huggingface.co/Jeremy341/MIRA-AI", { title: "MIRA model files", text: "The MIRA models on Hugging Face. The download counter counts fetches, not people." }],
-  ["https://huggingface.co/Jeremy341", { title: "Hugging Face profile", text: "Jeremy's Hugging Face profile, with the MIRA models." }],
-  ["https://pypi.org/project/mira-ai/", { title: "mira-ai on PyPI", text: "The mira-ai Python package, which bundles the MIRA models." }],
-  ["https://mira-vision.vercel.app/", { title: "MIRA website", text: "The MIRA project website.", image: "/previews/mira-site.png" }],
-  ["https://github.com/jeremy341/abi-vault", { title: "AbiVault source", text: "The source code for AbiVault, a shared money workspace for school committees." }],
-  ["https://abi-vault-demo.vercel.app/", { title: "AbiVault demo", text: "A live demo of AbiVault with sample data. It isn't meant for real financial data.", image: "/previews/abivault-demo.png" }],
-  ["https://github.com/jeremy341/TorchVK", { title: "TorchVK source", text: "The source code for TorchVK, an early research plan for PyTorch training through Vulkan." }],
-  ["https://github.com/jeremy341/Mobilenet-fpga", { title: "Mobilenet-fpga source", text: "The source code for the MobileNet quantization work. It has no FPGA code yet." }],
-  ["https://github.com/jeremy341/microdroplets-ui", { title: "Microdroplets UI source", text: "The source code for Microdroplets UI, which contains FluidicStudio." }],
-  ["https://github.com/jeremy341/esp32-alarm-clock", { title: "ESP32 alarm clock source", text: "The source code for the ESP32 alarm clock, my first real project." }],
-  ["https://github.com/jeremy341", { title: "GitHub profile", text: "Jeremy's GitHub profile." }],
-  ["https://de.linkedin.com/in/jeremy-darko-a0a850413", { title: "LinkedIn profile", text: "Jeremy's LinkedIn profile." }],
-  ["https://www.uni-due.de/ebs/", { title: "EBS chair", text: "The Chair of Electronic Components and Circuits at the University of Duisburg-Essen, where I did my internship.", image: "/previews/ebs-chair.png" }],
-  ["https://stardance.space/certificate", { title: "Certificate check", text: "The Stardance certificate page, where you enter a reference code to verify a certificate.", image: "/previews/stardance-certificate.png" }],
-  ["https://hackclub.com/", { title: "Hack Club", text: "A nonprofit movement of teenagers making cool projects. Stardance and Loadout are both Hack Club programs.", image: "/previews/hackclub.webp" }],
-  ["https://stardance.hackclub.com/", { title: "Stardance", text: "A free online summer program for teens 13 to 18. Build a project, log your hours and earn prizes.", image: "/previews/stardance.webp" }],
-  ["https://project.hackclub.com/overview/info/", { title: "YSWS", text: "You Ship, We Ship: a Hack Club model where you build and ship a project and get a reward back.", image: "/previews/ysws.webp" }],
-  ["https://loadout.dino.icu/", { title: "LOADOUT", text: "A proposal YSWS that would let people come to Germany for free for a three-day hackathon if they create enough projects.", image: "/previews/loadout.webp" }],
-  ["https://bambulab.com/", { title: "Bambu Lab", text: "A 3D printer maker. Jeremy got a Bambu Lab printer for free because of Poorup.", image: "/previews/bambulab.webp" }],
-]);
+]),
+  ...outsidePreviews(lang),
+};
 const fullTitle = title ? `${title} | ${site.name}` : site.name;
 const url = canonical(Astro.url.pathname);
 const english = canonical(otherPath(Astro.url.pathname, "en"));

@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: mira
 - Kategorie: Maschinelles Lernen
 - Status: Experiment
-- Technologien und Themen: Computer Vision, Python, YOLO, ONNX
+- Technologien und Themen: Computer Vision, Python, [YOLO](https://docs.ultralytics.com/), [ONNX](https://onnx.ai/)
 
 ## Zusammenfassung
 
@@ -13,7 +13,7 @@ Ich bringe einer Kamera bei, Abfall auseinanderzuhalten. Es ist Computer Vision,
 
 MIRA steht für Machine Intelligence for Recycling Automation. Es begann mit einer einfachen Frage: Kann eine günstige Kamera mit einem kleinen Modell verschiedene Abfallarten gut genug unterscheiden, um beim Sortieren zu helfen? Das langfristige Ziel ist automatisches Sortieren. Das kurzfristige Ziel ist bescheidener, dafür aber nützlicher: Ich will herausfinden, wie nah die aktuellen Modelle daran wirklich sind.
 
-Deshalb bin ich beim Schreiben so genau. Das Projekt ist als deutsche Forschungsarbeit für Jugend forscht aufgeschrieben, und ich versuche, Arbeit und Code aufeinander abgestimmt zu halten. Alles, was ich über ein Ergebnis schreibe, muss deshalb sagen, was gemessen wurde, auf welchen Daten und was es nicht zeigt.
+Deshalb bin ich beim Schreiben so genau. Das Projekt ist als deutsche Forschungsarbeit für [Jugend forscht](https://www.jugend-forscht.de/) aufgeschrieben, und ich versuche, Arbeit und Code aufeinander abgestimmt zu halten. Alles, was ich über ein Ergebnis schreibe, muss deshalb sagen, was gemessen wurde, auf welchen Daten und was es nicht zeigt.
 
 ## Im Projekt
 
@@ -27,9 +27,9 @@ Das zeigte, dass sich die Materialien unterscheiden lassen, aber es blieb eine L
 
 ### Stufe B: Wo liegt das Objekt?
 
-Stufe B ist der Wechsel von der Klassifikation zur Detektion. Ich habe mit YOLOv8n angefangen und dann auf YOLO11n gewechselt. Trainiert habe ich mit Ultralytics auf Kaggle und auf Colab-GPUs vom Typ T4, 120 Epochen bei 640 Pixeln.
+Stufe B ist der Wechsel von der Klassifikation zur Detektion. Ich habe mit YOLOv8n angefangen und dann auf YOLO11n gewechselt. Trainiert habe ich mit [Ultralytics](https://www.ultralytics.com/) auf [Kaggle](https://www.kaggle.com/) und auf Colab-GPUs vom Typ T4, 120 Epochen bei 640 Pixeln.
 
-Es gibt fünf Klassen: Glas, Metall, Papier, Plastik und Trash. Die Trainingsdaten kommen aus vier Quellen: TACO, TrashNet (mit SAM beschriftet), dem Trash-Detection-Datensatz von Roboflow und einem Datensatz von dmedhi. Ein Skript baut daraus den endgültigen Satz mit festem Seed, SHA-256-Prüfung gegen Duplikate und einem Herkunftsnachweis. So kann ich bei jedem Bild sagen, woher es stammt. Am Ende stehen 6.898 Bilder mit 12.832 Boxen, klassenausgeglichen. Eine Quelle, WaRP, habe ich wieder herausgenommen, weil sie die Ergebnisse verschlechtert hat. Den größten Sprung bei der Genauigkeit hat die Datenarbeit gebracht, nicht eine Änderung am Modell.
+Es gibt fünf Klassen: Glas, Metall, Papier, Plastik und Trash. Die Trainingsdaten kommen aus vier Quellen: [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet) (mit SAM beschriftet), dem Trash-Detection-Datensatz von [Roboflow](https://roboflow.com/) und einem Datensatz von dmedhi. Ein Skript baut daraus den endgültigen Satz mit festem Seed, SHA-256-Prüfung gegen Duplikate und einem Herkunftsnachweis. So kann ich bei jedem Bild sagen, woher es stammt. Am Ende stehen 6.898 Bilder mit 12.832 Boxen, klassenausgeglichen. Eine Quelle, WaRP, habe ich wieder herausgenommen, weil sie die Ergebnisse verschlechtert hat. Den größten Sprung bei der Genauigkeit hat die Datenarbeit gebracht, nicht eine Änderung am Modell.
 
 ### Zwei gute Läufe, zwei verschiedene Antworten
 
@@ -37,7 +37,7 @@ Welches Modell das beste ist, hängt davon ab, wie man es misst. Das war die wic
 
 EXP-019 hat die besten Validierungswerte. Es wiederholt EXP-018 auf dem sauberen, klassenausgeglichenen Datensatz und erreicht 90,6 % mAP50 auf dem Split mit 415 Bildern vom Tisch. Beim zweiten Mal kam fast genau dasselbe heraus. Das sind aber saubere Fotos auf einem schlichten Tisch. Der Wert zeigt, dass das Modell diesen Datensatz gut gelernt hat, aber nicht, wie es sich auf einem echten Sortierband verhält. Auf echten Fotos hat es nicht schlecht abgeschnitten, war dort aber auch nicht das beste Modell.
 
-EXP-014 war im Feld-Benchmark am besten, und das hat mich am meisten überrascht. Es wurde auf der älteren Mischung aus TACO, TrashNet und Roboflow trainiert. Auf seinem eigenen Validierungssplit kam es nur auf 60,7 % mAP50. Im Benchmark mit 805 Bildern, der Fotos aus der freien Natur und vom Tisch mischt, erreichte es 85,8 % F1 bei der Klassenpräsenz pro Bild. Das war der beste Wert von 11 getesteten Modellen. Ich führe das auf die wilden Fotos mit gemischtem Hintergrund zurück, mit denen es trainiert wurde. Der F1-Wert für Trash war mit 54 % trotzdem der schwächste. EXP-019 war nicht Teil dieses Benchmarks, und die Benchmark-Bilder sind nicht dieselben wie die 415 Bilder des Splits. Deshalb kann ich die beiden nicht direkt gegeneinander einordnen.
+EXP-014 war im Feld-Benchmark am besten, und das hat mich am meisten überrascht. Es wurde auf der älteren Mischung aus [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet) und [Roboflow](https://roboflow.com/) trainiert. Auf seinem eigenen Validierungssplit kam es nur auf 60,7 % mAP50. Im Benchmark mit 805 Bildern, der Fotos aus der freien Natur und vom Tisch mischt, erreichte es 85,8 % F1 bei der Klassenpräsenz pro Bild. Das war der beste Wert von 11 getesteten Modellen. Ich führe das auf die wilden Fotos mit gemischtem Hintergrund zurück, mit denen es trainiert wurde. Der F1-Wert für Trash war mit 54 % trotzdem der schwächste. EXP-019 war nicht Teil dieses Benchmarks, und die Benchmark-Bilder sind nicht dieselben wie die 415 Bilder des Splits. Deshalb kann ich die beiden nicht direkt gegeneinander einordnen.
 
 Daraus folgt das nächste Experiment. Auf dem Tischsplit erreicht Trash 97,5 % mAP50, im Feld-Benchmark aber nur 54 % F1. Meine Vermutung: Ein Validierungssatz mit meist einfachen, gut beleuchteten Fotos schönt das Ergebnis, und der Feld-Benchmark kommt dem näher, was ein Sortierer tatsächlich sieht. Bewiesen habe ich das noch nicht.
 
@@ -46,9 +46,9 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 ### Was es heute kann
 
 - Mit der Kommandozeile `mira` läuft die Live-Erkennung von einer Webcam oder einem IP/RTSP-Stream, optional mit ByteTrack-Tracking.
-- Ein lokales Dashboard mit FastAPI und einer Web-Oberfläche zeigt Erkennungen, Klassenzahlen, FPS, Latenz, CPU und Speicher.
+- Ein lokales Dashboard mit [FastAPI](https://fastapi.tiangolo.com/) und einer Web-Oberfläche zeigt Erkennungen, Klassenzahlen, FPS, Latenz, CPU und Speicher.
 - Es gibt Werkzeuge zum Bauen von Datensätzen, zum Auswerten der Modelle und für den Feld-Benchmark. Dahinter stehen etwa 25 Testdateien.
-- Exporte nach ONNX und LiteRT/TFLite bei 320 und 640 Pixeln. Das Paket `mira-ai` auf PyPI enthält die Modelle, und die Gewichte liegen auf Hugging Face.
+- Exporte nach [ONNX](https://onnx.ai/) und [LiteRT](https://ai.google.dev/edge/litert)/[TFLite](https://www.tensorflow.org/lite) bei 320 und 640 Pixeln. Das Paket `mira-ai` auf [PyPI](https://pypi.org/) enthält die Modelle, und die Gewichte liegen auf [Hugging Face](https://huggingface.co/).
 
 ## In Zahlen
 
@@ -61,7 +61,7 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 - Größe des endgültigen Modells: 5,47 MB als PyTorch-Gewichte, 3,02 MB als LiteRT-Datei mit 320 Pixeln
 - LiteRT-Export mit 320 Pixeln: 86,2 % mAP50, die kleinere Datei verliert also etwa 4 Punkte
 - Geschwindigkeit: 1,5 bis 3,6 ms pro Bild auf einer T4-GPU; noch keine Messung auf einem Raspberry Pi
-- Downloads: über 6.500 Modell-Downloads auf Hugging Face insgesamt (ein Download-Zähler, keine Zahl von Personen)
+- Downloads: über 6.500 Modell-Downloads auf [Hugging Face](https://huggingface.co/) insgesamt (ein Download-Zähler, keine Zahl von Personen)
 
 ## Abbildungen
 
@@ -73,7 +73,7 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 
 Der Sortierroboter ist noch nicht fertig, und auf einem Raspberry Pi hat bisher nichts gelaufen. EXP-020 trainiert noch und hat deshalb noch keine protokollierten Ergebnisse.
 
-Die 90,6 % stammen von einem Validierungssplit im Stil von TrashNet, also von Tischaufnahmen, die im Vergleich zu einer echten Sortierstrecke einfach sind. Der Testsplit mit 1.375 Bildern wurde für die endgültigen Läufe nicht ausgewertet. Der Feld-Benchmark prüft nur, ob eine Klasse im Bild vorkommt, nicht wo sie liegt. Deshalb sagt er wenig über die Qualität der Erkennung. Quantisierte Exporte verlieren Genauigkeit, wie das LiteRT-Ergebnis mit 320 Pixeln zeigt. Zerknülltes Papier, überlappende Objekte, Dosen, die man von der Öffnung her sieht, und ungewöhnliches Licht bleiben schwierige Fälle. Ein gutes Ergebnis auf dem Datensatz ist keine Garantie für echtes Sortieren. Die README sagt außerdem, dass KI-Werkzeuge bei Teilen des Programmierens und Debuggens geholfen haben.
+Die 90,6 % stammen von einem Validierungssplit im Stil von [TrashNet](https://github.com/garythung/trashnet), also von Tischaufnahmen, die im Vergleich zu einer echten Sortierstrecke einfach sind. Der Testsplit mit 1.375 Bildern wurde für die endgültigen Läufe nicht ausgewertet. Der Feld-Benchmark prüft nur, ob eine Klasse im Bild vorkommt, nicht wo sie liegt. Deshalb sagt er wenig über die Qualität der Erkennung. Quantisierte Exporte verlieren Genauigkeit, wie das LiteRT-Ergebnis mit 320 Pixeln zeigt. Zerknülltes Papier, überlappende Objekte, Dosen, die man von der Öffnung her sieht, und ungewöhnliches Licht bleiben schwierige Fälle. Ein gutes Ergebnis auf dem Datensatz ist keine Garantie für echtes Sortieren. Die README sagt außerdem, dass KI-Werkzeuge bei Teilen des Programmierens und Debuggens geholfen haben.
 
 ## Links
 

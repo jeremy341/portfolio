@@ -3,7 +3,7 @@
 - Original content ID: poorup
 - Category: Games & software
 - Status: Playable project
-- Technologies and topics: Node.js, Express, Socket.IO, JavaScript
+- Technologies and topics: Node.js, Express, [Socket.IO](https://socket.io/), JavaScript
 
 ## Summary
 
@@ -11,7 +11,7 @@ A real-time multiplayer board game that runs in the browser. Everyone sees the s
 
 ## Context and motivation
 
-I started Poorup because I wanted to learn how real-time web apps work and how to write game logic on the server. Most of my projects start in the Hack Club community, and this one did too. I also wanted something my friends and I could actually play together. Once it was out, people loved it.
+I started Poorup because I wanted to learn how real-time web apps work and how to write game logic on the server. Most of my projects start in the [Hack Club](https://hackclub.com/) community, and this one did too. I also wanted something my friends and I could actually play together. Once it was out, people loved it.
 
 It's a Monopoly-style property game. You roll, buy, trade and try to be the last player who can still pay the rent. You don't download anything or make an account. You open the link, pick a name and share the room code with whoever should sit at the table.
 
@@ -19,7 +19,7 @@ The hard parts are the ones you only notice when they break. What happens if som
 
 ## Inside the project
 
-The server owns the game. The browser only sends what the player wants to do, such as roll, buy, bid or accept a trade, over Socket.IO. The server checks each action against the rules and sends back the new state. That's why a modified browser can't cheat: it never decides anything. The server runs on Node.js and Express. The client is plain HTML, CSS and JavaScript with no framework, so the only two runtime dependencies are `express` and `socket.io`.
+The server owns the game. The browser only sends what the player wants to do, such as roll, buy, bid or accept a trade, over [Socket.IO](https://socket.io/). The server checks each action against the rules and sends back the new state. That's why a modified browser can't cheat: it never decides anything. The server runs on Node.js and Express. The client is plain HTML, CSS and JavaScript with no framework, so the only two runtime dependencies are `express` and `socket.io`.
 
 ### What is in the game
 
@@ -40,7 +40,7 @@ There's no database. Accounts, matches and social records are JSON files, with c
 
 ### How I built it
 
-I designed and wrote the whole interface, and I drew all of the SVG artwork myself. GPT/Codex helped with debugging and the backend, and it did most of the work on the in-game bots. A code-health tool flagged some of my biggest files as hotspots, so I used Codex to split them into smaller modules.
+I designed and wrote the whole interface, and I drew all of the SVG artwork myself. [GPT](https://openai.com/)/[Codex](https://openai.com/) helped with debugging and the backend, and it did most of the work on the in-game bots. A code-health tool flagged some of my biggest files as hotspots, so I used [Codex](https://openai.com/) to split them into smaller modules.
 
 The music isn't mine. It's third-party and openly licensed, and the credits are in the repository. I also rewrote the Git history on purpose, so the commit log isn't a full record of how the project developed.
 
@@ -53,7 +53,7 @@ The music isn't mine. It's third-party and openly licensed, and the credits are 
 - Code: about 61,000 lines of JavaScript in the server and client (top-level files only), plus about 39,000 lines of tests
 - Tests: 229 test suites in the full run, and CI fails the build below 88% line coverage
 - Runtime dependencies: 2 (`express` and `socket.io`)
-- Code health: the average source file scored 9.2 out of 10 in a CodeScene review in October 2026
+- Code health: the average source file scored 9.2 out of 10 in a [CodeScene](https://codescene.com/) review in October 2026
 
 ## Figures
 

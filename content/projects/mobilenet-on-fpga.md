@@ -3,7 +3,7 @@
 - Original content ID: fpga
 - Category: Hardware & embedded
 - Status: Work in progress
-- Technologies and topics: MobileNet, Quantization, TFLite, FPGA
+- Technologies and topics: MobileNet, Quantization, [TFLite](https://www.tensorflow.org/lite), FPGA
 
 ## Summary
 
@@ -22,9 +22,9 @@ This is the software half of the path to hardware. Two small networks are traine
 ### What I built
 
 - I wrote the Keras versions of MobileNetV1 (13 depthwise-separable blocks) and MobileNetV2 (17 inverted-residual blocks) by hand, at a width multiplier of 0.5 and an input size of 128 by 128 pixels.
-- I trained on CIFAR-10: 45,000 training, 5,000 validation and 10,000 test images, upscaled from 32 to 128 pixels. It ran in a Kaggle GPU notebook with early stopping.
-- Then I ran full-integer post-training quantization to TFLite, calibrated on 200 training images, with INT8 input and output.
-- An evaluation script runs the INT8 model through the TFLite interpreter on all 10,000 test images. I also inspected the converted graphs layer by layer, checking tensor types, shapes and scales.
+- I trained on CIFAR-10: 45,000 training, 5,000 validation and 10,000 test images, upscaled from 32 to 128 pixels. It ran in a [Kaggle](https://www.kaggle.com/) GPU notebook with early stopping.
+- Then I ran full-integer post-training quantization to [TFLite](https://www.tensorflow.org/lite), calibrated on 200 training images, with INT8 input and output.
+- An evaluation script runs the INT8 model through the [TFLite](https://www.tensorflow.org/lite) interpreter on all 10,000 test images. I also inspected the converted graphs layer by layer, checking tensor types, shapes and scales.
 - I also analysed the bit widths. The largest product of two INT8 values fits in 15 bits. The accumulators need 19 to 25 bits, and the widest one sits in the V2 classifier, which sums 640 products, so a 32-bit accumulator has room to spare.
 
 ### What it is not
@@ -34,7 +34,7 @@ An FPGA implementation is outside the scope of this repository. There's no HDL o
 ## In numbers
 
 - Accuracy on the 10,000 CIFAR-10 test images: V1 76.72% as Float32 and 76.35% as INT8; V2 77.93% as Float32 and 77.94% as INT8
-- Size of the TFLite file: V1 from 3.29 MB to 0.99 MB (3.34 times smaller); V2 from 2.35 MB to 0.85 MB (2.78 times smaller)
+- Size of the [TFLite](https://www.tensorflow.org/lite) file: V1 from 3.29 MB to 0.99 MB (3.34 times smaller); V2 from 2.35 MB to 0.85 MB (2.78 times smaller)
 - Parameters in Keras: V1 834,666 and V2 604,234, which is 27.6% fewer
 - Training: Adam at 1e-3, batch size 128, stopped early after 26 epochs (V1) and 23 epochs (V2), one random seed
 - Quantization: full-integer post-training, 200 calibration images
@@ -44,7 +44,7 @@ An FPGA implementation is outside the scope of this repository. There's no HDL o
 ## Figures
 
 - ![Bar chart of CIFAR-10 test accuracy: MobileNetV1 76.72 percent as Float32 and 76.35 as INT8, MobileNetV2 77.93 as Float32 and 77.94 as INT8.](mobilenet-on-fpga/accuracy.en.png) Test accuracy before and after INT8 quantization.
-- ![Bar chart of the TFLite file size: MobileNetV1 3.29 MB as Float32 and 0.99 MB as INT8, MobileNetV2 2.35 MB and 0.85 MB.](mobilenet-on-fpga/size.en.png) TFLite file size, Float32 and INT8.
+- ![Bar chart of the TFLite file size: MobileNetV1 3.29 MB as Float32 and 0.99 MB as INT8, MobileNetV2 2.35 MB and 0.85 MB.](mobilenet-on-fpga/size.en.png) [TFLite](https://www.tensorflow.org/lite) file size, Float32 and INT8.
 
 ## Where it stands
 

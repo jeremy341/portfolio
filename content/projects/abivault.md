@@ -3,7 +3,7 @@
 - Original content ID: abi
 - Category: Games & software
 - Status: Personal project
-- Technologies and topics: Next.js, TypeScript, Supabase
+- Technologies and topics: [Next.js](https://nextjs.org/), TypeScript, [Supabase](https://supabase.com/)
 
 ## Summary
 
@@ -31,7 +31,7 @@ AbiVault replaces the committee's spreadsheet with an application that takes mon
 
 ### The stack
 
-Next.js 16 with the App Router and server actions, React 19 and TypeScript. Clerk handles sign-in and organisations, and Supabase provides PostgreSQL, Row Level Security and file storage. Zod checks input, Recharts draws the reports and Tailwind 4 does the styling. Vitest runs the unit tests. The row-level security rules get their own SQL test, because that's the part I least wanted to get wrong.
+[Next.js](https://nextjs.org/) 16 with the App Router and server actions, React 19 and TypeScript. [Clerk](https://clerk.com/) handles sign-in and organisations, and [Supabase](https://supabase.com/) provides PostgreSQL, Row Level Security and file storage. Zod checks input, Recharts draws the reports and Tailwind 4 does the styling. Vitest runs the unit tests. The row-level security rules get their own SQL test, because that's the part I least wanted to get wrong.
 
 ## In numbers
 

@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: fpga
 - Kategorie: Hardware & Embedded
 - Status: In Arbeit
-- Technologien und Themen: MobileNet, Quantisierung, TFLite, FPGA
+- Technologien und Themen: MobileNet, Quantisierung, [TFLite](https://www.tensorflow.org/lite), FPGA
 
 ## Zusammenfassung
 
@@ -23,7 +23,7 @@ Das ist die Softwarehälfte des Weges zur Hardware. Zwei kleine Netze werden tra
 
 - Ich habe die Keras-Versionen von MobileNetV1 (13 tiefenweise trennbare Blöcke) und MobileNetV2 (17 invertierte Residualblöcke) selbst geschrieben, mit einem Breitenfaktor von 0,5 und einer Eingabe von 128 mal 128 Pixeln.
 - Ich habe auf CIFAR-10 trainiert: 45.000 Trainings-, 5.000 Validierungs- und 10.000 Testbilder, von 32 auf 128 Pixel hochskaliert. Das lief in einem Kaggle-GPU-Notebook mit frühem Abbruch.
-- Danach habe ich eine vollständige ganzzahlige Quantisierung nach dem Training zu TFLite gemacht, kalibriert mit 200 Trainingsbildern und mit INT8-Ein- und Ausgabe.
+- Danach habe ich eine vollständige ganzzahlige Quantisierung nach dem Training zu [TFLite](https://www.tensorflow.org/lite) gemacht, kalibriert mit 200 Trainingsbildern und mit INT8-Ein- und Ausgabe.
 - Ein Auswertungsskript lässt das INT8-Modell über den TFLite-Interpreter auf allen 10.000 Testbildern laufen. Außerdem habe ich die umgewandelten Graphen Schicht für Schicht durchgesehen, also Tensortypen, Formen und Skalen.
 - Ich habe auch die Bitbreiten analysiert. Das größte Produkt zweier INT8-Werte passt in 15 Bit. Die Akkumulatoren brauchen 19 bis 25 Bit, der breiteste liegt im Klassifikator von V2, der 640 Produkte aufsummiert. Ein 32-Bit-Akkumulator hat dort also Reserven.
 

@@ -3,7 +3,7 @@
 - Ursprüngliche Inhalts-ID: poorup
 - Kategorie: Spiele & Software
 - Status: Spielbares Projekt
-- Technologien und Themen: Node.js, Express, Socket.IO, JavaScript
+- Technologien und Themen: Node.js, Express, [Socket.IO](https://socket.io/), JavaScript
 
 ## Zusammenfassung
 
@@ -19,7 +19,7 @@ Die schwierigen Teile merkt man aber meist erst, wenn sie kaputtgehen. Was passi
 
 ## Im Projekt
 
-Der Server besitzt das Spiel. Der Browser schickt nur, was der Spieler tun will, also würfeln, kaufen, bieten oder einen Handel annehmen, über Socket.IO. Der Server prüft jede Aktion gegen die Regeln und schickt den neuen Zustand zurück. Deshalb kann ein manipulierter Browser nicht schummeln, denn er entscheidet nichts. Der Server läuft mit Node.js und Express. Der Client ist einfaches HTML, CSS und JavaScript ohne Framework, sodass die einzigen Laufzeitabhängigkeiten `express` und `socket.io` sind.
+Der Server besitzt das Spiel. Der Browser schickt nur, was der Spieler tun will, also würfeln, kaufen, bieten oder einen Handel annehmen, über [Socket.IO](https://socket.io/). Der Server prüft jede Aktion gegen die Regeln und schickt den neuen Zustand zurück. Deshalb kann ein manipulierter Browser nicht schummeln, denn er entscheidet nichts. Der Server läuft mit Node.js und Express. Der Client ist einfaches HTML, CSS und JavaScript ohne Framework, sodass die einzigen Laufzeitabhängigkeiten `express` und `socket.io` sind.
 
 ### Was im Spiel steckt
 
@@ -40,7 +40,7 @@ Es gibt keine Datenbank. Konten, Spiele und soziale Daten liegen als JSON-Dateie
 
 ### Wie ich es gebaut habe
 
-Die gesamte Oberfläche habe ich selbst entworfen und geschrieben, und alle SVG-Grafiken habe ich selbst gezeichnet. GPT/Codex hat beim Debuggen und beim Backend geholfen und den größten Teil der Bots im Spiel mitgebaut. Ein Code-Health-Werkzeug hat einige meiner größten Dateien als Problemstellen markiert, deshalb habe ich sie mit Codex in kleinere Module aufgeteilt.
+Die gesamte Oberfläche habe ich selbst entworfen und geschrieben, und alle SVG-Grafiken habe ich selbst gezeichnet. [GPT](https://openai.com/)/[Codex](https://openai.com/) hat beim Debuggen und beim Backend geholfen und den größten Teil der Bots im Spiel mitgebaut. Ein Code-Health-Werkzeug hat einige meiner größten Dateien als Problemstellen markiert, deshalb habe ich sie mit [Codex](https://openai.com/) in kleinere Module aufgeteilt.
 
 Die Musik ist nicht von mir. Sie stammt von Dritten und ist offen lizenziert, die Nachweise stehen im Repository. Außerdem habe ich die Git-Historie absichtlich neu geschrieben, deshalb zeigt das Commit-Protokoll nicht die ganze Entwicklung.
 

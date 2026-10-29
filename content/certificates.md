@@ -4,15 +4,15 @@ Each certificate and reference names who issued it. Where a document has private
 
 ## Hack Club Stardance Challenge
 
-- Issued by: Hack Club
+- Issued by: [Hack Club](https://hackclub.com/)
 - Kind: Certificate of achievement
 - Date: 2026
 - Reference: A9J6R5
 - Verify: [stardance.space/certificate](https://stardance.space/certificate)
 - Image: certificates/stardance.png
-- Image description: Certificate of achievement from the Hack Club Stardance Challenge for Jeremy Darko, signed by Zach Latta, founder of Hack Club. It names one shipped project and 159 hours of work.
+- Image description: Certificate of achievement from the [Hack Club](https://hackclub.com/) Stardance Challenge for Jeremy Darko, signed by Zach Latta, founder of [Hack Club](https://hackclub.com/). It names one shipped project and 159 hours of work.
 
-Hack Club gave me this one for building and shipping Poorup through the Stardance challenge. The certificate puts that work at 159 hours, and Zach Latta, the founder of Hack Club, signed it. To check it, enter the reference code on the Stardance site.
+[Hack Club](https://hackclub.com/) gave me this one for building and shipping Poorup through the Stardance challenge. The certificate puts that work at 159 hours, and Zach Latta, the founder of [Hack Club](https://hackclub.com/), signed it. To check it, enter the reference code on the Stardance site.
 
 ## Internship at the University of Duisburg-Essen
 

@@ -14,7 +14,7 @@ Let me provide you with some context first, the project which broke 7k is called
 
 ## Now what is the problem?
 
-Well you guys got the context now, but now you could be asking yourself what did I mean under "downloads aren't really downloads"? Well this is also the part I had to look up, but it seems like [Hugging Face](https://huggingface.co/) doesn't count people or clicks. It counts requests to a specific file, which is usually `config.json`. So if one person loads the model five times, that can be five counts, and now imagine my model has essentially 19 versions on its repo. So the stats could be padded, and that isn't really the only problem. If their machine has the file cached, a new run might not count at all. Basically the number says the file got requested, not how many people use the model.
+Well you guys got the context now, but now you could be asking yourself what did I mean under "downloads aren't really downloads"? Well this is also the part I had to look up, but it seems like [Hugging Face](https://huggingface.co/) doesn't count people or clicks. It counts requests to a specific file, which is usually [`config.json`](https://huggingface.co/docs/hub/models-download-stats). So if one person loads the model five times, that can be five counts, and now imagine my model has essentially 19 versions on its repo. So the stats could be padded, and that isn't really the only problem. If their machine has the file cached, a new run might not count at all. Basically the number says the file got requested, not how many people use the model.
 
 So this is sth worth mentioning, and the 7k aren't the same as 7k people. I would rather have a real number than a small one.
 
