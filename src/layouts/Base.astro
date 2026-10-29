@@ -26,16 +26,22 @@ const { title, description, type = "website", article, schema, home = false, noi
 const t = ui[lang];
 // Hover cards: a project's title and summary with its first figure, plus the outside links that have one.
 const { projects } = getContent(lang);
-// Screenshots for cards whose first figure is a chart or missing.
-const projectImages: Record<string, string> = {
+// Which project cards show a picture. Rule: a picture only when it shows the thing itself (the app,
+// the dashboard, the social card). Charts stay on the project page, never in a hover card.
+const projectImages: Record<string, string | undefined> = {
+  poorup: p2img("poorup"),
+  abivault: p2img("abivault"),
   mira: "/previews/mira-dashboard.png",
   fluidicstudio: "/previews/fluidicstudio.png",
 };
+function p2img(slug: string): string | undefined {
+  return projects.find((p) => p.slug === slug)?.figures[0]?.src.src;
+}
 const previews = {
   ...Object.fromEntries([
   ...projects.map((p) => [
     localizedUrl(lang, `/work/${p.slug}/`),
-    { title: p.name, text: p.summary, image: projectImages[p.slug] ?? p.figures[0]?.src.src },
+    { title: p.name, text: p.summary, image: projectImages[p.slug] },
   ]),
   ["/cv/", { title: "CV", text: "Experience, education, skills and personal projects." }],
 ]),

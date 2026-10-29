@@ -1174,7 +1174,8 @@ html[data-intro] .dash-hero .w {
   pointer-events: none;
 }
 .link-preview[hidden] { display: none; }
-.link-preview img { display: block; width: 100%; height: auto; margin-bottom: 8px; }
+/* Pictures keep a thin frame, so a dark screenshot sits as a block on the light page as well. */
+.link-preview img { display: block; width: 100%; height: auto; margin-bottom: 8px; border: 1px solid var(--line); background: var(--panel); }
 .link-preview img[hidden] { display: none; }
 .link-preview strong { display: block; margin-bottom: 4px; font-weight: 600; }
 .link-preview p { margin: 0; color: var(--muted); }
