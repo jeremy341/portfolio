@@ -14,30 +14,48 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent / "src" / "assets" / "work"
 
-BG = "#1a1b26"
-FG = "#c0caf5"
-MUTED = "#8a93bd"
-LINE = "#2f334d"
-BLUE = "#7aa2f7"
-ORANGE = "#ff9e64"
-GREEN = "#9ece6a"
+# Two palettes: the dark one is Tokyo Night (the default page), the light one matches the light page
+# so a chart sits on the page background in both themes.
+PALETTES = {
+    "dark": {
+        "BG": "#1a1b26", "FG": "#c0caf5", "MUTED": "#8a93bd", "LINE": "#2f334d",
+        "BLUE": "#7aa2f7", "ORANGE": "#ff9e64", "GREEN": "#9ece6a",
+    },
+    "light": {
+        "BG": "#e6e7ed", "FG": "#1a1b26", "MUTED": "#4c5577", "LINE": "#b4b9cf",
+        "BLUE": "#2e59c4", "ORANGE": "#b8590f", "GREEN": "#4d6b2a",
+    },
+}
+THEME = "dark"
+BG = FG = MUTED = LINE = BLUE = ORANGE = GREEN = ""
 
-plt.rcParams.update(
-    {
-        "font.family": "Consolas",
-        "font.size": 10.5,
-        "text.color": FG,
-        "axes.labelcolor": MUTED,
-        "xtick.color": MUTED,
-        "ytick.color": MUTED,
-        "axes.edgecolor": LINE,
-        "axes.facecolor": BG,
-        "figure.facecolor": BG,
-        "savefig.facecolor": BG,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-    }
-)
+
+def use(theme):
+    """Set the colours and the matplotlib defaults for one theme."""
+    global THEME, BG, FG, MUTED, LINE, BLUE, ORANGE, GREEN
+    THEME = theme
+    p = PALETTES[theme]
+    BG, FG, MUTED, LINE = p["BG"], p["FG"], p["MUTED"], p["LINE"]
+    BLUE, ORANGE, GREEN = p["BLUE"], p["ORANGE"], p["GREEN"]
+    plt.rcParams.update(
+        {
+            "font.family": "Consolas",
+            "font.size": 10.5,
+            "text.color": FG,
+            "axes.labelcolor": MUTED,
+            "xtick.color": MUTED,
+            "ytick.color": MUTED,
+            "axes.edgecolor": LINE,
+            "axes.facecolor": BG,
+            "figure.facecolor": BG,
+            "savefig.facecolor": BG,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+        }
+    )
+
+
+use("dark")
 
 
 def frame(size=(8.0, 3.7)):
@@ -56,7 +74,8 @@ def save(fig, project, name, lang):
     out = ROOT / project
     out.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
-    fig.savefig(out / f"{name}.{lang}.png", dpi=200)
+    suffix = "" if THEME == "dark" else ".light"
+    fig.savefig(out / f"{name}.{lang}{suffix}.png", dpi=200)
     plt.close(fig)
 
 
@@ -193,7 +212,9 @@ def mobilenet(lang):
 
 
 if __name__ == "__main__":
-    for language in ("en", "de"):
-        mira(language)
-        mobilenet(language)
+    for theme in ("dark", "light"):
+        use(theme)
+        for language in ("en", "de"):
+            mira(language)
+            mobilenet(language)
     print("charts written to", ROOT)

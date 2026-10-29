@@ -115,6 +115,8 @@ export interface ProjectLink {
 /** A picture on a project page, with the words that describe it. */
 export interface Figure {
   src: ImageMetadata;
+  /** The same chart drawn for the light theme, when one exists. */
+  light?: ImageMetadata;
   alt: string;
   caption: string;
 }
@@ -163,6 +165,7 @@ function figures(source: string | undefined): Figure[] {
   if (!source) return [];
   return [...source.matchAll(/^- !\[([^\]]*)\]\(([^)]+)\)\s*(.*)$/gm)].map(([, alt, path, caption]) => ({
     src: picture(`work/${path.trim()}`),
+    light: pictures[`/src/assets/work/${path.trim().replace(/\.(en|de)\.png$/, ".$1.light.png")}`]?.default,
     alt: alt.trim(),
     caption: caption.trim(),
   }));

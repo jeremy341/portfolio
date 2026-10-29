@@ -1086,3 +1086,8 @@ html[data-retype] .page-title {
     gap: 36px;
   }
 }
+
+/* Charts: the light theme shows the chart drawn for a light background. */
+.fig-img .chart-light { display: none; }
+html[data-theme="light"] .fig-img .chart-dark { display: none; }
+html[data-theme="light"] .fig-img .chart-light { display: block; }
