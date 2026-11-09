@@ -43,11 +43,12 @@ AbiVault replaces the committee's spreadsheet with an application that takes mon
 
 ## Figures
 
-- ![AbiVault's overview page in dark mode: key figures, a cash register card, the latest transaction, a goals panel and a receipt waiting for review.](abivault/dashboard.png) The public demo, with sample data.
+- ![AbiVault's landing page, introducing a notebook for class finances and linking to the demo.](abivault/home.jpg) The open-source demo's landing page.
+- ![AbiVault's overview in the light theme, showing a sample balance, recent transactions, items needing attention and savings goals.](abivault/dashboard.jpg) The open-source demo running locally with sample data.
 
 ## Where it stands
 
-Bank connections and Open Banking are deferred and switched off. The public demo runs on seeded sample data in a separate configuration, so it isn't meant for real financial data. It was built from an older branch. My working copy has been redesigned since then. The first version also had a different name, so some parts of the interface still say Abi Manager.
+Bank connections and Open Banking are deferred and switched off. The public demo runs on seeded sample data in a separate configuration, so it isn't meant for real financial data. The screenshots above show the open-source demo running locally.
 
 ## Links
 

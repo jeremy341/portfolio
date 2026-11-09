@@ -10,9 +10,9 @@ Jede Urkunde und jede Bescheinigung nennt, wer sie ausgestellt hat. Wo ein Dokum
 - Kennung: A9J6R5
 - Prüfen: [stardance.space/certificate](https://stardance.space/certificate)
 - Bild: certificates/stardance.png
-- Bildbeschreibung: Urkunde der [Hack Club](https://hackclub.com/) Stardance Challenge für Jeremy Darko, unterschrieben von Zach Latta, dem Gründer von [Hack Club](https://hackclub.com/). Sie nennt ein veröffentlichtes Projekt und 159 Stunden Arbeit.
+- Bildbeschreibung: Urkunde der [Hack Club](https://hackclub.com/) Stardance Challenge für Jeremy Darko, unterschrieben von Zach Latta, dem Gründer von [Hack Club](https://hackclub.com/). Sie nennt ein veröffentlichtes Projekt und 197 Stunden Arbeit.
 
-[Hack Club](https://hackclub.com/) hat mir die Urkunde für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Sie beziffert die Arbeit mit 159 Stunden, und unterschrieben hat sie Zach Latta, der Gründer von [Hack Club](https://hackclub.com/). Zum Prüfen gibst du die Kennung auf der Stardance-Website ein.
+[Hack Club](https://hackclub.com/) hat mir die Urkunde für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Sie beziffert die Arbeit mit 197 Stunden, und unterschrieben hat sie Zach Latta, der Gründer von [Hack Club](https://hackclub.com/). Zum Prüfen gibst du die Kennung auf der Stardance-Website ein.
 
 ## Praktikum an der Universität Duisburg-Essen
 

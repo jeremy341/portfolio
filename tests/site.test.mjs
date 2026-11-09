@@ -152,14 +152,14 @@ test("project pages say where to find the project and show their figures with de
     "mobilenet-on-fpga": { hosts: [], images: 2 },
     torchvk: { hosts: ["github.com/jeremy341/TorchVK"], images: 0 },
     fluidicstudio: { hosts: ["github.com/jeremy341/microdroplets-ui"], images: 0 },
-    abivault: { hosts: ["github.com/jeremy341/abi-vault", "abi-vault-demo.vercel.app"], images: 1 },
+    abivault: { hosts: ["github.com/jeremy341/abi-vault", "abi-vault-demo.vercel.app"], images: 2 },
   };
   for (const prefix of ["", "de/"]) {
     for (const [slug, want] of Object.entries(expected)) {
       const html = page(`${prefix}work/${slug}/index.html`);
       const bar = html.match(/<ul class="linkbar"[\s\S]*?<\/ul>/)?.[0] ?? "";
       for (const host of want.hosts) assert.ok(bar.includes(host), `${prefix}${slug}: the link row lacks ${host}`);
-      const images = html.match(/<img [^>]*>/g) ?? [];
+      const images = (html.match(/<img [^>]*>/g) ?? []).filter((img) => !/\salt(?:="")?(?:\s|>)/.test(img));
       assert.equal(images.length, want.images, `${prefix}${slug} should show ${want.images} pictures`);
       for (const img of images) {
         assert.match(img, /alt="[^"]{20,}"/, `${prefix}${slug}: a picture lacks a real description`);

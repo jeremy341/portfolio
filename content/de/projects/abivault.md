@@ -43,11 +43,12 @@ AbiVault ersetzt die Tabelle des Komitees durch eine Anwendung, die mit Geld sor
 
 ## Abbildungen
 
-- ![Die Übersichtsseite von AbiVault im dunklen Modus: Kennzahlen, eine Kassenkarte, die letzte Buchung, ein Zielbereich und ein Beleg, der auf Prüfung wartet.](abivault/dashboard.png) Die öffentliche Demo mit Beispieldaten.
+- ![Die Startseite von AbiVault stellt ein Notizbuch für die Klassenfinanzen vor und verlinkt zur Demo.](abivault/home.jpg) Die Startseite der Open-Source-Demo.
+- ![Die Übersicht von AbiVault im hellen Design mit Beispielkontostand, letzten Buchungen, offenen Aufgaben und Sparzielen.](abivault/dashboard.jpg) Die lokal ausgeführte Open-Source-Demo mit Beispieldaten.
 
 ## Aktueller Stand
 
-Bankanbindungen und Open Banking sind zurückgestellt und abgeschaltet. Die öffentliche Demo läuft mit erfundenen Beispieldaten in einer getrennten Konfiguration und ist deshalb nicht für echte Finanzdaten gedacht. Sie basiert auf einem älteren Entwicklungszweig. Meine Arbeitskopie wurde seitdem überarbeitet, aber einige Teile der Oberfläche sagen noch Abi Manager, weil die erste Version einen anderen Namen trug.
+Bankanbindungen und Open Banking sind zurückgestellt und abgeschaltet. Die öffentliche Demo läuft mit erfundenen Beispieldaten in einer getrennten Konfiguration und ist deshalb nicht für echte Finanzdaten gedacht. Die Bilder oben zeigen die lokal ausgeführte Open-Source-Demo.
 
 ## Links
 
