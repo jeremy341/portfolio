@@ -32,7 +32,8 @@ const schema = [
     url: canonical(url(lang, `/blog/${post.slug}/`)),
     mainEntityOfPage: canonical(url(lang, `/blog/${post.slug}/`)),
     datePublished: isoDate(post.publishedAt),
-    ...(post.updatedAt ? { dateModified: isoDate(post.updatedAt) } : {}),
+    // Every article has a modified date: its update date, or the publish date when it was never changed.
+    dateModified: isoDate(post.updatedAt ?? post.publishedAt),
     keywords: post.tags.join(", "),
     inLanguage: lang,
     wordCount: post.text.split(" ").length,
