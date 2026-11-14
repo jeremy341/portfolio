@@ -61,7 +61,7 @@ EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, au
 - Größe des endgültigen Modells: 5,47 MB als PyTorch-Gewichte, 3,02 MB als LiteRT-Datei mit 320 Pixeln
 - LiteRT-Export mit 320 Pixeln: 86,2 % mAP50, die kleinere Datei verliert also etwa 4 Punkte
 - Geschwindigkeit: 1,5 bis 3,6 ms pro Bild auf einer T4-GPU; noch keine Messung auf einem Raspberry Pi
-- Downloads: über 6.500 Modell-Downloads auf [Hugging Face](https://huggingface.co/) insgesamt (ein Download-Zähler, keine Zahl von Personen)
+- Downloads: über 8.300 Modell-Downloads auf [Hugging Face](https://huggingface.co/) insgesamt (ein Download-Zähler, keine Zahl von Personen)
 
 ## Abbildungen
 

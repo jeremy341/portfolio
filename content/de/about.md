@@ -54,7 +54,7 @@ Ich habe in jedem Bereich ein bisschen Können, aber in keinem bin ich ein Meist
 
 ## MIRA in der Öffentlichkeit
 
-Die MIRA-Modelle haben auf [Hugging Face](https://huggingface.co/) mehr als 6.500 Downloads insgesamt erreicht. Das ist ein Download-Zähler, er zählt also Abrufe und keine Personen. Trotzdem heißt das, dass die Dateien außerhalb meines eigenen Rechners benutzt werden. Als der Zähler am ersten Tag nach dem Release so stark gestiegen ist, konnte ich es kaum fassen. Für ein Projekt, das als Frage angefangen hat, ist das ein seltsam gutes Gefühl.
+Die MIRA-Modelle haben auf [Hugging Face](https://huggingface.co/) mehr als 8.300 Downloads insgesamt erreicht. Das ist ein Download-Zähler, er zählt also Abrufe und keine Personen. Trotzdem heißt das, dass die Dateien außerhalb meines eigenen Rechners benutzt werden. Als der Zähler am ersten Tag nach dem Release so stark gestiegen ist, konnte ich es kaum fassen. Für ein Projekt, das als Frage angefangen hat, ist das ein seltsam gutes Gefühl.
 
 - [MIRA-Modelldateien](https://huggingface.co/Jeremy341/MIRA-AI)
 - [Projektinformationen zu MIRA](projects/mira.md)

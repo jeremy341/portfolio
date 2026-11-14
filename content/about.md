@@ -54,7 +54,7 @@ I have a little skill in every area, but I'm a master of none.
 
 ## MIRA in public
 
-The MIRA models have passed 6,500+ lifetime downloads on [Hugging Face](https://huggingface.co/). That's a download counter, so it counts fetches, not people. Still, it means the files are being used beyond my own machine. When the counter jumped on the first day after the release, I couldn't really take it in. For a project that started as a question, that's a strange and good thing to see.
+The MIRA models have passed 8.3k+ lifetime downloads on [Hugging Face](https://huggingface.co/). That's a download counter, so it counts fetches, not people. Still, it means the files are being used beyond my own machine. When the counter jumped on the first day after the release, I couldn't really take it in. For a project that started as a question, that's a strange and good thing to see.
 
 - [MIRA model files](https://huggingface.co/Jeremy341/MIRA-AI)
 - [MIRA project information](projects/mira.md)

@@ -418,7 +418,7 @@ test("llms.txt and llms-full.txt say who the person is, list every page, and kee
   for (const href of ["https://github.com/jeremy341", "https://huggingface.co/Jeremy341", "https://de.linkedin.com/in/jeremy-darko-a0a850413"]) {
     assert.ok(index.includes(href), `llms.txt lacks ${href}`);
   }
-  assert.ok(index.includes("6,500+ lifetime model downloads"), "llms.txt states the MIRA download count with its caveat");
+  assert.ok(index.includes("8.3k+ lifetime model downloads"), "llms.txt states the MIRA download count with its caveat");
   const full = page("llms-full.txt");
   assert.equal(full.match(/^## Project: /gm)?.length, Object.keys(projects).length);
   assert.equal(full.match(/^## Article: /gm)?.length ?? 0, posts.length);

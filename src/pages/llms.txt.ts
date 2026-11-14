@@ -13,6 +13,16 @@ export const GET: APIRoute = () => {
   const email = contact.direct.find((row) => row.href.startsWith("mailto:"))?.href.slice("mailto:".length);
   const downloads = projects.find((p) => p.slug === "mira")?.facts.find((f) => f.label === "Downloads")?.value;
   const source = (project: Project) => project.links.find((link) => link.kind === "source")?.href;
+  const summaryOf = (slug: string) => projects.find((p) => p.slug === slug)?.summary ?? "";
+  // Questions a reader or an answer engine usually asks. Every answer repeats facts from the site's own pages.
+  const qa: [string, string][] = [
+    ["Who is Jeremy Darko?", `${site.fullName} is a student from North Rhine-Westphalia, Germany, who builds computer engineering and machine learning projects. Projects, articles and certificates are on this site.`],
+    ["What is MIRA?", "MIRA (Machine Intelligence for Recycling Automation) is a computer vision project that tries to tell kinds of waste apart with a camera and a small model. It is an experiment, not a finished sorting robot. Its Hugging Face counter shows 8.3k+ lifetime downloads, which counts file requests, not people."],
+    ["Is MIRA finished?", "No. The sorting robot is not finished and nothing has run on a Raspberry Pi yet. The next model, EXP-020, is in training and has no logged results yet."],
+    ["What is Poorup?", summaryOf("poorup")],
+    ["What is FluidicStudio?", summaryOf("fluidicstudio")],
+    ["Does Jeremy work at the University of Duisburg-Essen?", "Not in a university role. He does project work with the Chair of Electronic Components and Circuits (EBS), and he spent four weeks at the chair from 3 to 28 August 2026 on FluidicStudio."],
+  ];
 
   const lines = [
     `# ${site.name}`,
@@ -30,6 +40,8 @@ export const GET: APIRoute = () => {
     "- University of Duisburg-Essen: project work with the Chair of Electronic Components and Circuits (EBS), and an internship from 3 to 28 August 2026. It is project work, not a university role.",
     "- Languages: English at the root of the site, German under /de/ with the same paths.",
     "",
+    "## Questions and answers",
+    ...qa.flatMap(([question, answer]) => [`### ${question}`, answer, ""]),
     "## Profiles",
     ...contact.profiles.map((row) => `- ${row.label}: ${row.href}`),
     "",

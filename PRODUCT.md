@@ -44,7 +44,7 @@ These were set by Jeremy during this rebuild:
 ## Evidence on Hand
 
 - Six project records with status and limitations in `content/projects/`.
-- MIRA: 6,500+ lifetime model downloads on Hugging Face. This is a download counter, not unique users, and the caveat must stay next to the number.
+- MIRA: 8.3k+ lifetime model downloads on Hugging Face. This is a download counter, not unique users, and the caveat must stay next to the number.
 - No articles are published right now; they were removed to be written again. New ones go in `content/posts/`.
 - **Absent, must not be invented:** testimonials, benchmarks, project screenshots. Every number and picture comes from the project's own repository, log or live demo. The CV and email come from Jeremy's own CV and instruction; phone, home address, date of birth and grades stay unpublished, so the internship letter appears on Certificates only as its reference page (page 2), with the birth line covered by a bar burned into the pixels; the cover letter (address, IBAN) is never shown.
 

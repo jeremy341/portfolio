@@ -61,7 +61,7 @@ EXP-020 is training now. It's meant to combine the two directions: the clean, ba
 - Size of the final model: 5.47 MB as [PyTorch](https://pytorch.org/) weights, 3.02 MB as a 320-pixel [LiteRT](https://ai.google.dev/edge/litert) file
 - [LiteRT](https://ai.google.dev/edge/litert) export, 320 pixels: 86.2% mAP50, so the smaller file loses about 4 points
 - Speed: 1.5 to 3.6 ms per frame on a T4 GPU; no Raspberry Pi measurement yet
-- Downloads: 6,500+ lifetime model downloads on [Hugging Face](https://huggingface.co/) (a download counter, not a count of people)
+- Downloads: 8.3k+ lifetime model downloads on [Hugging Face](https://huggingface.co/) (a download counter, not a count of people)
 
 ## Figures
 
