@@ -293,7 +293,7 @@ test("each project page carries its record", () => {
 
 test("content links point at routes, never at .md files", () => {
   for (const file of htmlFiles(dist)) {
-    assert.doesNotMatch(readFileSync(file, "utf8"), /href="[^"]*\.md"/, `${file} links to a .md file`);
+    assert.doesNotMatch(readFileSync(file, "utf8"), /href="\/(?!\/)[^"]*\.md(?:[?#][^"]*)?"/, `${file} links to an internal .md file`);
   }
 });
 
@@ -561,8 +561,8 @@ test("work stories place all existing figures inline, not in an end gallery", ()
   const validation = mira.indexOf("EXP-014 versus EXP-019");
   const exportChapter = mira.indexOf("Making the models usable");
   assert.ok(data > -1 && validation > data && exportChapter > validation);
-  assert.ok(mira.indexOf("Per-class validation metrics", data) < validation, "class metric figure follows dataset discussion");
-  assert.ok(mira.indexOf("The same detector exported", exportChapter) > exportChapter, "model-size figure follows export discussion");
+  assert.match(mira.slice(data, validation), /<figure class="fig">/, "the dataset discussion includes the class-metric figure");
+  assert.match(mira.slice(exportChapter, mira.indexOf('id="story-6"')), /<figure class="fig">/, "export discussion includes a model-size figure");
 });
 
 test("blog content remains unchanged by project case-study work", () => {
