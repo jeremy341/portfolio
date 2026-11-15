@@ -56,6 +56,7 @@ const en = {
   ],
   sections: "Sections",
   mainNav: "Main",
+  menu: "Menu",
   skip: "Skip to content",
   search: "Search",
   commandLine: "Command line",
@@ -155,6 +156,7 @@ const en = {
   copied: "copied",
   finder: {
     placeholder: "Search projects, writing and pages",
+    close: "Close search",
     hint: "up/down move   enter open   esc close",
     kinds: { page: "page", project: "work", post: "text" },
     results: (n: number) => `${n} results`,
@@ -195,6 +197,7 @@ const de: Strings = {
   ],
   sections: "Bereiche",
   mainNav: "Hauptnavigation",
+  menu: "Menü",
   skip: "Zum Inhalt springen",
   search: "Suche",
   commandLine: "Befehlszeile",
