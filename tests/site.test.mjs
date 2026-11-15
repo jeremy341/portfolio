@@ -513,3 +513,17 @@ test("light mode is chosen before the first paint and offered in the status line
   assert.equal(html.split("data-theme-switch").length - 1, 2, "one switch in the top bar and one in the status line");
   assert.ok(html.includes('name="color-scheme" content="light dark"'));
 });
+
+
+test("mobile header offers an accessible search and menu on both languages", () => {
+  for (const locale of ["", "de/"]) {
+    const html = page(locale + "blog/index.html");
+    const labels = locale ? ["Projekte", "Blog", "Zertifikate", "Über mich", "Kontakt"] : ["Work", "Blog", "Certificates", "About", "Contact"];
+    assert.match(html, /<details class="mobile-nav">/);
+    assert.match(html, /<summary class="mobile-toggle" aria-label="(?:Menu|Menü)">/);
+    assert.match(html, /class="mobile-find" data-find aria-label=/);
+    assert.match(html, /<nav class="mobile-panel" aria-label=/);
+    assert.match(html, /class="mobile-settings"/);
+    for (const label of labels) assert.ok(html.includes(label), "missing mobile navigation: " + label);
+  }
+});
