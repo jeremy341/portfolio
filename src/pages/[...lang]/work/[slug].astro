@@ -39,14 +39,20 @@ const sections = [
   { id: "how", title: t.how, text: project.inside },
   { id: "where", title: t.where, text: project.standing },
 ];
-const outline = [
-  { id: "why", title: t.why },
-  { id: "how", title: t.how },
-  ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
-  ...(more.length ? [{ id: "figures", title: t.figures }] : []),
-  { id: "where", title: t.where },
-  { id: "links", title: t.links },
-];
+const outline = project.story
+  ? [
+      ...project.story.sections.map((section) => ({ id: section.id, title: section.title })),
+      ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
+      { id: "links", title: t.links },
+    ]
+  : [
+      { id: "why", title: t.why },
+      { id: "how", title: t.how },
+      ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
+      ...(more.length ? [{ id: "figures", title: t.figures }] : []),
+      { id: "where", title: t.where },
+      { id: "links", title: t.links },
+    ];
 // Where to find the project, shown right under the summary (the articles stay in the list at the end).
 const findIt = project.links.filter((link) => link.kind !== "article");
 
@@ -123,6 +129,61 @@ const schema = [
         </ul>
       )}
 
+      {project.story ? (
+        <div class="work-story">
+          {project.story.intro.length > 0 && (
+            <div class="work-story-intro story-copy">
+              {project.story.intro.map((part) => part.kind === "text" ? (
+                <Fragment set:html={part.html} />
+              ) : (
+                <Figure
+                  src={project.figures[part.index].src}
+                  light={project.figures[part.index].light}
+                  alt={project.figures[part.index].alt}
+                  caption={project.figures[part.index].caption}
+                  number={part.index + 1}
+                  lang={lang}
+                />
+              ))}
+            </div>
+          )}
+
+          {project.story.sections.map((chapter) => (
+            <section class="work-chapter" id={chapter.id} aria-labelledby={`${chapter.id}-title`}>
+              <h2 id={`${chapter.id}-title`}>{chapter.title}</h2>
+              <div class="work-chapter-body">
+                {chapter.parts.map((part) => part.kind === "text" ? (
+                  <div class="story-copy" set:html={part.html} />
+                ) : (
+                  <Figure
+                    src={project.figures[part.index].src}
+                    light={project.figures[part.index].light}
+                    alt={project.figures[part.index].alt}
+                    caption={project.figures[part.index].caption}
+                    number={part.index + 1}
+                    lang={lang}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+
+          {project.facts.length > 0 && (
+            <section class="block work-reference" id="numbers" aria-labelledby="numbers-title">
+              <h2 id="numbers-title">{t.numbers}</h2>
+              <dl class="facts">
+                {project.facts.map((fact) => (
+                  <div>
+                    <dt>{fact.label}</dt>
+                    <dd set:html={renderInline(fact.value, lang)} />
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
+        </div>
+      ) : (
+        <>
       {hero && <Figure src={hero.src} light={hero.light} alt={hero.alt} caption={hero.caption} number={1} lang={lang} eager />}
 
       {[sections[0], sections[1]].map((section) => (
@@ -161,6 +222,9 @@ const schema = [
         <h2 id={`${sections[2].id}-title`}>{sections[2].title}</h2>
         <Fragment set:html={renderMarkdown(sections[2].text, lang)} />
       </section>
+
+        </>
+      )}
 
       <section class="block" id="links" aria-labelledby="links-title">
         <h2 id="links-title">{t.links}</h2>
