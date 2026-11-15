@@ -214,7 +214,8 @@ test("the German pages carry German text and link only to German pages", () => {
     const internal =[...html.matchAll(/ href="(\/[^"#?]*)"/g)].map((m) => m[1]);
     for (const href of internal) {
       if (/\.\w+$/.test(href)) continue; // files such as the favicon and the PDF are shared
-      assert.ok(href.startsWith("/de/") || href === "/de", `${file} links to ${href}, which is not German`);
+      const englishArticle = file.endsWith("/de/blog/index.html") && posts.some((slug) => href === `/blog/${slug}/`);
+      assert.ok(href.startsWith("/de/") || href === "/de" || englishArticle, `${file} links to ${href}, which is not German`);
     }
   }
 });
