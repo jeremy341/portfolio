@@ -127,6 +127,15 @@ export interface Fact {
   value: string;
 }
 
+/** A story can place existing Astro-optimized project figures between paragraphs. */
+export type StoryPart = { kind: "text"; html: string } | { kind: "figure"; index: number };
+
+export interface ProjectStory {
+  intro: StoryPart[];
+  sections: { id: string; title: string; parts: StoryPart[] }[];
+  source: string;
+}
+
 export interface Project {
   slug: string;
   legacyId: string;
@@ -143,6 +152,7 @@ export interface Project {
   figures: Figure[];
   links: ProjectLink[];
   note?: string;
+  story?: ProjectStory;
 }
 
 function linkKind(lang: Lang, label: string, href: string): LinkKind {
@@ -171,6 +181,41 @@ function figures(source: string | undefined): Figure[] {
   }));
 }
 
+/** The {{figure:N}} line places an existing optimized figure (zero-based index).
+ *  Project section titles and ordering can now be different for every story.
+ *  Markdown still escapes raw HTML through renderMarkdown().
+ */
+function parseStory(source: string, figures: Figure[], lang: Lang, slug: string): ProjectStory {
+  const seen = new Set<number>();
+  const parseParts = (content: string): StoryPart[] =>
+    content.split(/^\s*\{\{figure:(\d+)\}\}\s*$/gm).flatMap((part, index): StoryPart[] => {
+      if (index % 2 === 0) {
+        return part.trim() ? [{ kind: "text", html: renderMarkdown(part.trim(), lang) }] : [];
+      }
+      const at = Number(part);
+      if (!Number.isSafeInteger(at) || at < 0 || at >= figures.length) {
+        throw new Error("Invalid figure index " + part + " in " + slug + " story");
+      }
+      if (seen.has(at)) throw new Error("Repeated figure " + at + " in " + slug + " story");
+      seen.add(at);
+      return [{ kind: "figure", index: at }];
+    });
+
+  const chunks = source.trim().split(/^### (.+)$/gm);
+  const intro = parseParts(chunks[0] ?? "");
+  const sections: ProjectStory["sections"] = [];
+  for (let i = 1; i < chunks.length; i += 2) {
+    const title = chunks[i].trim();
+    if (!title) throw new Error("Empty story heading in " + slug);
+    sections.push({ id: "story-" + (sections.length + 1), title, parts: parseParts(chunks[i + 1] ?? "") });
+  }
+  if (!sections.length) throw new Error("Project story for " + slug + " needs at least one ### heading");
+  if (figures.length !== seen.size) {
+    throw new Error("Project story for " + slug + " places " + seen.size + " of " + figures.length + " figures");
+  }
+  return { intro, sections, source };
+}
+
 function parseProject(lang: Lang, slug: string): Project {
   const n = names[lang];
   const source = file(lang, `projects/${slug}.md`);
@@ -179,6 +224,7 @@ function parseProject(lang: Lang, slug: string): Project {
   const category = categoryIds.find((id) => n.categories[id] === categoryLabel);
   if (!category) throw new Error(`Unknown category "${categoryLabel}" in ${lang}/${slug}`);
   const linkSection = section(map, n.links);
+  const projectFigures = figures(map.get(n.figures));
   const note = linkSection
     .split("\n")
     .filter((line) => line.trim() && !line.startsWith("- "))
@@ -193,16 +239,17 @@ function parseProject(lang: Lang, slug: string): Project {
     status: field(source, n.status),
     tech: field(source, n.tech).split(",").map((t) => t.trim()),
     summary: section(map, n.summary),
-    context: section(map, n.context),
-    inside: section(map, n.inside),
-    standing: section(map, n.standing),
+    context: map.get(n.context) ?? "",
+    inside: map.get(n.inside) ?? "",
+    standing: map.get(n.standing) ?? "",
     facts: facts(map.get(n.facts)),
-    figures: figures(map.get(n.figures)),
+    figures: projectFigures,
     links: links(linkSection).map(({ label, href }) => {
       const kind = linkKind(lang, label, href);
       return { kind, label: ui[lang].linkLabel[kind], href: resolveContentLink(href, lang) };
     }),
     note: note || undefined,
+    story: map.has("Story") ? parseStory(section(map, "Story"), projectFigures, lang, slug) : undefined,
   };
 }
 
