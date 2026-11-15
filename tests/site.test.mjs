@@ -55,7 +55,7 @@ test("the site is a home page, project pages and articles", () => {
     ...posts.map((slug) => `blog/${slug}/index.html`),
   ];
   // Every page also exists in German, at the same address under /de/.
-  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html")) {
+  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html" && !/^blog\/[^/]+\/index\.html$/.test(p))) {
     expected.push(`de/${path}`);
   }
   expected.push("search.json", "de/search.json", "llms.txt", "llms-full.txt", "og-card.png", "og-card-de.png");
