@@ -21,7 +21,7 @@ Well, there is more going on here than simply installing a different Python pack
 
 ### Wait, why not just use the GPU?
 
-If you've trained neural networks with PyTorch, you've probably seen \`torch.cuda\`. CUDA is NVIDIA's compute platform, and PyTorch has a very mature training backend for it. AMD has [ROCm](https://rocm.docs.amd.com/), but availability depends on the GPU, operating system and software versions. My particular RX 5600 XT on Windows doesn't have the same convenient supported route.
+If you've trained neural networks with PyTorch, you've probably seen `torch.cuda`. CUDA is NVIDIA's compute platform, and PyTorch has a very mature training backend for it. AMD has [ROCm](https://rocm.docs.amd.com/), but availability depends on the GPU, operating system and software versions. My particular RX 5600 XT on Windows doesn't have the same convenient supported route.
 
 Meanwhile, I can run graphics applications on the card just fine. Graphics APIs such as [Vulkan](https://www.vulkan.org/) already provide a way to send compute workloads to GPUs across different vendors.
 
@@ -47,24 +47,13 @@ PyTorch is not going to start sending Vulkan commands just because I ask nicely.
 
 My current architectural hypothesis looks roughly like this:
 
-\`\`\`text
+```flow
 PyTorch operation
-    |
-    v
-Custom device / PrivateUse1 integration
-    |
-    v
-TorchVK C++ runtime
-  - device and memory management
-  - operation dispatch
-  - synchronization
-    |
-    v
+PrivateUse1 custom device integration
+TorchVK C++ runtime: memory, dispatch, synchronization
 Vulkan compute pipeline
-    |
-    v
-SPIR-V shader executed on the GPU
-\`\`\`
+SPIR-V shader running on the GPU
+```
 
 SPIR-V is the intermediate representation used by Vulkan shaders: code written in something like GLSL or Slang is compiled into a form a Vulkan driver can consume. This diagram is a **proposed architecture**, not something I have running today.
 
