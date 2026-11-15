@@ -103,6 +103,7 @@ const en = {
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Writing",
+  writingEnglishOnly: "Articles are currently published in English.",
   writingDescription: (name: string) => `Writing by ${name} on machine-learning systems, computer engineering and learning by building.`,
   articlesAria: "Articles",
   minRead: (n: number) => `${n} min read`,
@@ -243,6 +244,7 @@ const de: Strings = {
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Texte",
+  writingEnglishOnly: "Meine Blogartikel sind derzeit nur auf Englisch verfügbar.",
   writingDescription: (name) => `Texte von ${name} über Machine-Learning-Systeme, Computer Engineering und Lernen durch Bauen.`,
   articlesAria: "Artikel",
   minRead: (n) => `${n} Min. Lesezeit`,
