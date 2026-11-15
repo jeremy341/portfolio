@@ -13,6 +13,8 @@ export const url = (lang: Lang, path: string) => prefix(lang) + path;
 /** The same page in the other language: /de/work/ <-> /work/. */
 export function otherPath(pathname: string, to: Lang): string {
   const bare = pathname.replace(/^\/de(?=\/|$)/, "") || "/";
+  // Blog entries are currently English-only. Never send the language switch to a 404.
+  if (to === "de" && /^\/blog\/[^/]+\/?$/.test(bare)) return "/de/blog/";
   return url(to, bare);
 }
 
