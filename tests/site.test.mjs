@@ -572,3 +572,58 @@ test("blog content remains unchanged by project case-study work", () => {
   assert.match(first, /To all future employers: please hire me on the spot/);
   assert.match(second, /Hi, if you are reading this, it seems like my clickbait worked/);
 });
+
+
+test("fenced Markdown renders highlighted, escaped and scrollable code", () => {
+  const source = [
+    "~~~js",
+    "function serverNow() {",
+    "  return Date.now() + (state.serverTimeOffset || 0);",
+    "}",
+    "~~~",
+  ].join("\n");
+  const html = renderMarkdown(source);
+  assert.match(html, /class="code-panel"/);
+  assert.match(html, /class="code-panel-title"/);
+  assert.match(html, /<pre tabindex="0"><code class="language-js">/);
+  assert.match(html, /<span class="code-keyword">function<\/span>/);
+  assert.match(html, /<span class="code-builtin">Date<\/span>/);
+  assert.match(html, /<span class="code-number">0<\/span>/);
+  assert.doesNotMatch(html, /~~~js/);
+
+  // Source snippets must remain text, never become live markup.
+  const unsafe = renderMarkdown("~~~js\nconst x = '<script>alert(1)</script>';\n~~~");
+  assert.doesNotMatch(unsafe, /<script>/);
+  assert.match(unsafe, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+});
+
+test("flow Markdown becomes an accessible diagram rather than ASCII art", () => {
+  const html = renderMarkdown(["~~~flow", "Input images", "Detector", "CSV export", "~~~"].join("\n"));
+  assert.match(html, /class="project-flow" role="group" aria-label="Process flow diagram"/);
+  assert.match(html, /<ol><li>Input images<\/li><li>Detector<\/li><li>CSV export<\/li><\/ol>/);
+  assert.doesNotMatch(html, /~~~flow/);
+});
+
+test("published project pages render code, flow diagrams and inline code correctly", () => {
+  const poorup = page("work/poorup/index.html");
+  assert.match(poorup, /class="code-panel"/);
+  assert.match(poorup, /class="language-js"/);
+  assert.match(poorup, /<span class="code-keyword">function<\/span>/);
+
+  const torch = page("work/torchvk/index.html");
+  assert.match(torch, /class="project-flow"/);
+  assert.match(torch, /<code>torch\.cuda<\/code>/);
+
+  const fluid = page("work/fluidicstudio/index.html");
+  assert.match(fluid, /class="project-flow"/);
+  assert.match(fluid, /class="code-panel"/);
+  assert.match(fluid, /<code>P1ON<\/code>/);
+
+  assert.match(page("work/mira/index.html"), /<code>mira-ai<\/code>/);
+  assert.match(page("work/abivault/index.html"), /<code>bigint<\/code>/);
+
+  for (const slug of ["poorup", "torchvk", "fluidicstudio", "mira", "abivault"]) {
+    const html = page("work/" + slug + "/index.html");
+    assert.doesNotMatch(html, /\\\x60|&#96;&#96;&#96;|&#x60;&#x60;&#x60;/, slug + ": escaped Markdown code leaked into the page");
+  }
+});
