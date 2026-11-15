@@ -37,7 +37,7 @@ This is one of those details that seems tiny until it bites you.
 
 Computers commonly represent decimal-looking values with floating-point numbers. Many decimal fractions can't be represented exactly in binary floating point. If you're building a game, a tiny difference usually doesn't matter. If you're recording a committee's money, I'd rather avoid that entire category of problem.
 
-AbiVault stores monetary values in **whole cents** as integers, using \`bigint\` where appropriate. So €40.10 becomes 4010 cents, rather than relying on a floating-point approximation.
+AbiVault stores monetary values in **whole cents** as integers, using `bigint` where appropriate. So €40.10 becomes 4010 cents, rather than relying on a floating-point approximation.
 
 Then there is the accounting model itself. Instead of a single editable number called "balance", the application records transactions through a ledger. A posted transaction writes balanced entries so that money movements can be traced consistently.
 
