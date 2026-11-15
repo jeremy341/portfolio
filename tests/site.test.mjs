@@ -557,12 +557,13 @@ test("work stories place all existing figures inline, not in an end gallery", ()
   }
 
   const mira = page("work/mira/index.html");
-  const data = mira.indexOf("I thought more training data would automatically help");
-  const validation = mira.indexOf("EXP-014 versus EXP-019");
-  const exportChapter = mira.indexOf("Making the models usable");
-  assert.ok(data > -1 && validation > data && exportChapter > validation);
+  const data = mira.indexOf('id="story-2-title"');
+  const validation = mira.indexOf('id="story-3-title"');
+  const exportChapter = mira.indexOf('id="story-5-title"');
+  const closing = mira.indexOf('id="story-6-title"');
+  assert.ok(data > -1 && validation > data && exportChapter > validation && closing > exportChapter);
   assert.match(mira.slice(data, validation), /<figure class="fig">/, "the dataset discussion includes the class-metric figure");
-  assert.match(mira.slice(exportChapter, mira.indexOf('id="story-6"')), /<figure class="fig">/, "export discussion includes a model-size figure");
+  assert.match(mira.slice(exportChapter, closing), /<figure class="fig">/, "export discussion includes a model-size figure");
 });
 
 test("blog content remains unchanged by project case-study work", () => {
