@@ -7,7 +7,7 @@
 
 ## Summary
 
-My attempt at teaching a camera to recognize waste. It started with a small classifier, grew into an object detector, and taught me why a great validation score doesn't always mean a great real-world model.
+I taught a camera to recognize waste, from a small classifier to YOLO detection. A great validation score didn't always mean a great real-world model.
 
 ## Story
 
@@ -113,7 +113,7 @@ To be honest, I liked seeing 90.6%. I liked it a lot. But realizing that I could
 - Model sizes: PyTorch 5.47 MB; 320-pixel LiteRT export 3.02 MB
 - Recorded 320-pixel LiteRT validation: 86.2% mAP50
 - GPU inference: 1.5 to 3.6 ms/frame on a T4 in the recorded setup, not a Raspberry Pi measurement
-- Downloads: 9.1K+ lifetime Hugging Face model-file requests at the recorded snapshot, not unique users
+- Downloads: 9.1K+ lifetime model downloads on Hugging Face (file requests, not unique people)
 
 ## Figures
 
