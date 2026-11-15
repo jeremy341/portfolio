@@ -29,8 +29,8 @@ const germanStatus = {
   abivault: "Privates Projekt",
 };
 
-// The articles were removed to be written again. Add each new slug here so the tests cover it.
-const posts = [];
+// English articles are live; German article translations are not yet published.
+const posts = ["am-i-famous-now", "first-blog"];
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -55,7 +55,7 @@ test("the site is a home page, project pages and articles", () => {
     ...posts.map((slug) => `blog/${slug}/index.html`),
   ];
   // Every page also exists in German, at the same address under /de/.
-  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html")) {
+  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html" && !/^blog\/[^/]+\/index\.html$/.test(p))) {
     expected.push(`de/${path}`);
   }
   expected.push("search.json", "de/search.json", "llms.txt", "llms-full.txt", "og-card.png", "og-card-de.png");
@@ -147,7 +147,7 @@ test("projects with a public repository are marked as source code", () => {
 
 test("project pages say where to find the project and show their figures with descriptions", () => {
   const expected = {
-    poorup: { hosts: ["github.com/jeremy341/Poorup", "poorup.tech", "poorup.jeremy-d.hackclub.app"], images: 4 },
+    poorup: { hosts: ["github.com/jeremy341/Poorup", "poorup.tech"], images: 4 },
     mira: { hosts: ["github.com/jeremy341/MIRA-AI", "mira-vision.vercel.app", "huggingface.co/Jeremy341/MIRA-AI", "pypi.org/project/mira-ai/"], images: 3 },
     "mobilenet-on-fpga": { hosts: [], images: 2 },
     torchvk: { hosts: ["github.com/jeremy341/TorchVK"], images: 0 },
@@ -190,8 +190,13 @@ test("every page links to its twin in the other language and says so with hrefla
     const german = rel.startsWith("/de/");
     const twin = german ? rel.slice("/de".length) || "/" : `/de${rel}`;
     const group = html.match(/<div class="lang"[\s\S]*?<\/div>/)?.[0] ?? "";
-    assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
-    assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
+    const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(rel);
+    if (englishOnlyArticle) {
+      assert.ok(group.includes('href="/de/blog/"'), `${rel} must fall back to the German blog index`);
+    } else {
+      assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
+      assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
+    }
     assert.match(group, new RegExp(`<a [^>]*href="${rel}"[^>]*aria-current="true"`), `${rel} does not mark its own language`);
     assert.match(html, new RegExp(`<html lang="${german ? "de" : "en"}"`));
   }
@@ -205,11 +210,12 @@ test("the German pages carry German text and link only to German pages", () => {
   if (posts.length) assert.match(page("de/blog/index.html"), /Min\. Lesezeit/);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.
-    const html = readFileSync(file, "utf8").replace(/<div class="lang"[\s\S]*?<\/div>/, "");
+    const html = readFileSync(file, "utf8").replace(/<div class="lang"[\s\S]*?<\/div>/g, "");
     const internal =[...html.matchAll(/ href="(\/[^"#?]*)"/g)].map((m) => m[1]);
     for (const href of internal) {
       if (/\.\w+$/.test(href)) continue; // files such as the favicon and the PDF are shared
-      assert.ok(href.startsWith("/de/") || href === "/de", `${file} links to ${href}, which is not German`);
+      const englishArticle = file.endsWith("/de/blog/index.html") && posts.some((slug) => href === `/blog/${slug}/`);
+      assert.ok(href.startsWith("/de/") || href === "/de" || englishArticle, `${file} links to ${href}, which is not German`);
     }
   }
 });
@@ -439,7 +445,7 @@ test("the feeds, sitemap, canonical links and share images use absolute addresse
   const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
   for (const [feed, lang] of [["rss.xml", "en"], ["de/rss.xml", "de"]]) {
     const xml = page(feed);
-    assert.equal(xml.match(/<item>/g)?.length ?? 0, posts.length, `${feed} lists every article`);
+    assert.equal(xml.match(/<item>/g)?.length ?? 0, lang === "en" ? posts.length : 0, `${feed} lists articles in that language`);
     for (const [, link] of xml.matchAll(/<link>([^<]+)<\/link>/g)) assert.ok(link.startsWith(origin), `${lang} feed link ${link} is not absolute`);
   }
   const sitemap = page("sitemap.xml");
@@ -510,6 +516,27 @@ test("the palette meets WCAG AA contrast in dark and light mode", () => {
 test("light mode is chosen before the first paint and offered in the status line", () => {
   const html = page("index.html");
   assert.ok(html.includes('localStorage.getItem("jd:theme")'));
-  assert.equal(html.split("data-theme-switch").length - 1, 2, "one switch in the top bar and one in the status line");
+  assert.equal(html.split("data-theme-switch").length - 1, 3, "desktop, mobile and status-line switches are present");
   assert.ok(html.includes('name="color-scheme" content="light dark"'));
+});
+
+
+test("mobile header offers an accessible search and menu on both languages", () => {
+  for (const locale of ["", "de/"]) {
+    const html = page(locale + "blog/index.html");
+    const labels = locale ? ["Projekte", "Blog", "Zertifikate", "Über mich", "Kontakt"] : ["Work", "Blog", "Certificates", "About", "Contact"];
+    assert.match(html, /<details class="mobile-nav">/);
+    assert.match(html, /<summary class="mobile-toggle" aria-label="(?:Menu|Menü)">/);
+    assert.match(html, /class="mobile-find" data-find aria-label=/);
+    assert.match(html, /<nav class="mobile-panel" aria-label=/);
+    assert.match(html, /class="mobile-settings"/);
+    for (const label of labels) assert.ok(html.includes(label), "missing mobile navigation: " + label);
+  }
+});
+
+
+test("mobile homepage keeps the navigation below a full first-screen hero", () => {
+  const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  assert.match(css, /\/\* The landing hero occupies the complete first viewport[\s\S]*?\.dash-hero\s*\{\s*min-height:\s*calc\(100svh - 64px\)/);
+  assert.doesNotMatch(css, /min-height:\s*clamp\(270px,\s*44svh,\s*480px\)/);
 });

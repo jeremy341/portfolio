@@ -50,7 +50,10 @@ const previews = {
 const fullTitle = title ? `${title} | ${site.name}` : site.name;
 const url = canonical(Astro.url.pathname);
 const english = canonical(otherPath(Astro.url.pathname, "en"));
-const alternates = (["en", "de"] as const).map((code) => ({ code, href: canonical(otherPath(Astro.url.pathname, code)) }));
+const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(Astro.url.pathname);
+const alternates = (["en", "de"] as const)
+  .filter((code) => !englishOnlyArticle || code === "en")
+  .map((code) => ({ code, href: canonical(otherPath(Astro.url.pathname, code)) }));
 const other = lang === "de" ? "en" : "de";
 // The share card in the page's language. Link previews need an absolute address, so it exists only with a domain.
 const shareImage = canonical(lang === "de" ? "/og-card-de.png" : "/og-card.png");
@@ -193,6 +196,7 @@ const speculation = {
       import "../scripts/headings";
       import "../scripts/lang";
       import "../scripts/navblock";
+      import "../scripts/mobile-nav";
       import "../scripts/scramble";
       import "../scripts/travel";
       import "../scripts/finder";

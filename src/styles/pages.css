@@ -1091,3 +1091,65 @@ html[data-retype] .page-title {
 .fig-img .chart-light { display: none; }
 html[data-theme="light"] .fig-img .chart-dark { display: none; }
 html[data-theme="light"] .fig-img .chart-light { display: block; }
+
+
+/* Search remains dismissible without an Escape key on touch devices. */
+.f-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.f-close:is(:hover, :focus-visible) {
+  color: var(--fg);
+}
+
+@media (max-width: 759px) {
+  .f-bar {
+    padding: 7px 8px 7px 14px;
+    gap: 8px;
+  }
+
+  .f-count {
+    display: none;
+  }
+
+  .f-main {
+    height: min(60dvh, 480px);
+  }
+
+  .f-row {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .chips .chip {
+    min-height: 44px;
+    padding-inline: 14px;
+  }
+
+  .linkbar a {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .project-body {
+    margin-top: 36px;
+  }
+
+  .block {
+    scroll-margin-top: 80px;
+  }
+
+  .figs {
+    gap: 28px;
+  }
+}

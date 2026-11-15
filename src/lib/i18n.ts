@@ -13,6 +13,8 @@ export const url = (lang: Lang, path: string) => prefix(lang) + path;
 /** The same page in the other language: /de/work/ <-> /work/. */
 export function otherPath(pathname: string, to: Lang): string {
   const bare = pathname.replace(/^\/de(?=\/|$)/, "") || "/";
+  // Blog entries are currently English-only. Never send the language switch to a 404.
+  if (to === "de" && /^\/blog\/[^/]+\/?$/.test(bare)) return "/de/blog/";
   return url(to, bare);
 }
 
@@ -56,6 +58,7 @@ const en = {
   ],
   sections: "Sections",
   mainNav: "Main",
+  menu: "Menu",
   skip: "Skip to content",
   search: "Search",
   commandLine: "Command line",
@@ -100,6 +103,7 @@ const en = {
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Writing",
+  writingEnglishOnly: "Articles are currently published in English.",
   writingDescription: (name: string) => `Writing by ${name} on machine-learning systems, computer engineering and learning by building.`,
   articlesAria: "Articles",
   minRead: (n: number) => `${n} min read`,
@@ -155,6 +159,7 @@ const en = {
   copied: "copied",
   finder: {
     placeholder: "Search projects, writing and pages",
+    close: "Close search",
     hint: "up/down move   enter open   esc close",
     kinds: { page: "page", project: "work", post: "text" },
     results: (n: number) => `${n} results`,
@@ -195,6 +200,7 @@ const de: Strings = {
   ],
   sections: "Bereiche",
   mainNav: "Hauptnavigation",
+  menu: "Menü",
   skip: "Zum Inhalt springen",
   search: "Suche",
   commandLine: "Befehlszeile",
@@ -238,6 +244,7 @@ const de: Strings = {
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Texte",
+  writingEnglishOnly: "Meine Blogartikel sind derzeit nur auf Englisch verfügbar.",
   writingDescription: (name) => `Texte von ${name} über Machine-Learning-Systeme, Computer Engineering und Lernen durch Bauen.`,
   articlesAria: "Artikel",
   minRead: (n) => `${n} Min. Lesezeit`,
@@ -291,6 +298,7 @@ const de: Strings = {
   copied: "kopiert",
   finder: {
     placeholder: "Projekte, Texte und Seiten durchsuchen",
+    close: "Suche schließen",
     hint: "hoch/runter bewegen   Enter öffnen   Esc schließen",
     kinds: { page: "Seite", project: "Projekt", post: "Text" },
     results: (n) => `${n} Treffer`,
