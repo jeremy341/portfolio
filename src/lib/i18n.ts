@@ -294,6 +294,7 @@ const de: Strings = {
   copied: "kopiert",
   finder: {
     placeholder: "Projekte, Texte und Seiten durchsuchen",
+    close: "Suche schließen",
     hint: "hoch/runter bewegen   Enter öffnen   Esc schließen",
     kinds: { page: "Seite", project: "Projekt", post: "Text" },
     results: (n) => `${n} Treffer`,
