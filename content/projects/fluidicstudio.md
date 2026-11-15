@@ -27,18 +27,18 @@ Bartels does publish a [software manual](https://bartels-mikrotechnik.de/wp-cont
 
 Some of the commands are surprisingly compact:
 
-\`\`\`text
+```text
 V        request firmware version
 F0=100   set frequency for the first driver group
 P1V120   set pump 1 amplitude to 120 Vpp
 P1ON     enable pump 1
 P1OFF    disable pump 1
 POFF     request all pumps off
-\`\`\`
+```
 
 Those are **protocol examples**, not commands you should send to unfamiliar hardware without checking your setup. The firmware expects a serial connection at 115200 baud, 8N1, with command lines terminated by CRLF.
 
-And even something as simple as "send \`P1ON\`" becomes complicated when another thread is reading replies, a sensor is streaming data, and the user might press Disconnect at any moment.
+And even something as simple as "send `P1ON`" becomes complicated when another thread is reading replies, a sensor is streaming data, and the user might press Disconnect at any moment.
 
 ### Reverse engineering is also about the boring details
 
@@ -58,17 +58,17 @@ Imagine the app is starting a pump. Sending the configuration isn't one atomic c
 
 An executable regression scenario captured this order before the fix:
 
-\`\`\`text
+```text
 0.001 s   F0=100
 0.007 s   CS0=0
 0.012 s   P1V120
 0.613 s   POFF
 0.618 s   P1ON    <- this should never happen after shutdown
-\`\`\`
+```
 
-The stop command had already been sent, but a pending start operation could still emit \`P1ON\` afterward. The application could believe shutdown had succeeded while the command stream told a different story.
+The stop command had already been sent, but a pending start operation could still emit `P1ON` afterward. The application could believe shutdown had succeeded while the command stream told a different story.
 
-The fix introduced a **teardown gate**: when shutdown starts, the serial manager stops accepting new commands, coordinates writes under a lock and prevents an in-flight start from completing after the final off request. A regression test checks that the late \`P1ON\` no longer reaches the simulated serial stream.
+The fix introduced a **teardown gate**: when shutdown starts, the serial manager stops accepting new commands, coordinates writes under a lock and prevents an in-flight start from completing after the final off request. A regression test checks that the late `P1ON` no longer reaches the simulated serial stream.
 
 That is a software-side fix, not proof that every physical failure mode has been eliminated. If the cable disappears or an OFF command isn't acknowledged, the actual pump state can still be unknown. The safe response is to report uncertainty rather than pretend a button click guarantees the hardware stopped.
 
@@ -84,15 +84,14 @@ The microscope workflow has its own problems. Recording frames and displaying a 
 
 The droplet analysis is another pipeline: define a region of interest, estimate the background, detect droplets, track them between frames, count line crossings, and export measurements. A counted crossing isn't necessarily a *valid* measurement; blurry frames or broken tracks can ruin the estimated length or velocity.
 
-\`\`\`text
+```flow
 Microscope video
-    -> select region and estimate background
-    -> detect droplets
-    -> track movement across frames
-    -> count crossings
-    -> validate measurements
-    -> export CSV and annotated video
-\`\`\`
+Region selection and background estimation
+Droplet detection
+Frame-to-frame tracking
+Crossing detection and measurement validation
+CSV and annotated video export
+```
 
 ### What four weeks didn't magically solve
 
