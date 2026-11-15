@@ -205,7 +205,7 @@ test("the German pages carry German text and link only to German pages", () => {
   if (posts.length) assert.match(page("de/blog/index.html"), /Min\. Lesezeit/);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.
-    const html = readFileSync(file, "utf8").replace(/<div class="lang"[\s\S]*?<\/div>/, "");
+    const html = readFileSync(file, "utf8").replace(/<div class="lang"[\s\S]*?<\/div>/g, "");
     const internal =[...html.matchAll(/ href="(\/[^"#?]*)"/g)].map((m) => m[1]);
     for (const href of internal) {
       if (/\.\w+$/.test(href)) continue; // files such as the favicon and the PDF are shared
@@ -510,7 +510,7 @@ test("the palette meets WCAG AA contrast in dark and light mode", () => {
 test("light mode is chosen before the first paint and offered in the status line", () => {
   const html = page("index.html");
   assert.ok(html.includes('localStorage.getItem("jd:theme")'));
-  assert.equal(html.split("data-theme-switch").length - 1, 2, "one switch in the top bar and one in the status line");
+  assert.equal(html.split("data-theme-switch").length - 1, 3, "desktop, mobile and status-line switches are present");
   assert.ok(html.includes('name="color-scheme" content="light dark"'));
 });
 
