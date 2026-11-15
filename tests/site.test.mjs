@@ -533,3 +533,10 @@ test("mobile header offers an accessible search and menu on both languages", () 
     for (const label of labels) assert.ok(html.includes(label), "missing mobile navigation: " + label);
   }
 });
+
+
+test("mobile homepage keeps the navigation below a full first-screen hero", () => {
+  const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  assert.match(css, /\/\* The landing hero occupies the complete first viewport[\s\S]*?\.dash-hero\s*\{\s*min-height:\s*calc\(100svh - 64px\)/);
+  assert.doesNotMatch(css, /min-height:\s*clamp\(270px,\s*44svh,\s*480px\)/);
+});
