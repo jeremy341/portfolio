@@ -14,7 +14,7 @@ const project = (p: Project) =>
     p.summary,
     p.facts.length ? `### In numbers\n\n${p.facts.map((f) => `- ${f.label}: ${plainText(f.value)}`).join("\n")}` : "",
     ...(p.story
-      ? [`### The project story\n\n${prose(p.story.source.replace(/^\\{\\{figure:\\d+\\}\\}\\s*$/gm, ""))}`]
+      ? [`### The project story\n\n${prose(p.story.source.replace(/^\{\{figure:\d+\}\}\s*$/gm, ""))}`]
       : [
           `### Why it exists\n\n${prose(p.context)}`,
           `### How it works\n\n${prose(p.inside)}`,
