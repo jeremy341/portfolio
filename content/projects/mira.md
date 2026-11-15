@@ -83,7 +83,7 @@ I don't think the responsible conclusion is "the model is bad." It's "I need bet
 
 Training isn't the only part of MIRA. I also wanted to *use* the detector instead of leaving it in a notebook.
 
-The project has a command-line tool for live webcam or RTSP stream inference, an optional ByteTrack tracker, a FastAPI-based dashboard, dataset tools and model exports. The \`mira-ai\` package can be installed through PyPI, and additional models are published on Hugging Face.
+The project has a command-line tool for live webcam or RTSP stream inference, an optional ByteTrack tracker, a FastAPI-based dashboard, dataset tools and model exports. The `mira-ai` package can be installed through PyPI, and additional models are published on Hugging Face.
 
 There's another trade-off once the model leaves PyTorch. An exported LiteRT/TFLite model at 320-pixel input size is about **3.02 MB**, compared with **5.47 MB** for the original PyTorch weights. On the recorded validation setup the smaller export scored **86.2% mAP50**, below the full model's 90.6%.
 

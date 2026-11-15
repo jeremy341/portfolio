@@ -43,13 +43,13 @@ The server currently gives an auction a five-second window, rejects bids arrivin
 
 The client gets a server-time offset from the synchronized game state and uses it to draw the countdown. The actual client code includes this:
 
-\`\`\`js
+```js
 function serverNow() {
   return Date.now() + (state.serverTimeOffset || 0);
 }
 
 const remaining = a.deadline - serverNow();
-\`\`\`
+```
 
 That helps the displayed timer stay aligned with the server's timeline, but it still isn't the source of truth. The server decides whether a bid counts and when the auction ends.
 
