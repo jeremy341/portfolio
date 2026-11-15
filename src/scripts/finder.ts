@@ -216,7 +216,7 @@ function build() {
   count.setAttribute("aria-hidden", "true");
   const close = el<HTMLButtonElement>("button", "f-close", "×");
   close.type = "button";
-  close.setAttribute("aria-label", ui[lang].search === "Suche" ? "Suche schließen" : "Close search");
+  close.setAttribute("aria-label", t.close);
   close.addEventListener("click", () => dialog.close());
   bar.append(prompt, input, count, close);
 
