@@ -1447,8 +1447,10 @@ html[data-intro] .dash-hero .w {
     margin-top: 48px;
   }
 
+  /* The landing hero occupies the complete first viewport below the 64px header.
+     Section links begin only after the first screen, just like on desktop. */
   .dash-hero {
-    min-height: clamp(270px, 44svh, 480px);
+    min-height: calc(100svh - 64px);
   }
 
   .dash-rows {
