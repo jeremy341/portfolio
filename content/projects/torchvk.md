@@ -7,57 +7,115 @@
 
 ## Summary
 
-I'm trying to run [PyTorch](https://pytorch.org/) training on GPU compute through [Vulkan](https://www.vulkan.org/), on a consumer card that the usual stacks don't serve well.
+I'm investigating whether I can train PyTorch models on my old AMD GPU using Vulkan. There isn't a working TorchVK backend yet; this is the research and feasibility stage.
 
-## Context and motivation
+## Story
 
-Most deep learning on GPUs assumes NVIDIA's CUDA or AMD's ROCm. On some consumer cards those stacks are weak or missing, so the owner ends up with a fast GPU that can really only be used for games. That's the problem TorchVK is my attempt at. I want another route: [PyTorch](https://pytorch.org/) training and general GPU compute through [Vulkan](https://www.vulkan.org/), which runs on almost any modern graphics card.
+So here's something that bothered me for a while without me actually questioning it: I had a graphics card sitting in my PC, but whenever I wanted to train MIRA, I went straight to Kaggle.
 
-I picked one specific target on purpose: a Radeon RX 5600 XT with 6 GB of memory on Windows. Writing for every GPU at once would make the project vague. A single card I own gives me a question I can actually answer.
+Not because I particularly enjoyed using someone else's GPU. I just had an AMD Radeon RX 5600 XT, and the usual PyTorch GPU setup on Windows wasn't exactly made for it. I accepted that for quite a while.
 
-## Inside the project
+Then, while looking for another machine-learning project, I came back to the same question. Why was I renting or borrowing compute when I already owned a GPU? Surely there's *some* way to make this work?
 
-TorchVK is still at the planning stage. The public repository holds documents, and there's no backend, no shader and no benchmark yet. What exists is the question, a survey of related work and the design I want to test. I'd rather say that plainly than make the repository look further along than it is.
+Well, there is more going on here than simply installing a different Python package. And that's how I ended up with TorchVK.
 
-### The question
+### Wait, why not just use the GPU?
 
-Can [PyTorch](https://pytorch.org/) training run on a consumer GPU through [Vulkan](https://www.vulkan.org/) Compute, on a card that CUDA and ROCm serve badly? The experiments are meant to answer that with measurements. The answer could be "not yet", and I'd still write that up.
+If you've trained neural networks with PyTorch, you've probably seen \`torch.cuda\`. CUDA is NVIDIA's compute platform, and PyTorch has a very mature training backend for it. AMD has [ROCm](https://rocm.docs.amd.com/), but availability depends on the GPU, operating system and software versions. My particular RX 5600 XT on Windows doesn't have the same convenient supported route.
 
-### Related work, and why this isn't a first
+Meanwhile, I can run graphics applications on the card just fine. Graphics APIs such as [Vulkan](https://www.vulkan.org/) already provide a way to send compute workloads to GPUs across different vendors.
 
-[Vulkan](https://www.vulkan.org/) backends for [PyTorch](https://pytorch.org/) already exist, so TorchVK doesn't claim to be the first. torchvulkan documents a PrivateUse1 device that trains MNIST and a tiny [GPT](https://openai.com/). There's also torch-vulkan and [PyTorch](https://pytorch.org/)'s own older [Vulkan](https://www.vulkan.org/) backend. The gap I want to test is narrower. I want training that can be verified as GPU-only, with no silent fallback to the CPU, and I want it to work on an RDNA1 card under Windows. I also want to train a small CNN with little video memory, and I want benchmarks that someone else can reproduce on their own machine.
+So the thought was: what if I could make PyTorch talk to Vulkan?
 
-### The planned design
+That isn't the same as making a game render with Vulkan. Training needs things like tensor storage, matrix operations, gradients and updates to model weights. A backend has to do those calculations correctly, then do them quickly enough to justify using the GPU at all.
 
-[PyTorch](https://pytorch.org/) talks to a custom PrivateUse1 device, which is a C++ extension that drives [Vulkan](https://www.vulkan.org/). Shaders are written in GLSL or Slang and compiled to SPIR-V.
+### I wasn't the first person to think of this
 
-```text
-PyTorch  ->  PrivateUse1 device  ->  TorchVK C++ extension
-         ->  Vulkan device, allocator, queues, pipeline cache
-         ->  GLSL or Slang  ->  SPIR-V  ->  GPU
-```
+I'll admit, the initial idea sounded pretty cool. A PyTorch training backend that doesn't depend on CUDA? Nice.
 
-The first exercise is deliberately small. Pick a device, allocate staging and device buffers, compile a shader, dispatch a vector addition, wait for it to finish and compare the result with the CPU. If that doesn't match, nothing above it is worth building.
+Then I started researching it.
 
-### The experiments, written down first
+Turns out projects such as [torchvulkan](https://github.com/zainsharief/torchvulkan) already explore PyTorch training through Vulkan, and other Vulkan integrations have existed too. Claiming that nobody has attempted this would be nonsense.
 
-I wrote down six experiments before I wrote any code: vector addition from one thousand to ten million elements, matrix multiplication from 128 to 4096, an MNIST classifier, a CIFAR-10 CNN, sensitivity to small video memory, and one-at-a-time ablations. The results column is empty on purpose. If I write the plan first, I can't quietly pick the experiments that look good afterwards.
+But their existence doesn't automatically answer *my* question: can I get a reproducible, GPU-only training path working on an older RDNA1 card with only 6 GB of VRAM, under Windows? What falls back to the CPU? What breaks? Where does the performance go?
+
+That's the gap I want to investigate. And if someone else's backend already solves it better, I'd rather contribute to that than build a worse copy just so I can put my name on it.
+
+### What the backend might actually look like
+
+PyTorch is not going to start sending Vulkan commands just because I ask nicely. It needs a device integration layer. One route worth evaluating is **PrivateUse1**, a PyTorch extension mechanism for registering custom devices and their operations.
+
+My current architectural hypothesis looks roughly like this:
+
+\`\`\`text
+PyTorch operation
+    |
+    v
+Custom device / PrivateUse1 integration
+    |
+    v
+TorchVK C++ runtime
+  - device and memory management
+  - operation dispatch
+  - synchronization
+    |
+    v
+Vulkan compute pipeline
+    |
+    v
+SPIR-V shader executed on the GPU
+\`\`\`
+
+SPIR-V is the intermediate representation used by Vulkan shaders: code written in something like GLSL or Slang is compiled into a form a Vulkan driver can consume. This diagram is a **proposed architecture**, not something I have running today.
+
+And before I'd even think about implementing a neural network, I'd have to get the boring foundations right. Device selection, buffer allocation, copying values to and from GPU memory, dispatching a shader, waiting for completion, then comparing its output against a trusted CPU result.
+
+"Just do a vector addition" sounds extremely underwhelming for a machine-learning project. But if a small addition is wrong, there's absolutely no point in building backpropagation on top of it.
+
+### Six experiments, and why I'm writing them down first
+
+The research plan currently lists six experiments. They aren't results; they're questions I want the implementation to answer.
+
+1. **Vector addition:** can Vulkan compute the right values, and when do memory transfer and dispatch overhead dominate?
+2. **Matrix multiplication:** how does performance change with matrix size, memory access and shader design?
+3. **MNIST training:** can a small network complete forward and backward passes without accidentally switching to CPU?
+4. **CIFAR-10 CNN:** what happens when the workload becomes more realistic and contains convolutions?
+5. **Low-VRAM behavior:** how much memory is consumed, and what fails first on a 6 GB card?
+6. **Ablations:** if I change one implementation choice at a time, which choices actually matter?
+
+An *ablation* simply means isolating one part of a system to see whether it causes the observed difference. It's easy to change three things, see a faster benchmark and declare victory. It's much harder to know which change helped.
+
+I also want to distinguish GPU execution time from total end-to-end time. A shader being fast means very little if copying data, synchronizing the device or switching execution paths eats the rest of the time.
+
+### The awkward part: there's no result yet
+
+This is probably the least impressive paragraph on the page, but it's important.
+
+As of the documented research stage, **there is no working TorchVK backend, no implemented compute shader and no benchmark result I can honestly claim**. The public repository has the roadmap, related-work notes and an evaluation plan.
+
+I'm deliberately not presenting the architecture diagram above as finished software or making up performance numbers. The first real milestone is simple: run one GPU operation, verify its output, and establish that it didn't silently fall back to the CPU.
+
+After that, we'll see whether the original idea still makes sense.
+
+### What I want to find out next
+
+Maybe Vulkan will be a practical route to using my card for small training workloads. Maybe another backend will turn out to be the better solution. Maybe the overhead will make the whole thing slower than I hoped.
+
+All three outcomes would teach me something about GPU systems.
+
+The motivation hasn't changed, though: I own a GPU, I want to understand how it works below the machine-learning framework, and I'd love to stop treating Kaggle as the only possible answer to that problem.
 
 ## In numbers
 
-- Stage: R0, the survey of competitors and the hardware feasibility check; every item of it is still open
-- Code: none yet, the repository holds planning documents only
-- Planned experiments: 6
+- Stage: R0, research and feasibility; no completed GPU training backend
+- Code: no implemented backend or shader in the public repository
+- Planned experiments: 6 (not completed benchmarks)
 - Benchmarks and results: none
-- Target hardware: Radeon RX 5600 XT, 6 GB
-- Estimated effort: 300 to 650 hours or more for a full result with a reviewed report, according to the roadmap
-
-## Where it stands
-
-TorchVK is early research, not a working GPU backend. The repository says it doesn't offer a usable backend yet, and it claims no performance or compatibility results. It also lists what the project won't try to do: support every piece of hardware, reinvent autograd, train very large language models, replace CUDA or promise speedups.
-
-The competitor details are a snapshot from 10 October 2026. I haven't reproduced any of the other projects' results myself, so I cite them the way their authors report them.
+- Target hardware: Radeon RX 5600 XT, 6 GB VRAM, Windows
+- Roadmap estimate: 300 to 650+ hours for the complete research scope, not time already spent
 
 ## Links
 
 - [Source repository: TorchVK](https://github.com/jeremy341/TorchVK)
+- [PyTorch documentation](https://pytorch.org/)
+- [Vulkan overview](https://www.vulkan.org/)

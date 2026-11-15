@@ -7,51 +7,120 @@
 
 ## Summary
 
-A desktop app that runs a microfluidics lab bench from one window: pumps, a flow sensor, a microscope camera and droplet analysis.
+A Python desktop application I built during my UDE microfluidics internship to bring pump control, flow sensors, microscope video and droplet analysis into one workspace.
 
-## Context and motivation
+## Story
 
-FluidicStudio grew out of my internship at the Chair of Electronic Components and Circuits (EBS) at the University of Duisburg-Essen, which ran from 3 to 28 August 2026. I worked on it alone, for Dr. Lin, on a control and image-analysis system for droplet-based microfluidics. The repository is called Microdroplets UI, and FluidicStudio is the name of the app inside it.
+When I started my internship at the University of Duisburg-Essen, I knew very little about microfluidics. Four weeks later I was building a desktop application that needed to communicate with pumps, read sensors, show a microscope camera, and analyse tiny droplets moving through channels.
 
-I came in knowing almost nothing about microfluidics, so the plan was ambitious for four weeks. The idea was to replace the [Bartels](https://www.bartels-mikrotechnik.de/) studio software and put the whole workflow in one place, from running the pumps to analysing the recordings, with support for the [Dino-Lite](https://dino-lite.eu/) microscope. That meant getting different hardware and software pieces to talk to each other. I built the interface that runs the bench and shows the results, helped run experiments, and wrote code that finds droplets in camera images and measures them. The internship certificate lists those tasks, and most of them ended up in this project. When I presented the results to the people at the chair, they loved it.
+Which is a slightly ambitious thing to attempt when you've only just learned what the equipment does.
 
-The hard part is what you're measuring. The interesting events are tiny droplets moving through channels a fraction of a millimetre wide. A single run means keeping the pumps going, watching a flow sensor, recording with a microscope and then reading the result off the video afterwards. Doing that across several programs and a spreadsheet is slow and easy to get wrong. That's why FluidicStudio tries to do all of it from one window and keep the data together.
+The project eventually became my **FluidicStudio** app. The GitHub repository is called Microdroplets UI. It was developed independently for the university work; it is **not** Bartels' own commercial application, which is also called *Bartels FluidicStudio*.
 
-## Inside the project
+The hardest part wasn't actually drawing the interface. It was figuring out how to talk to the hardware reliably.
 
-FluidicStudio is a desktop app written in Python with [PyQt6](https://riverbankcomputing.com/software/pyqt/). It drives the bench from one place: the pumps, a liquid-flow sensor, a microscope camera, and an offline analysis of the videos it recorded.
+### The board wasn't a normal software API
 
-### The parts
+The setup used a [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/) and an mp-Highdriver4, plus liquid-flow sensors and a Dino-Lite microscope. The board exposes a USB serial connection. That means you send short commands to the ESP32 firmware through a COM port rather than calling a polished Python library.
 
-- **Pumps and waveforms.** It drives [Bartels](https://www.bartels-mikrotechnik.de/) micropumps through a multi-channel driver board. All four channels share one driver frequency, but each has its own amplitude and on/off state. Every channel also has an owner, either manual control or a running waveform, so two things can never fight over the same pump. The waveforms are sine, triangle, sawtooth and square.
-- **Sensors.** Readings from a [Sensirion](https://sensirion.com/) SLF3S-1300F liquid-flow sensor go through a protocol parser into one shared data hub. The live plots and a CSV logger both read from there. Units get converted once, where the data comes in, so nothing downstream has to guess what a number means.
-- **Camera.** Preview and recording from a USB microscope run through [OpenCV](https://opencv.org/). Brightness, exposure and the LED go through the vendor's DNX64 library. Recording happens in its own worker. When it falls behind, it throws away old frames, so the delay between what the camera sees and what the screen shows stays bounded.
-- **Droplet analytics.** This part came out of the image-analysis work at the internship. It runs over a recorded video in steps. First you pick a region of interest and estimate the background. Then it detects droplets in each frame, tracks them, stitches the tracks together and counts line crossings. Last, it takes measurements, calibrates them and exports a CSV with overlays on the video. The code keeps a counted event separate from a valid measurement, because a droplet can cross the line and still be too blurry to measure.
-- **Workspace.** A two-panel view for quick work. It reads the same backend state as the full pages, so there's no second copy of the logic to keep in sync.
+Bartels does publish a [software manual](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf) with the basic command protocol, so I wasn't discovering every instruction from scratch. But integrating the particular board, firmware responses, driver behavior and the rest of the bench still involved a lot of digging and testing. Not everything I needed was explained in one place.
 
-### How it is built
+Some of the commands are surprisingly compact:
 
-Each physical board gets its own service bundle, which handles the connection, channel ownership, pump control and wave execution. That way more than one board can be attached at the same time.
+\`\`\`text
+V        request firmware version
+F0=100   set frequency for the first driver group
+P1V120   set pump 1 amplitude to 120 Vpp
+P1ON     enable pump 1
+P1OFF    disable pump 1
+POFF     request all pumps off
+\`\`\`
 
-Shutdown needed the most care. A code audit found a real bug here. If the board disconnected at the wrong moment, a pump-on command could be written after the stop command, and the pump would keep running with nobody in control. The fix is a teardown gate that blocks new commands once shutdown has started. There's also a regression test, so the bug can't come back quietly.
+Those are **protocol examples**, not commands you should send to unfamiliar hardware without checking your setup. The firmware expects a serial connection at 115200 baud, 8N1, with command lines terminated by CRLF.
+
+And even something as simple as "send \`P1ON\`" becomes complicated when another thread is reading replies, a sensor is streaming data, and the user might press Disconnect at any moment.
+
+### Reverse engineering is also about the boring details
+
+I spent a lot of time cross-checking the documented commands against what the board actually reported. Which replies were acknowledgments? Which lines were measurements? How did you identify the connected firmware without accidentally changing a pump setting? How did a shared driver frequency affect several channels?
+
+The project now has dedicated [board-communication notes](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md) and a [pump-control research document](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md). They separate manufacturer-documented commands from behavior observed during integration.
+
+I think that's one of the most useful parts of the work. It isn't a claim that I've published the world's only Bartels documentation; the manufacturer already provides a protocol table and code examples. It's that I had to turn those details into something an actual application could depend on.
+
+For example, I eventually wanted the software to handle more than one board and prevent manual pump controls from fighting a running waveform. Each channel therefore needs an owner: either manual control or a waveform controller, but not both at once.
+
+### A disconnect bug that made me take shutdown seriously
+
+One of the code audits found a particularly nasty timing problem.
+
+Imagine the app is starting a pump. Sending the configuration isn't one atomic command: it can set a frequency, a waveform, an amplitude and *then* turn the pump on. What happens if the user disconnects halfway through that sequence?
+
+An executable regression scenario captured this order before the fix:
+
+\`\`\`text
+0.001 s   F0=100
+0.007 s   CS0=0
+0.012 s   P1V120
+0.613 s   POFF
+0.618 s   P1ON    <- this should never happen after shutdown
+\`\`\`
+
+The stop command had already been sent, but a pending start operation could still emit \`P1ON\` afterward. The application could believe shutdown had succeeded while the command stream told a different story.
+
+The fix introduced a **teardown gate**: when shutdown starts, the serial manager stops accepting new commands, coordinates writes under a lock and prevents an in-flight start from completing after the final off request. A regression test checks that the late \`P1ON\` no longer reaches the simulated serial stream.
+
+That is a software-side fix, not proof that every physical failure mode has been eliminated. If the cable disappears or an OFF command isn't acknowledged, the actual pump state can still be unknown. The safe response is to report uncertainty rather than pretend a button click guarantees the hardware stopped.
+
+### The rest of the application had to agree on the data
+
+Once the board connection worked, I could focus on the actual experiment workflow.
+
+The PyQt6 interface has pump controls, waveform generation, sensor plots, camera preview and a two-panel workspace. Sensor data goes through a shared backend so the live chart and CSV logger read from the same interpreted measurements.
+
+That "convert units once" rule sounds boring, but it's important. Otherwise one page can think a number is in raw sensor units while another assumes it's in microlitres per minute.
+
+The microscope workflow has its own problems. Recording frames and displaying a responsive preview aren't identical jobs. If recording or processing falls behind, you need to decide what to buffer and what to drop, or the preview becomes a delayed picture of what happened several seconds ago.
+
+The droplet analysis is another pipeline: define a region of interest, estimate the background, detect droplets, track them between frames, count line crossings, and export measurements. A counted crossing isn't necessarily a *valid* measurement; blurry frames or broken tracks can ruin the estimated length or velocity.
+
+\`\`\`text
+Microscope video
+    -> select region and estimate background
+    -> detect droplets
+    -> track movement across frames
+    -> count crossings
+    -> validate measurements
+    -> export CSV and annotated video
+\`\`\`
+
+### What four weeks didn't magically solve
+
+The internship ran from 3 to 28 August 2026. That was enough to build an ambitious experimental application, not enough to turn it into certified laboratory instrumentation.
+
+The repository has a lot of tests and audit notes. But **software tests are not physical calibration**. I don't have a published measurement-accuracy benchmark for droplet length or velocity, and the code's configurable pump limits aren't proof that those values were measured on the bench.
+
+There are also unfinished areas. The valves page is incomplete, automatic driver identification isn't something I'd call universally reliable, and parts of the image analysis can only process recorded video rather than every possible camera input. Some behavior also relies on a proprietary Dino-Lite library that can't simply be included in the repository.
+
+Still, I learned a lot more than how to build a PyQt interface. The interesting work was understanding a real device's protocol, coordinating several subsystems and realizing that a disconnect button is a hardware-state problem, not just a UI event.
+
+For a four-week internship, that was quite a lot. And I'd happily do more work like this.
 
 ## In numbers
 
-- Code: about 23,700 lines of Python in the app, backend and interface, plus 7,600 lines of tests
-- Tests: 386 test functions in 50 files; I haven't re-run them for this page, so I don't claim that all of them pass
-- Documentation: 39 files, including two code audits (the first fixed 30 backend defects)
-- Camera presets checked for the microscope: 1280 by 1024 pixels at 10 or 20 FPS, and 640 by 480 at up to 30 FPS
-- Pump driver range set in the software: 10 to 250 Vpp at 50 to 800 Hz for the Highdriver4 board (a software limit, not a bench result)
-- Benchmarks and measurement accuracy: none
-
-## Where it stands
-
-This is experimental laboratory software, and the repository says so too. There's no supported device list, no measurement accuracy figure, no validated experimental result and no claim of production readiness. Automatic driver detection is experimental, the valves page is a placeholder, and the analysis only works on recorded video, not on single still images.
-
-Software tests and hardware validation are two different things. Most areas have a software test, but there's no recorded result from the bench. So the pump ranges in the code are limits I set in the software, not numbers I measured on the hardware.
-
-If the serial connection drops, the software doesn't know what the pumps are doing. Their physical state stays unknown until someone checks them. The microscope vendor's DNX64 library is proprietary and isn't part of the repository. I also haven't published a screenshot of the application yet.
+- Internship: 3–28 August 2026, University of Duisburg-Essen
+- Implementation: Python with PyQt6, serial communication, OpenCV and a sensor data hub
+- Hardware: Bartels mp-Multiboard2, mp-Highdriver4, Sensirion SLF3S-1300F, Dino-Lite microscope
+- Code snapshot: approximately 23,700 lines of Python plus 7,600 lines of tests
+- Recorded tests: 386 functions in 50 files; not all independently rerun for this page
+- Manufacturer serial protocol: 115200 baud, 8N1, CRLF terminators
+- Camera modes documented in project: 1280×1024 at 10 or 20 FPS; 640×480 up to 30 FPS
+- Pump software limits: 10–250 Vpp and 50–800 Hz for the Highdriver4, not measured performance
+- Verified lab measurement accuracy: not established in the public record
 
 ## Links
 
 - [Source repository: microdroplets-ui](https://github.com/jeremy341/microdroplets-ui)
+- [Board communication notes](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md)
+- [Pump control research](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md)
+- [Bartels software manual](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf)

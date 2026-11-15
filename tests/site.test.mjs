@@ -177,8 +177,8 @@ test("each project with measurements has an In numbers section, and no page make
     assert.ok(page(`de/work/${slug}/index.html`).includes("In Zahlen"), `German ${slug} lacks In Zahlen`);
   }
   // TorchVK has no code yet and MobileNet has no FPGA part; the pages must keep saying so.
-  assert.match(page("work/torchvk/index.html"), /no backend, no shader and no benchmark/);
-  assert.match(page("work/mobilenet-on-fpga/index.html"), /no latency measurement/);
+  assert.match(page("work/torchvk/index.html"), /no working TorchVK backend, no implemented compute shader and no benchmark result/);
+  assert.match(page("work/mobilenet-on-fpga/index.html"), /no.*measured latency/i);
 });
 
 test("every page links to its twin in the other language and says so with hreflang", () => {
@@ -278,9 +278,9 @@ test("each project page carries its record", () => {
     const html = page(`work/${slug}/index.html`);
     assert.match(html, new RegExp(`<h1[^>]*>${project.name}</h1>`));
     assert.ok(html.includes(project.status));
-    for (const heading of ["Why it exists", "How it works", "Where it stands"]) {
-      assert.ok(html.includes(heading), `${slug} lacks "${heading}"`);
-    }
+    assert.match(html, /class="work-story"/, `${slug} should render its individual story`);
+    assert.match(html, /id="story-1"/, `${slug} needs its own chapter outline`);
+    assert.doesNotMatch(html, /id="figures"/, `${slug} should not move figures to a separate end gallery`);
     assert.match(html, /"@type":"(CreativeWork|SoftwareSourceCode)"/);
     const de = page(`de/work/${slug}/index.html`);
     assert.match(de, new RegExp(`<h1[^>]*>${project.name}</h1>`));
@@ -293,7 +293,7 @@ test("each project page carries its record", () => {
 
 test("content links point at routes, never at .md files", () => {
   for (const file of htmlFiles(dist)) {
-    assert.doesNotMatch(readFileSync(file, "utf8"), /href="[^"]*\.md"/, `${file} links to a .md file`);
+    assert.doesNotMatch(readFileSync(file, "utf8"), /href="\/(?!\/)[^"]*\.md(?:[?#][^"]*)?"/, `${file} links to an internal .md file`);
   }
 });
 
@@ -539,4 +539,36 @@ test("mobile homepage keeps the navigation below a full first-screen hero", () =
   const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
   assert.match(css, /\/\* The landing hero occupies the complete first viewport[\s\S]*?\.dash-hero\s*\{\s*min-height:\s*calc\(100svh - 64px\)/);
   assert.doesNotMatch(css, /min-height:\s*clamp\(270px,\s*44svh,\s*480px\)/);
+});
+
+
+
+test("work stories place all existing figures inline, not in an end gallery", () => {
+  const counts = { mira: 3, poorup: 4, "mobilenet-on-fpga": 2, abivault: 2, torchvk: 0, fluidicstudio: 0 };
+  for (const [slug, count] of Object.entries(counts)) {
+    const html = page("work/" + slug + "/index.html");
+    const storyStart = html.indexOf('class="work-story"');
+    const storyEnd = html.indexOf('id="numbers"');
+    assert.ok(storyStart >= 0 && storyEnd > storyStart, slug + ": story should precede technical reference");
+    const inside = html.slice(storyStart, storyEnd);
+    const figures = inside.match(/<figure class="fig">/g) ?? [];
+    assert.equal(figures.length, count, slug + ": figures should appear in the story at their selected locations");
+    assert.doesNotMatch(html, /id="figures"/, slug + ": generic figure gallery remains");
+  }
+
+  const mira = page("work/mira/index.html");
+  const data = mira.indexOf('id="story-2-title"');
+  const validation = mira.indexOf('id="story-3-title"');
+  const exportChapter = mira.indexOf('id="story-5-title"');
+  const closing = mira.indexOf('id="story-6-title"');
+  assert.ok(data > -1 && validation > data && exportChapter > validation && closing > exportChapter);
+  assert.match(mira.slice(data, validation), /<figure class="fig">/, "the dataset discussion includes the class-metric figure");
+  assert.match(mira.slice(exportChapter, closing), /<figure class="fig">/, "export discussion includes a model-size figure");
+});
+
+test("blog content remains unchanged by project case-study work", () => {
+  const first = readFileSync(join(root, "content/posts/first-blog.md"), "utf8");
+  const second = readFileSync(join(root, "content/posts/am-i-famous-now.md"), "utf8");
+  assert.match(first, /To all future employers: please hire me on the spot/);
+  assert.match(second, /Hi, if you are reading this, it seems like my clickbait worked/);
 });
