@@ -214,7 +214,11 @@ function build() {
   input.setAttribute("aria-autocomplete", "list");
   count = el("span", "f-count");
   count.setAttribute("aria-hidden", "true");
-  bar.append(prompt, input, count);
+  const close = el<HTMLButtonElement>("button", "f-close", "×");
+  close.type = "button";
+  close.setAttribute("aria-label", ui[lang].search === "Suche" ? "Suche schließen" : "Close search");
+  close.addEventListener("click", () => dialog.close());
+  bar.append(prompt, input, count, close);
 
   list = el("ul", "f-list");
   list.id = "f-list";
