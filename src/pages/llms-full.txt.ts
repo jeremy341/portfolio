@@ -13,9 +13,13 @@ const project = (p: Project) =>
     `Status: ${p.status}. Category: ${p.categoryLabel}. Built with: ${p.tech.join(", ")}.`,
     p.summary,
     p.facts.length ? `### In numbers\n\n${p.facts.map((f) => `- ${f.label}: ${plainText(f.value)}`).join("\n")}` : "",
-    `### Why it exists\n\n${prose(p.context)}`,
-    `### How it works\n\n${prose(p.inside)}`,
-    `### Where it stands\n\n${prose(p.standing)}`,
+    ...(p.story
+      ? [`### The project story\n\n${prose(p.story.source.replace(/^\\{\\{figure:\\d+\\}\\}\\s*$/gm, ""))}`]
+      : [
+          `### Why it exists\n\n${prose(p.context)}`,
+          `### How it works\n\n${prose(p.inside)}`,
+          `### Where it stands\n\n${prose(p.standing)}`,
+        ]),
   ]
     .filter(Boolean)
     .join("\n\n");
