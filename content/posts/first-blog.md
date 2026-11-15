@@ -1,6 +1,6 @@
 ---
 title: "First blog"
-description: "well just created my first post"
+description: "My first post on Hack Club, Stardance, PoorUp, a 3D printer and getting LOADOUT off the ground."
 slug: first-blog
 publishedAt: 2026-10-26
 tags: [hack-club, stardance]
