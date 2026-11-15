@@ -9,7 +9,10 @@ export const getStaticPaths = langParams;
 
 const lang = langOf(Astro.params.lang);
 const t = ui[lang];
-const { posts } = getContent(lang);
+const localPosts = getContent(lang).posts;
+const englishOnly = lang === "de" && localPosts.length === 0;
+const posts = englishOnly ? getContent("en").posts : localPosts;
+const postLang = englishOnly ? "en" : lang;
 const schema = [
   {
     "@type": "Blog",
@@ -19,7 +22,7 @@ const schema = [
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
       headline: post.title,
-      url: canonical(url(lang, `/blog/${post.slug}/`)),
+      url: canonical(url(postLang, `/blog/${post.slug}/`)),
       datePublished: isoDate(post.publishedAt),
     })),
   },
@@ -29,12 +32,13 @@ const schema = [
 
 <Base title={t.writingTitle} description={t.writingDescription(site.name)} schema={schema} lang={lang}>
   <h1 class="page-title">{t.writingTitle}</h1>
+  {englishOnly && <p class="page-lead">{t.writingEnglishOnly}</p>}
 
   <section class="index" aria-label={t.articlesAria}>
     <ol class="entries">
       {posts.map((post, i) => (
         <li style={`--i:${i}`}>
-          <a class="entry" href={url(lang, `/blog/${post.slug}/`)}>
+          <a class="entry" href={url(postLang, `/blog/${post.slug}/`)}>
             <span class="entry-name"><span class="hit">{post.title}</span></span>
             <time class="entry-aside" datetime={isoDate(post.publishedAt)}>{formatDate(post.publishedAt, lang)}</time>
             <span class="entry-text">{post.description}</span>
