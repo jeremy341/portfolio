@@ -1532,3 +1532,10 @@ html[data-intro] .dash-hero .w {
     transition: none;
   }
 }
+
+/* A JS-less page still has native menu navigation, but not a dead search control. */
+@media (max-width: 759px) {
+  html:not([data-js]) .mobile-find {
+    display: none;
+  }
+}
