@@ -7,7 +7,7 @@
 
 ## Summary
 
-I compared two small neural networks, converted them to INT8, and measured what happened to their accuracy and size. The work is preparation for possible FPGA hardware, not an FPGA implementation.
+I compared MobileNetV1 and V2 before and after INT8 conversion, measuring model size and accuracy ahead of possible FPGA hardware.
 
 ## Story
 
