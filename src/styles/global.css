@@ -1196,3 +1196,339 @@ html[data-intro] .dash-hero .w {
   }
 }
 
+
+
+/* Mobile-first reading and navigation: the desktop editor chrome is unchanged.
+   The phone header has one identity and two actions; the rest lives in a native
+   details menu so navigation works before JavaScript loads. */
+.brand-mobile,
+.mobile-controls {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  :root {
+    --pad: clamp(16px, 4vw, 24px);
+    --gap: 16px;
+  }
+
+  html {
+    scroll-padding-top: 76px;
+  }
+
+  body {
+    padding-bottom: 0;
+  }
+
+  .site-header.frame {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    min-height: 64px;
+    padding-block: 8px;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+
+  .site-header .brand[data-home] {
+    display: inline-flex;
+  }
+
+  .brand {
+    min-width: 0;
+    white-space: nowrap;
+    font-size: 1.1rem;
+    letter-spacing: -0.04em;
+  }
+
+  .brand-full,
+  .site-header .site-nav {
+    display: none;
+  }
+
+  .brand-mobile {
+    display: inline;
+  }
+
+  .mobile-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .mobile-find,
+  .mobile-toggle {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-find:is(:hover, :focus-visible),
+  .mobile-toggle:is(:hover, :focus-visible) {
+    color: var(--accent);
+  }
+
+  .mobile-toggle {
+    list-style: none;
+  }
+
+  .mobile-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .search-glyph {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: -4px 4px 0 0;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .search-glyph::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 2px;
+    top: 13px;
+    left: 13px;
+    background: currentColor;
+    transform: rotate(45deg);
+    transform-origin: left center;
+  }
+
+  .menu-glyph,
+  .menu-glyph::before,
+  .menu-glyph::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .menu-glyph {
+    position: relative;
+  }
+
+  .menu-glyph::before,
+  .menu-glyph::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    transition: transform 200ms var(--ease);
+  }
+
+  .menu-glyph::before {
+    top: -6px;
+  }
+
+  .menu-glyph::after {
+    top: 6px;
+  }
+
+  .mobile-nav[open] .menu-glyph {
+    background: transparent;
+  }
+
+  .mobile-nav[open] .menu-glyph::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .mobile-nav[open] .menu-glyph::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .mobile-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: 8px var(--pad) 22px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 0 18px 30px rgb(0 0 0 / 15%);
+  }
+
+  .mobile-panel > a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 54px;
+    gap: 16px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 1.1rem;
+    font-weight: 550;
+    transition: color 150ms var(--ease);
+  }
+
+  .mobile-panel > a:is(:hover, :focus-visible),
+  .mobile-panel > a[aria-current="page"] {
+    color: var(--accent);
+  }
+
+  .mobile-number {
+    flex: none;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mobile-settings {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 16px;
+  }
+
+  .mobile-settings .lang a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .mobile-settings .lang-cur {
+    width: 44px;
+  }
+
+  .mobile-settings .lang[data-on="de"] .lang-cur {
+    transform: translateX(44px);
+  }
+
+  .mobile-settings .theme-btn {
+    min-height: 44px;
+    margin: 0;
+    padding: 0 4px;
+  }
+
+  /* The desktop Vim status bar uses precious screen space and duplicates mobile controls. */
+  .vim-status,
+  .vim-row {
+    display: none;
+  }
+
+  main {
+    min-width: 0;
+    padding-bottom: 72px;
+  }
+
+  .page-title {
+    margin-top: 28px;
+    font-size: clamp(1.85rem, 7vw, 2.8rem);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+  }
+
+  .page-lead {
+    margin-top: 18px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .index {
+    margin-top: 48px;
+  }
+
+  .dash-hero {
+    min-height: clamp(270px, 44svh, 480px);
+  }
+
+  .dash-rows {
+    margin-top: 12px;
+  }
+
+  .dash-rows a {
+    grid-template-columns: 2rem minmax(0, 1fr) 2ch;
+    column-gap: 12px;
+    padding-block: 18px;
+  }
+
+  .dash-d {
+    display: none;
+  }
+
+  .dash-t {
+    font-size: clamp(2rem, 7.5vw, 3.1rem);
+  }
+
+  .dash-k {
+    font-size: 0.85rem;
+  }
+
+  .entry {
+    margin-inline: 0;
+    padding-inline: 0;
+    row-gap: 8px;
+  }
+
+  .entry-name,
+  .entry-text,
+  .prose,
+  .block {
+    overflow-wrap: break-word;
+  }
+
+  .prose,
+  .block {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  article > .prose {
+    margin-top: 36px;
+  }
+
+  .article-foot {
+    margin-top: 56px;
+  }
+
+  .prose :is(pre, table),
+  .block :is(pre, table) {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .prose :is(img, video),
+  .block :is(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 759px) {
+  .mobile-nav[open] .mobile-panel {
+    animation: mobile-panel-in 180ms var(--ease);
+  }
+}
+
+@keyframes mobile-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-glyph::before,
+  .menu-glyph::after {
+    transition: none;
+  }
+}
