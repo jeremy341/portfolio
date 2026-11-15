@@ -11,10 +11,16 @@ const { home = false, lang } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => path.startsWith(href);
+const switchUrl = (code: Lang) => /404(\.html|\/)$/.test(path) ? url(code, "/") : otherPath(path, code);
 ---
 
 <header class="site-header frame">
-  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined} tabindex={home ? -1 : undefined} aria-hidden={home ? "true" : undefined}>{site.name}</a>
+  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined}>
+    <span class="brand-full">{site.name}</span>
+    <span class="brand-mobile" aria-hidden="true">Jeremy.</span>
+  </a>
+
+  <!-- Desktop retains the original editor-like navigation. -->
   <nav class="site-nav" aria-label={t.mainNav}>
     <span class="nav-cur" aria-hidden="true"></span>
     {navFor(lang).map((item) => <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>)}
@@ -22,15 +28,37 @@ const isCurrent = (href: string) => path.startsWith(href);
     <div class="lang" role="group" aria-label={t.language} data-on={lang}>
       <span class="lang-cur" aria-hidden="true"></span>
       {langs.map((code) => (
-        <a
-          href={/404(\.html|\/)$/.test(path) ? url(code, "/") : otherPath(path, code)}
-          lang={code}
-          hreflang={code}
-          title={ui[code].languageName[code]}
-          aria-current={code === lang ? "true" : undefined}
-        >{code.toUpperCase()}</a>
+        <a href={switchUrl(code)} lang={code} hreflang={code} title={ui[code].languageName[code]} aria-current={code === lang ? "true" : undefined}>{code.toUpperCase()}</a>
       ))}
     </div>
     <button type="button" class="theme-btn" data-theme-switch>{t.themeLight}</button>
   </nav>
+
+  <!-- On touch screens: two clear actions, not a wrapping row of nine controls. -->
+  <div class="mobile-controls">
+    <button type="button" class="mobile-find" data-find aria-label={t.search} title={t.search}>
+      <span class="search-glyph" aria-hidden="true"></span>
+    </button>
+    <details class="mobile-nav">
+      <summary class="mobile-toggle" aria-label={t.menu}>
+        <span class="menu-glyph" aria-hidden="true"></span>
+      </summary>
+      <nav class="mobile-panel" aria-label={t.mainNav}>
+        {navFor(lang).map((item, index) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+            <span>{item.label}</span><span class="mobile-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          </a>
+        ))}
+        <div class="mobile-settings">
+          <div class="lang" role="group" aria-label={t.language} data-on={lang}>
+            <span class="lang-cur" aria-hidden="true"></span>
+            {langs.map((code) => (
+              <a href={switchUrl(code)} lang={code} hreflang={code} title={ui[code].languageName[code]} aria-current={code === lang ? "true" : undefined}>{code.toUpperCase()}</a>
+            ))}
+          </div>
+          <button type="button" class="theme-btn" data-theme-switch>{t.themeLight}</button>
+        </div>
+      </nav>
+    </details>
+  </div>
 </header>
