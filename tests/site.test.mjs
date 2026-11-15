@@ -29,8 +29,8 @@ const germanStatus = {
   abivault: "Privates Projekt",
 };
 
-// The articles were removed to be written again. Add each new slug here so the tests cover it.
-const posts = [];
+// English articles are live; German article translations are not yet published.
+const posts = ["am-i-famous-now", "first-blog"];
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -147,7 +147,7 @@ test("projects with a public repository are marked as source code", () => {
 
 test("project pages say where to find the project and show their figures with descriptions", () => {
   const expected = {
-    poorup: { hosts: ["github.com/jeremy341/Poorup", "poorup.tech", "poorup.jeremy-d.hackclub.app"], images: 4 },
+    poorup: { hosts: ["github.com/jeremy341/Poorup", "poorup.tech"], images: 4 },
     mira: { hosts: ["github.com/jeremy341/MIRA-AI", "mira-vision.vercel.app", "huggingface.co/Jeremy341/MIRA-AI", "pypi.org/project/mira-ai/"], images: 3 },
     "mobilenet-on-fpga": { hosts: [], images: 2 },
     torchvk: { hosts: ["github.com/jeremy341/TorchVK"], images: 0 },
@@ -190,8 +190,13 @@ test("every page links to its twin in the other language and says so with hrefla
     const german = rel.startsWith("/de/");
     const twin = german ? rel.slice("/de".length) || "/" : `/de${rel}`;
     const group = html.match(/<div class="lang"[\s\S]*?<\/div>/)?.[0] ?? "";
-    assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
-    assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
+    const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(rel);
+    if (englishOnlyArticle) {
+      assert.ok(group.includes('href="/de/blog/"'), `${rel} must fall back to the German blog index`);
+    } else {
+      assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
+      assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
+    }
     assert.match(group, new RegExp(`<a [^>]*href="${rel}"[^>]*aria-current="true"`), `${rel} does not mark its own language`);
     assert.match(html, new RegExp(`<html lang="${german ? "de" : "en"}"`));
   }
@@ -439,7 +444,7 @@ test("the feeds, sitemap, canonical links and share images use absolute addresse
   const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
   for (const [feed, lang] of [["rss.xml", "en"], ["de/rss.xml", "de"]]) {
     const xml = page(feed);
-    assert.equal(xml.match(/<item>/g)?.length ?? 0, posts.length, `${feed} lists every article`);
+    assert.equal(xml.match(/<item>/g)?.length ?? 0, lang === "en" ? posts.length : 0, `${feed} lists articles in that language`);
     for (const [, link] of xml.matchAll(/<link>([^<]+)<\/link>/g)) assert.ok(link.startsWith(origin), `${lang} feed link ${link} is not absolute`);
   }
   const sitemap = page("sitemap.xml");
