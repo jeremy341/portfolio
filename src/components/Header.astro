@@ -28,7 +28,7 @@ const switchUrl = (code: Lang) => /404(\.html|\/)$/.test(path) ? url(code, "/") 
     <div class="lang" role="group" aria-label={t.language} data-on={lang}>
       <span class="lang-cur" aria-hidden="true"></span>
       {langs.map((code) => (
-        <a href={switchUrl(code)} lang={code} hreflang={code} title={ui[code].languageName[code]} aria-current={code === lang ? "true" : undefined}>{code.toUpperCase()}</a>
+        <a href={switchUrl(code)} lang={code} hreflang={code} title={code === "de" && /^\/blog\/[^/]+\/?$/.test(path) ? ui[code].writingTitle : ui[code].languageName[code]} aria-current={code === lang ? "true" : undefined}>{code.toUpperCase()}</a>
       ))}
     </div>
     <button type="button" class="theme-btn" data-theme-switch>{t.themeLight}</button>
