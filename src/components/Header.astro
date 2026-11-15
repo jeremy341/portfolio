@@ -15,7 +15,7 @@ const switchUrl = (code: Lang) => /404(\.html|\/)$/.test(path) ? url(code, "/") 
 ---
 
 <header class="site-header frame">
-  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined}>
+  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined} aria-label={site.name}>
     <span class="brand-full">{site.name}</span>
     <span class="brand-mobile" aria-hidden="true">Jeremy.</span>
   </a>
