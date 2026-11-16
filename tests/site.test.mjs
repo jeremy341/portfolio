@@ -177,7 +177,7 @@ test("each project with measurements has an In numbers section, and no page make
     assert.ok(page(`de/work/${slug}/index.html`).includes("In Zahlen"), `German ${slug} lacks In Zahlen`);
   }
   // TorchVK has no code yet and MobileNet has no FPGA part; the pages must keep saying so.
-  assert.match(page("work/torchvk/index.html"), /no working TorchVK backend, no implemented compute shader and no benchmark result/);
+  assert.match(page("work/torchvk/index.html"), /no working training backend, no implemented GPU compute shader and no measured benchmark result/);
   assert.match(page("work/mobilenet-on-fpga/index.html"), /no.*measured latency/i);
 });
 
@@ -603,7 +603,7 @@ test("fenced Markdown becomes a real IDE-like Shiki buffer in both themes", () =
   // A source sample or title must not be able to inject executable HTML.
   const unsafe = renderMarkdown("~~~js title=<script>\nconst x = '<script>alert(1)</script>';\n~~~");
   assert.doesNotMatch(unsafe, /<script>/);
-  assert.match(unsafe, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(unsafe, /&#x3C;script>alert\(1\)&#x3C;\/script>/);
   assert.doesNotMatch(unsafe, /class="code-file"><script>/);
 });
 
