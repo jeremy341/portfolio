@@ -5,6 +5,12 @@ type Preview = { title: string; text: string; image?: string };
 const data = document.getElementById("link-previews");
 const previews: Record<string, Preview> = data ? JSON.parse(data.textContent ?? "{}") : {};
 
+export function previewFor(anchor: HTMLAnchorElement): Preview | undefined {
+  const target = new URL(anchor.href, location.href);
+  const key = target.origin === location.origin ? target.pathname : `${target.origin}${target.pathname}`;
+  return previews[key];
+}
+
 if (window.matchMedia("(hover: hover)").matches && Object.keys(previews).length > 0) {
   const card = document.createElement("div");
   card.className = "link-preview";
@@ -27,12 +33,6 @@ if (window.matchMedia("(hover: hover)").matches && Object.keys(previews).length 
 
   // The preview for a link, or undefined when it has none. Links on this site match by path,
   // links elsewhere by their origin and path.
-  function previewFor(anchor: HTMLAnchorElement): Preview | undefined {
-    const target = new URL(anchor.href, location.href);
-    const key = target.origin === location.origin ? target.pathname : `${target.origin}${target.pathname}`;
-    return previews[key];
-  }
-
   // Above the link, or below it when there is no room above.
   function place(anchor: HTMLAnchorElement) {
     const box = anchor.getBoundingClientRect();
@@ -61,6 +61,7 @@ if (window.matchMedia("(hover: hover)").matches && Object.keys(previews).length 
   }
 
   document.addEventListener("pointerover", (event) => {
+    if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
     const anchor = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
     if (!anchor || anchor === link) return;
     window.clearTimeout(timer);

@@ -5,7 +5,27 @@ import { sound } from "./sound";
 
 const rows = document.querySelectorAll<HTMLElement>(".dash-rows a, .entries .entry");
 
+let pressed: { row: HTMLElement; id: number; x: number; y: number } | undefined;
+const release = () => {
+  pressed?.row.removeAttribute("data-pressed");
+  pressed = undefined;
+};
+document.addEventListener("pointermove", (event) => {
+  if (pressed && event.pointerId === pressed.id && Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y) > 10) release();
+}, { passive: true });
+document.addEventListener("pointerup", release, { passive: true });
+document.addEventListener("pointercancel", release, { passive: true });
+window.addEventListener("scroll", release, { passive: true });
+window.addEventListener("blur", release);
+window.addEventListener("pagehide", release);
+
 for (const row of rows) {
+  row.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "touch" || !event.isPrimary) return;
+    release();
+    pressed = { row, id: event.pointerId, x: event.clientX, y: event.clientY };
+    row.setAttribute("data-pressed", "");
+  }, { passive: true });
   let left = 0;
   let frame = 0;
   let x = 0;

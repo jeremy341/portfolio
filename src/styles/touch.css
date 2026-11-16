@@ -1,0 +1,96 @@
+/* A separate inline control keeps links predictable on touch screens. */
+.preview-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  margin-inline: 2px;
+  padding: 0 3px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.8em;
+  vertical-align: baseline;
+  cursor: pointer;
+}
+
+.preview-trigger:active {
+  background: var(--hover);
+}
+
+.preview-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: min(100%, 640px);
+  max-width: 100%;
+  max-height: calc(100dvh - 24px);
+  margin: 0 auto;
+  padding: 20px 24px max(24px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.preview-sheet::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.preview-close,
+.preview-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  color: var(--fg);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.preview-close {
+  margin-left: auto;
+  margin-bottom: 20px;
+}
+
+.preview-sheet img {
+  display: block;
+  width: 100%;
+  max-height: 30dvh;
+  object-fit: contain;
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.preview-sheet img[hidden] { display: none; }
+.preview-sheet h2 { font-size: 1.25rem; line-height: 1.4; }
+.preview-sheet p { margin-top: 12px; color: var(--muted); }
+.preview-open { margin-top: 24px; background: var(--accent); color: var(--bg); border-color: var(--accent); }
+body:has(dialog[open]) .link-preview { display: none; }
+
+/* Press feedback follows the finger and cancels as soon as it becomes a scroll. */
+:is(.dash-rows a, .entries .entry)[data-pressed] {
+  background: var(--hover);
+}
+
+.entry[data-pressed] .lc {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.dash-rows a[data-pressed] .dash-n { color: var(--accent); }
+.dash-rows a[data-pressed] .dash-t { color: var(--accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.dash-rows a, .entries .entry) {
+    transition: background-color 120ms var(--ease);
+  }
+}

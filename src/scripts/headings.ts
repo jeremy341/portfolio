@@ -10,6 +10,7 @@
 import { editor } from "./editor";
 import { sound } from "./sound";
 import { boxOf, motionAllowed, smearTo } from "./smear";
+import { touchRipple } from "./touch-ripple";
 
 const SELECTOR = ".page-title, .prose h2, .block h2, .index-title";
 const REACH = 2.3; // letter widths, as in the hero
@@ -158,6 +159,8 @@ for (const element of document.querySelectorAll<HTMLElement>(SELECTOR)) {
     wake();
   });
   element.addEventListener("pointerleave", () => leave(heading));
+
+  touchRipple(element, letters, base);
 
   if (hasCursor) {
     element.addEventListener("click", (event) => {

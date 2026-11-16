@@ -4,6 +4,7 @@
 import { editor } from "./editor";
 import { sound } from "./sound";
 import { boxOf, motionAllowed, smearTo } from "./smear";
+import { touchRipple } from "./touch-ripple";
 
 const root = document.documentElement;
 const cells = [...document.querySelectorAll<HTMLElement>(".dash-cells .c")];
@@ -25,6 +26,8 @@ function rest(index: number) {
 
 // Click a letter to put the cursor there (the cursor jumps with a smear), as on the home page.
 const hero = document.querySelector<HTMLElement>(".dash-hero");
+const name = hero?.querySelector<HTMLElement>(".dash-name");
+if (name) touchRipple(name, cells.filter((cell) => cell.hasAttribute("data-l")), 700, () => !busy);
 hero?.addEventListener("click", (event) => {
   const cell = (event.target as HTMLElement).closest<HTMLElement>(".dash-cells .c[data-l]");
   const index = cell ? cells.indexOf(cell) : -1;

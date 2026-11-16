@@ -155,6 +155,7 @@ const en = {
   keysOff: "keys off",
   themeDark: "dark mode",
   themeLight: "light mode",
+  preview: { button: (title: string) => `Preview: ${title}`, close: "Close preview", open: "Open page" },
   help: "/ search   j k rows or scroll   d u scroll   gg G top bottom   yy copy link   H back   w b e a c sections   :e {file}   :set nokeys   :set nosound   :set light   :set dark   :intro   :q",
   copied: "copied",
   finder: {
@@ -294,6 +295,7 @@ const de: Strings = {
   keysOff: "Tasten aus",
   themeDark: "Dunkelmodus",
   themeLight: "Hellmodus",
+  preview: { button: (title: string) => `Vorschau: ${title}`, close: "Vorschau schließen", open: "Seite öffnen" },
   help: "/ suchen   j k Zeilen oder scrollen   d u scrollen   gg G Anfang Ende   yy Link kopieren   H zurück   p t z m c Bereiche   :e {Datei}   :set nokeys   :set nosound   :set light   :set dark   :intro   :q",
   copied: "kopiert",
   finder: {
