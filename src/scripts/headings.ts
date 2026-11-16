@@ -1,5 +1,5 @@
 // The home hero's mouse hover (hero.ts) on the headlines of the inner pages (MIRA, Work,
-// Writing, article titles and the section headings): letters near the pointer thin out as
+// Writing and article titles): letters near the pointer thin out as
 // it passes, like light bending the type, the letter under it gets a hollow block (Neovim's
 // unfocused cursor) showing where a click would put the real one, and a quiet tick plays as
 // the pointer crosses letters. On the page title a click really does move the cursor, with
@@ -150,15 +150,18 @@ for (const element of document.querySelectorAll<HTMLElement>(SELECTOR)) {
   };
   all.push(heading);
 
-  element.addEventListener("pointermove", (event) => {
-    if (event.pointerType !== "mouse" || !hover.matches || !motionAllowed()) return;
-    heading.pointer = { x: event.clientX, y: event.clientY };
-    const letter = (event.target as HTMLElement).closest<HTMLElement>(".ht");
-    setGhost(heading, letter && letters.indexOf(letter) !== heading.at ? letter : null);
-    active.add(heading);
-    wake();
-  });
-  element.addEventListener("pointerleave", () => leave(heading));
+  // Section headings remain still and silent under the mouse.
+  if (element.classList.contains("page-title")) {
+    element.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse" || !hover.matches || !motionAllowed()) return;
+      heading.pointer = { x: event.clientX, y: event.clientY };
+      const letter = (event.target as HTMLElement).closest<HTMLElement>(".ht");
+      setGhost(heading, letter && letters.indexOf(letter) !== heading.at ? letter : null);
+      active.add(heading);
+      wake();
+    });
+    element.addEventListener("pointerleave", () => leave(heading));
+  }
 
   touchRipple(element, letters, base);
 
