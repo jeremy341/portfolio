@@ -6,6 +6,22 @@ export type Card = { title: string; text: string; image?: string };
 type Entry = { en: Card; de: Card };
 
 export const outside: Record<string, Entry> = {
+  "https://en.wikipedia.org/wiki/Vibe_coding": {
+    en: { title: "Vibe coding", text: "An informal term for building software by directing an AI to generate code. It often implies relying on the result without closely examining the implementation; people use the term differently." },
+    de: { title: "Vibe Coding", text: "Ein informeller Begriff für das Entwickeln von Software durch KI-generierten Code. Oft meint er, dass man das Ergebnis übernimmt, ohne die Umsetzung genau zu prüfen; der Begriff wird unterschiedlich verwendet." },
+  },
+  "https://en.wikipedia.org/wiki/Integrated_development_environment": {
+    en: { title: "IDE", text: "An integrated development environment: an editor with tools to navigate, run and debug a codebase. Jeremy works in an IDE so he can inspect and edit the project files directly." },
+    de: { title: "IDE", text: "Eine integrierte Entwicklungsumgebung: ein Editor mit Werkzeugen zum Navigieren, Ausführen und Debuggen von Code. Jeremy kann dort die Projektdateien direkt ansehen und bearbeiten." },
+  },
+  "https://docs.github.com/en/actions": {
+    en: { title: "GitHub Actions", text: "GitHub's automation system for running workflows such as tests, builds and deployments whenever code is pushed or another event occurs." },
+    de: { title: "GitHub Actions", text: "GitHubs Automatisierungssystem für Abläufe wie Tests, Builds und Deployments, die bei einem Push oder anderen Ereignissen starten." },
+  },
+  "https://github.com/jeremy341/egg": {
+    en: { title: "Egg", text: "An independent deployment dashboard Jeremy is developing for Hack Club Nest. It connects GitHub projects to Nest containers and manages deployments, logs and rollbacks." },
+    de: { title: "Egg", text: "Ein unabhängiges Deployment-Dashboard, das Jeremy für Hack Club Nest entwickelt. Es verbindet GitHub-Projekte mit Nest-Containern und verwaltet Deployments, Logs und Rollbacks." },
+  },
   "https://huggingface.co/": {
     en: { title: "Hugging Face", text: "A website where people share machine learning models, datasets and demos. Each model page counts how often its files are requested, not how many people use the model.", image: "/previews/huggingface.png" },
     de: { title: "Hugging Face", text: "Eine Website, auf der Menschen Modelle für maschinelles Lernen, Datensätze und Demos teilen. Jede Modellseite zählt, wie oft ihre Dateien angefragt werden, nicht wie viele Menschen das Modell nutzen.", image: "/previews/huggingface.png" },
