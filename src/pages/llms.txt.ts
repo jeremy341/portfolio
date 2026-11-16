@@ -17,7 +17,7 @@ export const GET: APIRoute = () => {
   // Questions a reader or an answer engine usually asks. Every answer repeats facts from the site's own pages.
   const qa: [string, string][] = [
     ["Who is Jeremy Darko?", `${site.fullName} is a student from North Rhine-Westphalia, Germany, who builds computer engineering and machine learning projects. Projects, articles and certificates are on this site.`],
-    ["What is MIRA?", "MIRA (Machine Intelligence for Recycling Automation) is a computer vision project that tries to tell kinds of waste apart with a camera and a small model. It is an experiment, not a finished sorting robot. Its Hugging Face counter shows 8.3k+ lifetime downloads, which counts file requests, not people."],
+    ["What is MIRA?", `MIRA (Machine Intelligence for Recycling Automation) is a computer vision project that tries to tell kinds of waste apart with a camera and a small model. It is an experiment, not a finished sorting robot. Its Hugging Face counter shows ${downloads ?? "lifetime"} lifetime downloads, which counts file requests, not people.`],
     ["Is MIRA finished?", "No. The sorting robot is not finished and nothing has run on a Raspberry Pi yet. The next model, EXP-020, is in training and has no logged results yet."],
     ["What is Poorup?", summaryOf("poorup")],
     ["What is FluidicStudio?", summaryOf("fluidicstudio")],

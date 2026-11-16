@@ -47,7 +47,7 @@ const previews = {
 ]),
   ...outsidePreviews(lang),
 };
-const fullTitle = title ? `${title} | ${site.name}` : site.name;
+const fullTitle = home && title ? `${site.name} | ${title}` : title ? `${title} | ${site.name}` : site.name;
 const url = canonical(Astro.url.pathname);
 const english = canonical(otherPath(Astro.url.pathname, "en"));
 const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(Astro.url.pathname);

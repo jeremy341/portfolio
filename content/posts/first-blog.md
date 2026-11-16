@@ -1,6 +1,6 @@
 ---
-title: "First blog"
-description: "My first post on Hack Club, Stardance, PoorUp, a 3D printer and getting LOADOUT off the ground."
+title: "What I built with Hack Club: Poorup and LOADOUT"
+description: "Jeremy Darko looks back at building Poorup through Hack Club's Stardance and beginning the planning for LOADOUT."
 slug: first-blog
 publishedAt: 2026-10-26
 tags: [hack-club, stardance]

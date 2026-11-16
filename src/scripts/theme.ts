@@ -18,7 +18,13 @@ function current(): Theme {
 // The label names what a press does: on a dark page it offers light mode, and the reverse.
 function paint() {
   const label = current() === "light" ? t.themeDark : t.themeLight;
-  for (const button of buttons) button.textContent = label;
+  for (const button of buttons) {
+    const text = button.querySelector("[data-theme-label]");
+    if (text) text.textContent = label;
+    else button.textContent = label;
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  }
 }
 
 export function setTheme(theme: Theme) {

@@ -181,7 +181,7 @@ test("each project with measurements has an In numbers section, and no page make
   assert.match(page("work/mobilenet-on-fpga/index.html"), /no measured hardware resource or latency results/);
 });
 
-test("every page links to its twin in the other language and says so with hreflang", () => {
+test("translated pages link to their twin, and untranslated articles fall back safely", () => {
   const files = htmlFiles(dist).filter((file) => !file.endsWith("404.html"));
   for (const file of files) {
     const html = readFileSync(file, "utf8");
@@ -207,14 +207,14 @@ test("the German pages carry German text and link only to German pages", () => {
   assert.ok(projectsPage.includes("6 Projekte"));
   const about = page("de/about/index.html");
   assert.ok(about.includes("Biografie") && about.includes("Projektarbeit mit der UDE"));
-  if (posts.length) assert.match(page("de/blog/index.html"), /Min\. Lesezeit/);
+  assert.equal(jsonLd(page("de/blog/index.html"))[0]["@graph"].find((node) => node["@type"] === "Blog").blogPost.length, posts.length);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.
     const html = readFileSync(file, "utf8").replace(/<div class="lang"[\s\S]*?<\/div>/g, "");
     const internal =[...html.matchAll(/ href="(\/[^"#?]*)"/g)].map((m) => m[1]);
     for (const href of internal) {
       if (/\.\w+$/.test(href)) continue; // files such as the favicon and the PDF are shared
-      const englishArticle = file.endsWith("/de/blog/index.html") && posts.some((slug) => href === `/blog/${slug}/`);
+      const englishArticle = file.split("\\").join("/").endsWith("/de/blog/index.html") && posts.some((slug) => href === `/blog/${slug}/`);
       assert.ok(href.startsWith("/de/") || href === "/de" || englishArticle, `${file} links to ${href}, which is not German`);
     }
   }
@@ -255,10 +255,11 @@ test("Work lists all six projects and Writing lists every article", () => {
   for (const slug of posts) assert.match(blog, new RegExp(`href="/blog/${slug}/"`), `no link to ${slug}`);
 });
 
-test("no icons or sprites ship, and pictures appear only on project pages and Certificates", () => {
+test("only the theme icon ships, and pictures appear only on project pages and Certificates", () => {
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, "utf8");
-    assert.doesNotMatch(html, /<svg|<canvas|<picture/, `${file} contains graphics`);
+    const withoutThemeIcon = html.replace(/<svg class="theme-icon"[^>]*>[\s\S]*?<\/svg>/g, "");
+    assert.doesNotMatch(withoutThemeIcon, /<svg|<canvas|<picture/, `${file} contains unexpected graphics`);
     const rel = file.slice(dist.length + 1).split("\\").join("/");
     if (/<img /.test(html)) {
       assert.match(rel, /^(de\/)?(work\/[\w-]+|certificates)\/index\.html$/, `${rel} should not carry pictures`);
@@ -302,7 +303,7 @@ test("articles have dates and structured data", () => {
     const html = page(`blog/${slug}/index.html`);
     assert.match(html, /<time datetime="\d{4}-\d{2}-\d{2}">/, `${slug} has no date`);
     assert.match(html, /"@type":"BlogPosting"/);
-    assert.match(html, /<article>/);
+    assert.match(html, /<article\b[^>]*>/);
   }
 });
 
@@ -437,15 +438,15 @@ test("German pages are described in German by the same structured data", () => {
   const home = jsonLd(page("de/index.html"))[0]["@graph"];
   const person = home.find((node) => node["@type"] === "Person");
   assert.match(person.description, /^Jeremy Darko ist ein Schüler/);
-  assert.match(page("de/index.html"), /<title>Schüler und Entwickler für Machine Learning, GPU-Computing und Hardware \| Jeremy Darko<\/title>/);
+  assert.match(page("de/index.html"), /<title>Jeremy Darko \| Computer Engineering, Machine Learning, GPU-Computing und Hardware<\/title>/);
   assert.match(page("de/blog/index.html"), /"@type":"Blog"/);
 });
 
 test("the feeds, sitemap, canonical links and share images use absolute addresses", () => {
   const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
-  for (const [feed, lang] of [["rss.xml", "en"], ["de/rss.xml", "de"]]) {
+  for (const [feed, lang, count] of [["rss.xml", "en", posts.length], ["de/rss.xml", "de", 0]]) {
     const xml = page(feed);
-    assert.equal(xml.match(/<item>/g)?.length ?? 0, lang === "en" ? posts.length : 0, `${feed} lists articles in that language`);
+    assert.equal(xml.match(/<item>/g)?.length ?? 0, count, `${feed} lists articles in that language`);
     for (const [, link] of xml.matchAll(/<link>([^<]+)<\/link>/g)) assert.ok(link.startsWith(origin), `${lang} feed link ${link} is not absolute`);
   }
   const sitemap = page("sitemap.xml");
