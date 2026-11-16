@@ -11,39 +11,41 @@ I compared MobileNetV1 and V2 before and after INT8 conversion, measuring model 
 
 ## Story
 
-A neural network that works on a powerful GPU is cool. But what happens when you want to run one on hardware with much less memory and compute?
+Making a neural network smaller sounds like an obvious improvement when you want to run it on limited hardware. Less memory, fewer calculations, hopefully less power. But there's a catch: shrinking the numerical representation means throwing away precision.
 
-That's the question behind my MobileNet experiment, which came out of project work connected to the Chair of Electronic Components and Circuits at the University of Duisburg-Essen.
+So how much of the model's accuracy disappears with those extra bits?
 
-The goal wasn't to build an FPGA accelerator in a weekend. It was to answer something more basic first: **if I make a model smaller and switch its calculations from floating-point numbers to 8-bit integers, how much accuracy do I lose?**
+That became the central question of my MobileNet experiment, part of project work connected to the Chair of Electronic Components and Circuits at the University of Duisburg-Essen. The long-term context is FPGA hardware, where you can design the arithmetic rather than simply rely on a general-purpose GPU. But before thinking about building an accelerator, I wanted to know what numerical format that accelerator would have to support.
 
-Because there's not much point designing hardware around an idea if the model becomes useless as soon as you convert it.
+And the results were a little less predictable than the phrase "lower precision" might suggest.
 
-### First, two networks that are actually designed to be small
+### Start with models built to be small
 
-I chose MobileNetV1 and MobileNetV2. Both use *depthwise convolutions*, which process spatial information one channel at a time, followed by pointwise operations that mix channels. That can make them much cheaper than standard convolutions.
+I chose MobileNetV1 and MobileNetV2 because both were designed with efficiency in mind.
 
-MobileNetV2 adds **inverted residual blocks**: expand the channels, apply a depthwise operation, then project back down through a linear bottleneck. The idea is to preserve useful information while keeping the expensive operations manageable.
+A standard convolution processes spatial information and mixes channels in one expensive operation. A **depthwise separable convolution** splits that work: a depthwise operation processes each channel separately, then a pointwise operation combines them. MobileNetV2 goes further with **inverted residual blocks**, expanding channels for computation before projecting them back through a linear bottleneck.
 
-I built the architectures in Keras rather than simply importing pretrained models. That let me inspect the operations and tensor shapes directly. For both, I used an input size of 128×128 pixels and a width multiplier of 0.5, meaning the networks use fewer channels than their full-width versions.
+Those choices matter if you later want to map the calculations to constrained hardware. They also gave me two different architectures to compare without jumping straight to a massive model.
 
-The experiment used CIFAR-10: 45,000 training images, 5,000 validation images and 10,000 test images, resized from 32×32 pixels to 128×128. Both networks trained with Adam and early stopping. This is a controlled comparison, not a claim that CIFAR-10 looks like a real deployment environment.
+I implemented the networks in Keras rather than loading ready-made pretrained weights. Both used 128×128 RGB inputs and a width multiplier of 0.5, which reduces their number of channels. I trained on CIFAR-10, dividing it into 45,000 training, 5,000 validation and 10,000 test images, with Adam and early stopping.
 
-### What exactly is INT8 quantization?
+CIFAR-10's original images are only 32×32 pixels, so resizing them to 128×128 doesn't create any new detail. The purpose was a controlled software comparison, not proof that these networks would behave identically on a real camera or FPGA.
 
-Normally, a lot of neural-network arithmetic is done with 32-bit floating-point values, called Float32. You can represent a huge range of numbers, but storing and multiplying them takes more bits than simpler integer formats.
+### What changes when Float32 becomes INT8?
 
-With **quantization**, you approximate those values with a smaller set of integers and keep scale information that maps the integers back to the values they represent. INT8 uses signed 8-bit values, typically from -128 to 127.
+The Float32 versions represent values with 32-bit floating-point numbers. That gives a wide range of representable values and a certain numerical precision, but it also costs storage and more complex arithmetic.
 
-That sounds as though it should always hurt accuracy. You're literally throwing away numerical precision.
+**INT8 quantization** approximates those values using signed 8-bit integers, commonly in the range -128 to 127, together with scales that tell the model how those integers relate to the original values.
 
-For this experiment I used full-integer, post-training quantization to TFLite. The training still happened in Float32; a calibration pass over 200 images helped choose the numerical ranges for the converted model. The exported models use INT8 for inputs and outputs.
+The immediate benefit is easy to understand: smaller weights can occupy fewer bytes. The less obvious part is the effect on predictions. If two activation values that were previously distinguishable get rounded to the same integer, the network has lost some information. Repeat that across many operations, and you might expect a visible loss of accuracy.
 
-The interesting question was whether the lower precision would noticeably hurt classification.
+To find out, I first trained the models in Float32, then converted them to full-integer TFLite models. A 200-image calibration pass was used to estimate the ranges needed for quantization, and the exported models used INT8 inputs and outputs.
 
-### The results were closer than you might expect
+The plan was straightforward: compare both versions on the same 10,000-image test set and see whether the reduction in precision cost too much.
 
-The recorded test accuracy numbers were:
+### The accuracy result wasn't the dramatic part
+
+Here are the recorded results:
 
 | Model | Float32 | INT8 | Difference |
 | --- | ---: | ---: | ---: |
@@ -52,11 +54,15 @@ The recorded test accuracy numbers were:
 
 {{figure:0}}
 
-MobileNetV1 lost 0.37 percentage points. MobileNetV2's INT8 model scored **0.01 percentage points higher**, which sounds like an improvement until you remember the test set has 10,000 images. That's exactly one additional correct prediction.
+MobileNetV1 lost 0.37 percentage points. That's a small difference, but at least it goes in the direction you'd expect.
 
-So no, I wouldn't call that evidence that quantization somehow improved MobileNetV2. It's effectively the same observed accuracy in this one run.
+MobileNetV2 was more interesting: its INT8 export scored **77.94%**, compared with **77.93%** for Float32. Does that mean reducing precision made the model better?
 
-The file sizes changed much more clearly:
+Not really. On a test set of 10,000 images, that difference is exactly *one* additional correct prediction. One training run and one test set aren't enough to argue that quantization improved accuracy. The meaningful observation is that the measured accuracy stayed almost unchanged.
+
+Which brings us back to the original reason for doing this. If the predictions barely changed, how much smaller did the model become?
+
+The file-size comparison was much clearer:
 
 | Model | Float32 TFLite | INT8 TFLite |
 | --- | ---: | ---: |
@@ -65,37 +71,35 @@ The file sizes changed much more clearly:
 
 {{figure:1}}
 
-That made the V1 file roughly **3.34× smaller** and the V2 file roughly **2.78× smaller**, while the recorded accuracy stayed close.
+That's approximately **3.34 times smaller** for V1 and **2.78 times smaller** for V2. So the interesting result wasn't the extra 0.01 percentage points. It was how much storage I could save without observing a substantial accuracy drop in that test.
 
-This doesn't automatically mean the INT8 version runs 3× faster. File size, execution latency, memory access and hardware support are different measurements. I didn't benchmark an FPGA implementation because there isn't one here.
+But a smaller file still isn't the same thing as a faster network.
 
-### Why the numbers matter for hardware
+### Why an FPGA cares about more than file size
 
-When a model runs on custom hardware, you have to decide how wide its arithmetic units and accumulation registers are.
+On an FPGA, you have to choose the arithmetic resources that will carry out each operation. An INT8 multiplication can require up to **16 signed bits** for its result. A convolution then sums many products together, so its accumulator needs enough bits to avoid overflow.
 
-An INT8 multiplication produces a result that may need up to **16 signed bits**. Then a convolution or fully connected layer may add hundreds of those products together, so the accumulator needs more headroom. The project contains a bit-width analysis of the actual layer shapes and reduction lengths; for the recorded configurations, 32-bit accumulation provides enough room.
+The project includes a bit-width analysis using the model's layer shapes and reduction lengths. For the recorded configurations, a 32-bit accumulator provides enough room.
 
-That analysis is useful before implementing anything in HDL or HLS (hardware-description and high-level-synthesis languages). It helps you estimate which operations and widths an eventual accelerator would need to support.
+That's useful planning information. It tells me something about the operations an eventual design would need, and it gives me a way to reason about memory and arithmetic cost before writing hardware-description code.
 
-But those are arithmetic requirements, not FPGA resource measurements. No logic elements, DSP blocks, power draw or measured latency are reported here.
+What it doesn't tell me is how many DSP blocks an FPGA implementation would use, how much power it would draw or how quickly it could classify an image. I haven't implemented the FPGA part, and there are no measured hardware resource or latency results to report.
 
-### A few things I would improve before trusting the comparison too much
+So the experiment answered one important question about the *model representation*. It didn't answer the next question about *execution on hardware*.
 
-I don't want to overstate this experiment.
+### What I'd test before making a bigger claim
 
-It used **one training seed**, so there's no estimate of run-to-run variation. The calibration selection included 25 images that fell in the validation split under the recorded data partition, so I would redo calibration using strictly training-only samples. The evaluation code also truncates quantized input values rather than rounding them, which should be corrected before making a stronger comparison.
+There are also limitations in the software comparison itself. I used **one training seed**, so I don't have a distribution of results across independent runs. The recorded calibration selection included 25 images overlapping the validation split, which I'd fix by sampling strictly from the training split.
 
-And the training curves show overfitting: training accuracy approached 100% while validation accuracy plateaued. Resizing tiny CIFAR-10 images to 128×128 doesn't introduce more actual visual detail, either.
+The quantized input evaluation also used truncation rather than rounding. That's worth correcting before interpreting small accuracy differences. And the training curves show overfitting: training accuracy approached 100% while validation accuracy leveled off.
 
-I also don't have a particularly dramatic personal story about the training run anymore. What I still find useful is the engineering lesson: **you can sometimes cut model size substantially without destroying the measured accuracy, but you need a fair evaluation before you claim anything about deployment.**
+Those aren't reasons to throw the results away. They're reasons to be specific about what the results actually establish.
 
-### Where I'd take it next
+I'd repeat the experiments with multiple seeds, clean up calibration and input conversion, then measure end-to-end inference on a named hardware target. Only with those numbers could I start talking about actual FPGA acceleration.
 
-I'd retrain across several seeds, clean up the calibration split and input rounding, and get a measured latency result on a **named hardware target**.
+The experiment began with a simple worry: would INT8 make a small model too inaccurate to be useful? In this run it didn't. That gives me a reason to continue, not a license to claim I've built a fast accelerator.
 
-Only then would I start making claims about what an FPGA accelerator could realistically offer.
-
-For now, this is the software and numerical-analysis half of an eventual hardware problem. And that's already a pretty useful half to understand.
+And for an engineering project, knowing exactly which question you've answered is at least as important as getting an impressive number.
 
 ## In numbers
 
