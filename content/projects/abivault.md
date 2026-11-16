@@ -11,79 +11,85 @@ A financial workspace for school graduating committees. I wanted a way to track 
 
 ## Story
 
-Over the years I've heard too many stories about graduating classes collecting money for their Abi events and then having trouble accounting for where it went. Sometimes the stories are about mistakes. Sometimes they're about someone allegedly spending money that wasn't theirs.
+Over the years, I've heard a surprising number of stories about graduating classes collecting money for their Abi celebrations and then struggling to explain where it all went. Sometimes it sounded like poor bookkeeping. Sometimes people suspected that money had been spent without permission.
 
-I can't verify every story I've heard, and I'm not accusing anyone at my school. But they made me wonder: why is money collected from dozens of students so often managed in a spreadsheet that a few people can edit?
+I can't verify those stories, and I'm not accusing anyone at my own school. But they left me wondering why a committee handling money from dozens of students might still depend on a spreadsheet that only a handful of people can really inspect.
 
-So I wanted to build something more transparent. That's where AbiVault came from.
+A spreadsheet can tell you what someone *typed*. It doesn't necessarily tell you who made a change, whether the amount was correct or what happened to the money afterward.
 
-The idea is pretty simple: if a committee collects money for a yearbook, party or trip, members should be able to understand where it went. And the people handling it should have tools that make both accidental mistakes and unauthorized changes harder.
+That's the problem I wanted AbiVault to address.
 
 {{figure:0}}
 
-### The €40 question
+### Let's say €40 is missing
 
-Imagine a committee member asks: "Where did those €40 go?"
+Imagine a student asks a fairly reasonable question: "Where did those €40 go?"
 
-In a spreadsheet, you might find a row saying "decorations", but not know who entered it, whether there's a receipt, or if someone later changed the amount.
+If the only answer is a spreadsheet row labeled "decorations", what have we actually learned? We know somebody entered an expense. We may not know who approved it, whether there's a receipt, or if the value was edited after the fact.
 
-I wanted to make that kind of question answerable from the system itself. Every important movement of money should have a record, a reason and an audit trail.
+So instead of starting with a pretty dashboard, I wanted to start with the evidence needed to answer that question. A transaction should have a recorded amount and purpose. It should fit into a consistent account balance. The people allowed to change it should be identifiable, and important changes should leave a trail.
 
-Of course, software can't make someone honest. It can make the records easier to inspect and much harder to quietly change without a trace.
+None of this guarantees that people will be honest. But if something goes wrong, having records you can follow is much better than hoping everybody remembers what happened.
 
-### Why I didn't store money as normal decimal numbers
+There's a technical detail hidden even in the first requirement, though: what does it mean to record an amount *correctly*?
 
-This is one of those details that seems tiny until it bites you.
+### You can't audit a number that was stored badly
 
-Computers commonly represent decimal-looking values with floating-point numbers. Many decimal fractions can't be represented exactly in binary floating point. If you're building a game, a tiny difference usually doesn't matter. If you're recording a committee's money, I'd rather avoid that entire category of problem.
+Computers often represent numbers with floating-point arithmetic. That's useful for many calculations, but binary floating-point formats cannot represent every decimal fraction exactly.
 
-AbiVault stores monetary values in **whole cents** as integers, using `bigint` where appropriate. So €40.10 becomes 4010 cents, rather than relying on a floating-point approximation.
+For a graphics experiment, a tiny rounding difference might not matter. In an accounting ledger, I don't want avoidable numerical quirks appearing in the first place.
 
-Then there is the accounting model itself. Instead of a single editable number called "balance", the application records transactions through a ledger. A posted transaction writes balanced entries so that money movements can be traced consistently.
+So AbiVault stores amounts as **integer cents**, using `bigint` where needed. €40.10 is represented as 4010 cents, not as an approximate floating-point value.
 
-The rule behind double-entry bookkeeping is that each transaction has matching debit and credit sides. It doesn't mean a transaction must be *correct in the real world*, but it prevents the ledger from becoming internally inconsistent in a lot of common ways.
+That solves the representation problem. But consider our missing €40 again. Even a perfectly stored number doesn't explain where it went if the only data is an editable field called "balance".
 
-### Who gets to see and edit the money?
+That's why the system uses a **ledger** and balanced transactions. With double-entry bookkeeping, a posted movement has matching debit and credit sides. The entries form an accounting record that can be traced rather than a single total that can be overwritten.
 
-This is where the project becomes more than a prettier spreadsheet.
+The ledger can ensure internal consistency. It cannot prove that a purchase was legitimate or that a receipt is genuine. Which leads to the next problem: who is allowed to enter, approve or change these records?
 
-AbiVault has three roles: admin, supervisor and student. Students get a restricted view of the finances. People responsible for managing the account can perform the actions their role allows.
+### The wrong person shouldn't be able to rewrite the answer
 
-The app uses [Clerk](https://clerk.com/) for authentication and organizations and [Supabase](https://supabase.com/) with PostgreSQL for its data. **Row Level Security (RLS)** is a database feature that checks whether a query is allowed to access a particular row. The rules tie records to the user's organization, so one committee shouldn't be able to read another committee's entries just by changing a request.
+AbiVault has admin, supervisor and student roles. Students can inspect a restricted view of the finances, while the people responsible for managing the committee get permissions appropriate to their roles.
 
-That distinction matters. Hiding a button in the interface isn't security. A user can inspect browser requests. Authorization has to be enforced on the backend or in the database itself.
+I use [Clerk](https://clerk.com/) for authentication and organizations, with [Supabase](https://supabase.com/) and PostgreSQL storing the financial data. One of the more important pieces is **Row Level Security (RLS)**.
 
-Important changes also get audit records, and accounting periods can be locked after they've been closed. Once a period is closed, it shouldn't be possible to casually rewrite last month's finances.
+RLS means the database itself applies rules about which rows a request can access. If a student from one committee changes an ID in a browser request, that should not suddenly give them another committee's transaction history.
 
-### Receipts, cash and the things spreadsheets forget
+And this cannot be solved by hiding an Edit button. Browser interfaces are under the user's control; authorization has to be enforced behind them.
 
-A proper financial record needs more than an amount and a date. People want to know what was bought, who approved it and whether the receipt exists.
+But access control only answers who can do something *now*. Suppose someone was authorized to make a change yesterday. Can we still understand what was changed next month?
 
-AbiVault supports attaching receipt images or PDFs, tracking review states, cash-register counts, savings goals and CSV reports. Receipts are stored privately and accessed using short-lived signed links rather than leaving public URLs lying around.
+Important actions therefore create audit records, and accounting periods can be locked once they're closed. Those controls help preserve the history behind the balance instead of letting a later edit silently replace it.
 
-The interface is in German because it's intended for German school committees. I also built distinct layouts for desktop, tablet and phone instead of assuming a wide finance table would somehow become usable on a tiny touchscreen.
+### The receipt is where the story becomes real
+
+Back to the €40. We can now store the amount accurately, link it to a balanced transaction and control who is allowed to edit it.
+
+But if the committee bought decorations, somebody should still be able to show *which* decorations. Otherwise the software is just very good at recording an unsupported claim.
+
+AbiVault supports receipt images and PDFs, review states, cash-register counts, savings goals and CSV reports. Receipts stay in private storage and are accessed through short-lived signed links instead of public file URLs.
+
+The interface is in German, because it's intended for German graduating committees, and it has layouts for desktop, tablet and mobile. Being able to check a transaction from a phone matters when the people managing the money aren't always sitting at a desk.
 
 {{figure:1}}
 
-That's the demo dashboard. It uses **sample data**, not a real graduating class's private financial records. The distinction is important: a screenshot of a convincing dashboard isn't evidence that the entire system is ready to hold real student money.
+That screenshot is the **demo dashboard**, with seeded example data. It demonstrates the interface and the way records are presented; it is not a screenshot of a real graduating class's finances.
 
-### What I'm actually confident about, and what I'm not
+And that distinction matters, because a working-looking dashboard is not the same as a financial system that has been tested in a real organization.
 
-The repository includes unit tests and a separate SQL test for the Row Level Security rules. That's good, because the access rules are exactly the part I'd least want to get wrong.
+### A demo is not a security audit
 
-But I haven't independently rerun every test specifically for this page, and I wouldn't treat the existence of tests as an external security audit.
+The project contains unit tests and a separate SQL test for its Row Level Security policies. Those checks are particularly relevant when organization boundaries and permissions are part of the design.
 
-There's also no bank integration or Open Banking connection. Those are deliberately left out. And the public demo is isolated from real data; it should not be used as a live financial system just because the interface looks finished.
+Still, tests in a repository aren't an independent security review. I haven't validated AbiVault with real committee finances or completed the operational work I'd want before anybody relied on it for their money.
 
-If I were to take AbiVault toward real use, I'd put much more effort into operational security, backups and recovery procedures, threat modeling, user testing and independent review.
+There's no bank integration or Open Banking connection, either. If the project were to move beyond a controlled demo, I'd want stronger backup and recovery procedures, threat modeling, independent review and actual usability testing with committees.
 
-### What I wanted to build
+So I'm not claiming that AbiVault has solved the problem of trust. Technology can't do that by itself.
 
-The thing I care about most isn't how many database migrations it has. It's the idea that students should be able to trust the process around money they've contributed.
+What I wanted was a system where the answer to "Where did those €40 go?" could be built from evidence: a precise amount, a transaction, an authorized action, an audit history and a receipt.
 
-That doesn't happen just because an app exists. But thoughtful permissions, traceable transactions and good records are a pretty decent place to start.
-
-And if nobody ever has to ask where their committee's €40 mysteriously disappeared, that would be nice too.
+If a graduating class can follow that trail without needing to take one person's word for it, then the project is doing something useful. And ideally, nobody has to turn an Abi committee meeting into a detective investigation just to find out what happened to €40.
 
 ## In numbers
 

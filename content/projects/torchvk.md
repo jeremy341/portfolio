@@ -11,41 +11,47 @@ I'm investigating whether I can train PyTorch models on my old AMD GPU using Vul
 
 ## Story
 
-So here's something that bothered me for a while without me actually questioning it: I had a graphics card sitting in my PC, but whenever I wanted to train MIRA, I went straight to Kaggle.
+For most of MIRA's training runs, I used Kaggle. Nothing particularly strange about that, except for one small detail: there was already a GPU sitting in my own computer.
 
-Not because I particularly enjoyed using someone else's GPU. I just had an AMD Radeon RX 5600 XT, and the usual PyTorch GPU setup on Windows wasn't exactly made for it. I accepted that for quite a while.
+An AMD Radeon RX 5600 XT, to be precise.
 
-Then, while looking for another machine-learning project, I came back to the same question. Why was I renting or borrowing compute when I already owned a GPU? Surely there's *some* way to make this work?
+For a long time I just accepted that PyTorch training on Windows wasn't really going to happen on this card. I had a working notebook in Kaggle, so why question it? It wasn't until I started thinking about another machine-learning project that the arrangement began to bother me.
 
-Well, there is more going on here than simply installing a different Python package. And that's how I ended up with TorchVK.
+Why was I borrowing compute when I already owned a GPU? And if the problem wasn't that my GPU couldn't calculate anything, what was actually stopping PyTorch from using it?
 
-### Wait, why not just use the GPU?
+That's where TorchVK began. Not with a groundbreaking performance result, but with a question I had been avoiding.
 
-If you've trained neural networks with PyTorch, you've probably seen `torch.cuda`. CUDA is NVIDIA's compute platform, and PyTorch has a very mature training backend for it. AMD has [ROCm](https://rocm.docs.amd.com/), but availability depends on the GPU, operating system and software versions. My particular RX 5600 XT on Windows doesn't have the same convenient supported route.
+### The GPU works. The software stack is the problem.
 
-Meanwhile, I can run graphics applications on the card just fine. Graphics APIs such as [Vulkan](https://www.vulkan.org/) already provide a way to send compute workloads to GPUs across different vendors.
+Most PyTorch tutorials treat `torch.cuda` as the obvious way to run training on a GPU. That makes sense for supported NVIDIA hardware: CUDA has mature libraries and extensive PyTorch integration. AMD has ROCm, but GPU, operating-system and version support matter. My RX 5600 XT on Windows isn't a convenient supported target.
 
-So the thought was: what if I could make PyTorch talk to Vulkan?
+The frustrating part is that this doesn't mean the card is unable to perform parallel calculations. It can run graphics applications, and [Vulkan](https://www.vulkan.org/) exposes compute functionality across GPU vendors.
 
-That isn't the same as making a game render with Vulkan. Training needs things like tensor storage, matrix operations, gradients and updates to model weights. A backend has to do those calculations correctly, then do them quickly enough to justify using the GPU at all.
+So Vulkan looked like a possible route around the software support problem. The first idea was simple enough: if the GPU can execute Vulkan compute shaders, perhaps I could connect that capability to PyTorch.
 
-### I wasn't the first person to think of this
+Except there's a fairly large difference between running *a* shader and training a neural network.
 
-I'll admit, the initial idea sounded pretty cool. A PyTorch training backend that doesn't depend on CUDA? Nice.
+A training backend needs to store tensors, execute a wide range of operations, preserve numerical correctness and handle gradients so model parameters can be updated. It also has to manage memory and synchronization efficiently. If every operation copies data back to the CPU, then getting a shader to run doesn't solve much.
 
-Then I started researching it.
+Which changes the question. It's not "can Vulkan add numbers?" It is "can a usable training path be built on top of Vulkan, and how much of it will actually run on the GPU?"
 
-Turns out projects such as [torchvulkan](https://github.com/zainsharief/torchvulkan) already explore PyTorch training through Vulkan, and other Vulkan integrations have existed too. Claiming that nobody has attempted this would be nonsense.
+### Then I discovered I wasn't the first
 
-But their existence doesn't automatically answer *my* question: can I get a reproducible, GPU-only training path working on an older RDNA1 card with only 6 GB of VRAM, under Windows? What falls back to the CPU? What breaks? Where does the performance go?
+I started reading about existing attempts, including [torchvulkan](https://github.com/zainsharief/torchvulkan). Other people had already explored Vulkan and PyTorch integration.
 
-That's the gap I want to investigate. And if someone else's backend already solves it better, I'd rather contribute to that than build a worse copy just so I can put my name on it.
+Initially, that sounded like it might kill the idea. What's the point of making another backend if one exists?
 
-### What the backend might actually look like
+But research doesn't become pointless just because somebody has worked on the same topic. It gives you something concrete to evaluate. Does an existing solution train models on *my* RX 5600 XT? Does it silently fall back to the CPU? Can I reproduce its results, identify the missing operations and measure where the time goes?
 
-PyTorch is not going to start sending Vulkan commands just because I ask nicely. It needs a device integration layer. One route worth evaluating is **PrivateUse1**, a PyTorch extension mechanism for registering custom devices and their operations.
+That's a narrower and, frankly, more useful research question than trying to announce that I had invented Vulkan machine learning.
 
-My current architectural hypothesis looks roughly like this:
+If an existing backend turns out to be better, contributing to it may be more sensible than maintaining an inferior duplicate. I want to understand the problem, not win a naming competition.
+
+### What would PyTorch actually talk to?
+
+One integration route I want to explore is **PrivateUse1**, PyTorch's mechanism for registering custom device backends. It could provide the connection between PyTorch operators and a C++ runtime responsible for allocating GPU buffers, dispatching operations and synchronizing their results.
+
+That runtime would then invoke Vulkan compute pipelines using **SPIR-V**, the intermediate representation consumed by Vulkan shaders. This is my current architectural *hypothesis*:
 
 ```flow
 PyTorch operation
@@ -55,44 +61,37 @@ Vulkan compute pipeline
 SPIR-V shader running on the GPU
 ```
 
-SPIR-V is the intermediate representation used by Vulkan shaders: code written in something like GLSL or Slang is compiled into a form a Vulkan driver can consume. This diagram is a **proposed architecture**, not something I have running today.
+It's tempting to look at that diagram and imagine a functioning backend. But the boxes are easy to draw; making them agree on memory ownership, tensor shapes and execution order is the difficult part.
 
-And before I'd even think about implementing a neural network, I'd have to get the boring foundations right. Device selection, buffer allocation, copying values to and from GPU memory, dispatching a shader, waiting for completion, then comparing its output against a trusted CPU result.
+The sensible first milestone is much smaller. Allocate buffers, send some values to the device, dispatch a vector-addition shader, retrieve its output and check every result against a trusted CPU calculation.
 
-"Just do a vector addition" sounds extremely underwhelming for a machine-learning project. But if a small addition is wrong, there's absolutely no point in building backpropagation on top of it.
+Vector addition isn't exactly the most exciting achievement in machine learning. That's kind of the point. If I can't prove that a tiny operation is correct, timing an entire neural network would only give me a faster way to measure a mistake.
 
-### Six experiments, and why I'm writing them down first
+### Six experiments, each answering the next question
 
-The research plan currently lists six experiments. They aren't results; they're questions I want the implementation to answer.
+Once one operation works, I can finally start asking performance questions. But even those need an order.
 
-1. **Vector addition:** can Vulkan compute the right values, and when do memory transfer and dispatch overhead dominate?
-2. **Matrix multiplication:** how does performance change with matrix size, memory access and shader design?
-3. **MNIST training:** can a small network complete forward and backward passes without accidentally switching to CPU?
-4. **CIFAR-10 CNN:** what happens when the workload becomes more realistic and contains convolutions?
-5. **Low-VRAM behavior:** how much memory is consumed, and what fails first on a 6 GB card?
-6. **Ablations:** if I change one implementation choice at a time, which choices actually matter?
+First, **vector addition** checks correctness and exposes how expensive memory transfers and dispatch can be for a small workload. Next, **matrix multiplication** tests an operation that actually matters for neural networks, where memory access patterns and shader design become much more important.
 
-An *ablation* simply means isolating one part of a system to see whether it causes the observed difference. It's easy to change three things, see a faster benchmark and declare victory. It's much harder to know which change helped.
+If those work, **MNIST training** would test whether forward and backward passes can stay on the device. A **CIFAR-10 convolutional network** would add more demanding operations. Then **low-VRAM tests** would show what happens when an older 6 GB card runs into memory pressure.
 
-I also want to distinguish GPU execution time from total end-to-end time. A shader being fast means very little if copying data, synchronizing the device or switching execution paths eats the rest of the time.
+Finally, I'd run **ablations**: change one implementation choice at a time and see which change affects the result. Without that, it's very easy to modify several settings, get a faster run and have absolutely no idea why.
 
-### The awkward part: there's no result yet
+There's another distinction I want to keep clear throughout. A fast GPU kernel isn't the same as a fast end-to-end training step. Dispatch overhead, transfers, synchronization and unintended CPU fallbacks can erase what looked like a win in an isolated benchmark.
 
-This is probably the least impressive paragraph on the page, but it's important.
+So each experiment should answer a question that makes the *next* experiment worth attempting. Otherwise I'm just collecting numbers.
 
-As of the documented research stage, **there is no working TorchVK backend, no implemented compute shader and no benchmark result I can honestly claim**. The public repository has the roadmap, related-work notes and an evaluation plan.
+### The result I'm not going to pretend I have
 
-I'm deliberately not presenting the architecture diagram above as finished software or making up performance numbers. The first real milestone is simple: run one GPU operation, verify its output, and establish that it didn't silently fall back to the CPU.
+As of the research documented in the public repository, **TorchVK is still at the feasibility stage**. There is no working training backend, no implemented GPU compute shader and no measured benchmark result I can claim here.
 
-After that, we'll see whether the original idea still makes sense.
+I could write a much more impressive-sounding project page by treating the roadmap as completed work. But that wouldn't make it any more real.
 
-### What I want to find out next
+The next concrete step is proving one device operation works correctly, without a hidden CPU fallback. After that comes a fair performance comparison. Only then will it make sense to talk seriously about training.
 
-Maybe Vulkan will be a practical route to using my card for small training workloads. Maybe another backend will turn out to be the better solution. Maybe the overhead will make the whole thing slower than I hoped.
+Maybe Vulkan will give my old AMD card a useful training path. Maybe I'll discover a different implementation is better, or that the overhead is worse than I expected. Either way, I'll understand GPU software a lot better than I did when I was automatically opening Kaggle.
 
-All three outcomes would teach me something about GPU systems.
-
-The motivation hasn't changed, though: I own a GPU, I want to understand how it works below the machine-learning framework, and I'd love to stop treating Kaggle as the only possible answer to that problem.
+And that was the question that started this in the first place: if I already have the hardware, what would it take to actually use it?
 
 ## In numbers
 

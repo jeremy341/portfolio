@@ -11,97 +11,87 @@ I taught a camera to recognize waste, from a small classifier to YOLO detection.
 
 ## Story
 
-So, at one point I got MIRA to about **90.6% mAP50** on its validation set. I was thrilled. After all those experiments, seeing that number on the screen felt amazing.
+I remember seeing **90.6% mAP50** on MIRA's validation results and feeling genuinely excited. After all the training runs, dataset changes and failed ideas, there was finally a number that made the work look like it was paying off.
 
-Then I tried the models on less controlled, real-life images.
+At least, that's what I thought.
 
-Yeah. Not quite as amazing.
+Because the moment I started testing the models on less controlled images, that confidence became harder to justify. In my own real-world trials, the newer model didn't consistently seem as reliable as EXP-014, an older experiment with a much less impressive validation score.
 
-To my eyes, the newer model wasn't consistently doing as well as my older EXP-014 model. That was frustrating, because the validation score was supposed to mean the training was going in the right direction. But it made me question what I was actually measuring.
+So how does a model get *better* on paper while leaving me less convinced when I actually use it? That question ended up shaping the next stage of MIRA.
 
-And honestly, that question became more interesting than the number itself.
+### From recognizing an image to finding an object
 
-### How it started: one camera, a bit of waste, and a question
+MIRA stands for **Machine Intelligence for Recycling Automation**. The long-term idea is waste sorting with a camera and a small model. Before I could think about building a sorter, though, I needed to find out whether the software could recognize the waste in the first place.
 
-MIRA stands for **Machine Intelligence for Recycling Automation**. The long-term goal is automatic waste sorting. The less glamorous short-term goal is getting a computer to recognize the materials in front of a camera reliably.
+I began with 796 photos divided into four classes, trained a small convolutional neural network (CNN), and later fine-tuned MobileNetV2. That classifier reached roughly 87% validation accuracy, and I managed to export a 2.6 MB INT8 TFLite version.
 
-I began with 796 photos in four classes. First I built a small convolutional neural network (CNN) to learn the basics. Then I fine-tuned MobileNetV2, which reached around 87% validation accuracy. I even converted that classifier into a 2.6 MB INT8 TFLite model.
+That was a useful start. But imagine putting two bottles and a piece of paper in front of the camera. A classifier can tell you which category best describes the *whole image*. It won't tell a sorting mechanism where each item is. For that, I needed **object detection**, where a model predicts both a class and a bounding box around an object.
 
-Pretty nice for something small. But it had a problem.
+So I moved to YOLOv8n and eventually YOLO11n, this time detecting glass, metal, paper, plastic and trash. That solved the *type* of problem I was asking the model to solve. It didn't yet solve the much more annoying question of what data I should trust.
 
-A **classifier** returns a label for an entire image. It can tell you the photo looks like plastic. A machine sorting a pile of objects needs **detection**: what objects are there, where are they, and how many?
+### The dataset was part of the experiment
 
-So MIRA went from classification to object detection. I tried YOLOv8n, then YOLO11n, with five labels: glass, metal, paper, plastic and trash.
+My images didn't come from one neat source. I combined data from [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet), [Roboflow](https://roboflow.com/) and a dataset by dmedhi. Some images had clean backgrounds and isolated objects. Others showed actual litter in complicated scenes.
 
-### I thought more training data would automatically help
+At first, adding more images seemed like an obvious improvement. More examples should mean more learning, right? Except the sources had different labeling conventions, class distributions and visual conditions. More data wasn't necessarily better *data*.
 
-This is where things started getting messy.
+I tested different combinations, removed WaRP after it made the results worse, and eventually rebuilt a balanced dataset. The new split used a fixed random seed and SHA-256 deduplication to reduce the risk of duplicate files appearing in training and evaluation. The resulting dataset contained **6,898 images and 12,832 boxes**, divided into 5,108 training, 415 validation and 1,375 test images.
 
-The dataset came from several places, including [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet), [Roboflow](https://roboflow.com/) data and a dataset by dmedhi. I had to reconcile different image styles, backgrounds and annotations. Some photos look like carefully arranged objects on a table. Others look much more like actual litter.
-
-I originally expected that throwing more data at the model would make it smarter. Turns out that's not how it works.
-
-I tested combinations, dropped the WaRP source after it worsened results, and rebuilt a class-balanced dataset with a fixed random seed and SHA-256 deduplication. That last part matters: a dataset isn't trustworthy if near-identical files accidentally appear in both training and evaluation.
-
-The rebuilt set has **6,898 images and 12,832 bounding boxes**, with 5,108 training images, 415 validation images and 1,375 reserved for testing. The validation split is comparatively clean and tabletop-like, which will become important in a second.
+That rebuild was followed by a dramatic jump in the recorded per-class validation scores:
 
 {{figure:1}}
 
-That graph shows how much the recorded per-class validation metrics changed after rebuilding the data. It's a dramatic improvement on *that evaluation setup*. It isn't evidence that every material became just as easy to detect in real conditions.
+Looks like a huge improvement. And on the chosen validation set, it was. But there's a detail I didn't appreciate enough at first: those 415 validation images were comparatively clean and tabletop-like.
 
-### EXP-014 versus EXP-019: two different kinds of good
+Which means the next question wasn't simply whether the score had increased. It was whether I'd made a model that understood waste better, or a model that had become particularly good at *that kind of image*.
 
-EXP-014 was trained on an older dataset mix, including more varied backgrounds. Its recorded validation result was **60.7% mAP50**.
+### Two good runs, but what does "good" mean?
 
-EXP-018 and EXP-019 used the cleaner, balanced data. They got approximately **90.6% mAP50** on the 415-image validation split, and the repeat came out almost the same.
+Consider the numbers. EXP-014, trained with an older and more varied dataset mix, achieved **60.7% mAP50** on its recorded validation split. After the rebuild, EXP-018 and EXP-019 reached roughly **90.6% mAP50** on the cleaner 415-image split, with almost the same result on the repeat run.
 
-At first glance you'd think that settles it. New model wins. Right?
+Same project, much higher number, repeatable result. You can probably see why I was thrilled. Surely the newer model had won?
 
-Well, not so fast.
+Well, testing on less controlled images made that conclusion uncomfortable.
 
 {{figure:0}}
 
-The chart tells the story of the validation experiments, but it doesn't answer how the models handle a genuinely different scene. In a separate **805-image field benchmark**, EXP-014 reached **85.8% image-level class-presence F1**, the highest result among the 11 models evaluated there.
+In a *separate* 805-image field benchmark, EXP-014 achieved **85.8% image-level class-presence F1**, the strongest result among the 11 models evaluated there. That might sound like an easy comparison with 90.6%, but it isn't. The two numbers don't measure the same thing, and **EXP-019 wasn't included in that field benchmark**.
 
-Here's the important technical catch: **mAP50 and image-level F1 are not the same metric.** mAP50 checks how well the detector's boxes overlap annotated objects at an intersection-over-union threshold of 0.5. Image-level class-presence F1 asks whether the right classes appear anywhere in the image. It doesn't directly score where the boxes are.
+To understand why, we need two definitions. **mAP50** evaluates predicted object boxes and classes at a 0.5 intersection-over-union threshold. **Image-level F1** evaluates whether the right classes are present somewhere in the image, without directly checking the boxes. Different datasets and different metrics mean 85.8% and 90.6% cannot be ranked against each other.
 
-And EXP-019 wasn't part of that 805-image benchmark. So I cannot honestly claim that EXP-014 *measured* better than EXP-019 in a fair head-to-head test. What I *can* say is that my less-controlled testing made me distrust the newer model's apparent improvement, and the separate benchmark showed that EXP-014 deserves serious attention.
+So I don't have a fair head-to-head result proving EXP-014 beats EXP-019. I have something less satisfying, but much more useful: a reason to question whether my clean validation split reflects the situations that matter to me.
 
-Those are useful clues, not a completed comparison.
+### The number was hiding a different problem
 
-### A pretty good score can still hide an ugly failure
+The trash class illustrates the difficulty. On the clean validation data, the recorded mAP50 for trash reached **97.5%**. EXP-014's trash class scored **54% F1** in the separate field evaluation. Again, these aren't directly comparable scores. But they remind me how differently the same category behaves under different conditions.
 
-One example I keep coming back to is the trash class. On the clean validation set, its recorded mAP50 reached **97.5%**. In the separate field benchmark, EXP-014's trash F1 was **54%**.
+In an actual scene, paper is crumpled, metal might only be visible from one angle, and objects overlap. Good lighting and carefully arranged backgrounds aren't guaranteed. Training and evaluating mostly on clean images can make the model look much more dependable than it feels when I point a camera at a messy pile of waste.
 
-Again, those results come from different evaluations and can't be subtracted as though they measured one thing. But the difference in how difficult "trash" appears across settings is exactly why evaluation design matters.
+That doesn't mean EXP-019 is worthless, or that EXP-014 is universally better. It means my evaluation still has a gap. And declaring a winner before testing both on the same independent data would be doing exactly what got me into this situation.
 
-Real objects overlap. Paper gets crumpled. Cans are photographed from the opening. Backgrounds and lighting are inconsistent. A model that looks brilliant on clean images can still make very annoying mistakes when I point a camera at an actual pile of waste.
+### Getting the model out of the notebook
 
-I don't think the responsible conclusion is "the model is bad." It's "I need better evidence before calling it good."
+There was also a practical question I couldn't avoid: even if I trusted the model, how would someone actually use it?
 
-### Making the models usable is its own project
+MIRA now has a command-line tool for webcam and RTSP inference, optional ByteTrack tracking, a FastAPI dashboard, dataset utilities and exported models. The `mira-ai` package is on PyPI, with model files on Hugging Face.
 
-Training isn't the only part of MIRA. I also wanted to *use* the detector instead of leaving it in a notebook.
-
-The project has a command-line tool for live webcam or RTSP stream inference, an optional ByteTrack tracker, a FastAPI-based dashboard, dataset tools and model exports. The `mira-ai` package can be installed through PyPI, and additional models are published on Hugging Face.
-
-There's another trade-off once the model leaves PyTorch. An exported LiteRT/TFLite model at 320-pixel input size is about **3.02 MB**, compared with **5.47 MB** for the original PyTorch weights. On the recorded validation setup the smaller export scored **86.2% mAP50**, below the full model's 90.6%.
-
-Smaller files are useful for eventual edge devices, but shrinking the file doesn't magically make it an accurate or fast Raspberry Pi deployment. I still don't have a measured Raspberry Pi result for the final detector.
+Exporting exposed a second trade-off. The original PyTorch weights are about **5.47 MB**, while a 320-pixel LiteRT/TFLite export is about **3.02 MB**. That's attractive if the eventual target is a small device. But the recorded validation score for that export was **86.2% mAP50**, not the full model's 90.6%, and smaller files don't automatically guarantee faster inference.
 
 {{figure:2}}
 
-If you're wondering about the Hugging Face download number: it's over 9,000 lifetime file requests in the recorded snapshot, **not** over 9,000 unique people. I wrote [a separate, less serious blog post](/blog/am-i-famous-now/) explaining that whole situation.
+I still don't have a measured deployment result for the final detector on a Raspberry Pi. That's another experiment, not an achievement I can quietly add to a project page.
 
-### So what now?
+And regarding the 9,000-plus Hugging Face "downloads": those are lifetime model-file requests, **not** 9,000 unique people. I wrote [a separate blog post](/blog/am-i-famous-now/) about why that distinction matters. Apparently even my download counter has a validation problem.
 
-The next direction, EXP-020, is an attempt to combine two things I liked: the cleaner, balanced training data behind EXP-019 and the more varied real-world backgrounds behind EXP-014.
+### So where does that leave EXP-020?
 
-The hypothesis is that the mix could generalize better. But I won't put a new victory number on this page until there's a recorded evaluation that actually supports it.
+EXP-020 is meant to test the obvious follow-up hypothesis: combine the balanced, cleaner training data behind EXP-019 with the varied backgrounds that made EXP-014 worth revisiting. Then evaluate the models under genuinely comparable conditions.
 
-For now, MIRA is still a research project. It recognizes objects in images and video, but it isn't a finished automatic sorting robot. The independent 1,375-image test split for the final runs hasn't been evaluated, and I haven't measured the final detector on a Raspberry Pi.
+I don't have a verified EXP-020 result to report here, and the independent 1,375-image test split hasn't yet been used to establish a final score for these runs. MIRA is still an experiment, not an autonomous recycling robot.
 
-To be honest, I liked seeing 90.6%. I liked it a lot. But realizing that I couldn't blindly trust it probably taught me more.
+Would I like the next model to score higher? Obviously. But I want the number to tell me something about what the model can do *outside* the validation set.
+
+I was thrilled by that 90.6%. I still think it's a nice result. I just learned that the most interesting part of it was the question it couldn't answer.
 
 ## In numbers
 

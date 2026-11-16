@@ -11,23 +11,23 @@ A Python desktop application I built during my UDE microfluidics internship to b
 
 ## Story
 
-When I started my internship at the University of Duisburg-Essen, I knew very little about microfluidics. Four weeks later I was building a desktop application that needed to communicate with pumps, read sensors, show a microscope camera, and analyse tiny droplets moving through channels.
+I went into my internship at the University of Duisburg-Essen knowing very little about microfluidics. The equipment could control tiny amounts of liquid, measure flow and record droplets moving through channels. My job was to bring those different pieces into one usable desktop application.
 
-Which is a slightly ambitious thing to attempt when you've only just learned what the equipment does.
+That sounded like a software project. And technically, it was. But after working with the hardware, I realized that drawing a button labeled "Start pump" was the easy part.
 
-The project eventually became my **FluidicStudio** app. The GitHub repository is called Microdroplets UI. It was developed independently for the university work; it is **not** Bartels' own commercial application, which is also called *Bartels FluidicStudio*.
+The difficult part was understanding what happened *after* I clicked it.
 
-The hardest part wasn't actually drawing the interface. It was figuring out how to talk to the hardware reliably.
+Over four weeks I built what became my **FluidicStudio** app, published in a repository called Microdroplets UI. It's an independent university project, not the vendor's product, which also happens to be named *Bartels FluidicStudio*. An unfortunate naming coincidence, but a useful distinction.
 
-### The board wasn't a normal software API
+### First I had to learn the board's language
 
-The setup used a [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/) and an mp-Highdriver4, plus liquid-flow sensors and a Dino-Lite microscope. The board exposes a USB serial connection. That means you send short commands to the ESP32 firmware through a COM port rather than calling a polished Python library.
+The setup used a [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/), an mp-Highdriver4, liquid-flow sensors and a Dino-Lite microscope. Instead of offering a polished Python API for the whole setup, the board communicates through a USB serial port. You send short strings to its firmware and interpret what comes back.
 
-Bartels does publish a [software manual](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf) with the basic command protocol, so I wasn't discovering every instruction from scratch. But integrating the particular board, firmware responses, driver behavior and the rest of the bench still involved a lot of digging and testing. Not everything I needed was explained in one place.
+Bartels already documents core commands in its [software manual](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf). So I wasn't discovering a secret protocol from scratch. What took work was reconciling those instructions with the firmware responses, connected drivers and sensors on the bench.
 
-Some of the commands are surprisingly compact:
+For example, several useful commands look almost suspiciously simple:
 
-```text
+```text title=board-commands.txt
 V        request firmware version
 F0=100   set frequency for the first driver group
 P1V120   set pump 1 amplitude to 120 Vpp
@@ -36,53 +36,61 @@ P1OFF    disable pump 1
 POFF     request all pumps off
 ```
 
-Those are **protocol examples**, not commands you should send to unfamiliar hardware without checking your setup. The firmware expects a serial connection at 115200 baud, 8N1, with command lines terminated by CRLF.
+These are protocol examples, not an invitation to send them to unfamiliar hardware. The setup uses 115200 baud, 8N1 serial communication with CRLF line endings, and actual safe values depend on the connected device.
 
-And even something as simple as "send `P1ON`" becomes complicated when another thread is reading replies, a sensor is streaming data, and the user might press Disconnect at any moment.
+Simple commands, right? But a command is only half the conversation. I still had to work out which incoming lines were acknowledgments, which were sensor measurements, and which responses could be safely used to identify the firmware without unexpectedly changing a setting.
 
-### Reverse engineering is also about the boring details
+And once several parts of the app were sending commands, even knowing what `P1ON` means wasn't enough.
 
-I spent a lot of time cross-checking the documented commands against what the board actually reported. Which replies were acknowledgments? Which lines were measurements? How did you identify the connected firmware without accidentally changing a pump setting? How did a shared driver frequency affect several channels?
+### One board, several things trying to control it
 
-The project now has dedicated [board-communication notes](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md) and a [pump-control research document](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md). They separate manufacturer-documented commands from behavior observed during integration.
+The application eventually needed manual pump controls, waveforms, sensor plots, camera preview and a two-panel workspace. Those features can't behave like isolated scripts if they share the same hardware.
 
-I think that's one of the most useful parts of the work. It isn't a claim that I've published the world's only Bartels documentation; the manufacturer already provides a protocol table and code examples. It's that I had to turn those details into something an actual application could depend on.
+Suppose a waveform is running on one channel while the manual controls try to change that same pump. Which one is allowed to write the next command? If they both do, the UI can say one thing while the board receives another.
 
-For example, I eventually wanted the software to handle more than one board and prevent manual pump controls from fighting a running waveform. Each channel therefore needs an owner: either manual control or a waveform controller, but not both at once.
+That led to a channel-ownership model: a channel belongs to either manual control or a waveform controller at a given moment. The backend also distinguishes settings that affect one pump from settings shared by a driver group.
 
-### A disconnect bug that made me take shutdown seriously
+I documented that work in the [board-communication notes](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md) and [pump-control research](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md), separating documented commands from behavior observed during integration.
 
-One of the code audits found a particularly nasty timing problem.
+I initially found the short command strings almost amusing. But coordinating them correctly turned out to matter much more than their length.
 
-Imagine the app is starting a pump. Sending the configuration isn't one atomic command: it can set a frequency, a waveform, an amplitude and *then* turn the pump on. What happens if the user disconnects halfway through that sequence?
+And then a code audit found a case where it mattered a lot.
 
-An executable regression scenario captured this order before the fix:
+### When "off" was followed by "on"
 
-```text
+Imagine the app is starting a pump. That's not necessarily one write to the board. A start sequence can set a frequency, select a waveform, set an amplitude and only then enable the pump.
+
+Now imagine pressing Disconnect while that sequence is still in progress.
+
+You'd expect the final global off request to win. After all, what's the point of a Disconnect button if an earlier command can turn the pump back on?
+
+An executable regression scenario recorded the following sequence **before the fix**:
+
+```text title=shutdown-trace.txt
 0.001 s   F0=100
 0.007 s   CS0=0
 0.012 s   P1V120
 0.613 s   POFF
-0.618 s   P1ON    <- this should never happen after shutdown
+0.618 s   P1ON    <- sent after the global off request
 ```
 
-The stop command had already been sent, but a pending start operation could still emit `P1ON` afterward. The application could believe shutdown had succeeded while the command stream told a different story.
+Look at the final two lines. `POFF` was sent at 0.613 seconds. Then, five milliseconds later, the pending start operation still sent `P1ON`.
 
-The fix introduced a **teardown gate**: when shutdown starts, the serial manager stops accepting new commands, coordinates writes under a lock and prevents an in-flight start from completing after the final off request. A regression test checks that the late `P1ON` no longer reaches the simulated serial stream.
+The application could believe it had shut everything down while its own command stream was enabling a pump. And because pump state affects physical hardware, that's not just an irritating UI glitch.
 
-That is a software-side fix, not proof that every physical failure mode has been eliminated. If the cable disappears or an OFF command isn't acknowledged, the actual pump state can still be unknown. The safe response is to report uncertainty rather than pretend a button click guarantees the hardware stopped.
+The fix added a **teardown gate** to the serial manager. Once shutdown starts, it stops accepting new commands and coordinates the final off request with in-flight writes. A regression test checks that the late `P1ON` no longer gets through the simulated serial connection.
 
-### The rest of the application had to agree on the data
+That doesn't prove every physical pump always stops safely. If the connection fails or an off command isn't acknowledged, the real hardware state can still be unknown. The software needs to report that uncertainty instead of pretending the act of closing a window is proof of a successful shutdown.
 
-Once the board connection worked, I could focus on the actual experiment workflow.
+### Getting useful measurements was another problem
 
-The PyQt6 interface has pump controls, waveform generation, sensor plots, camera preview and a two-panel workspace. Sensor data goes through a shared backend so the live chart and CSV logger read from the same interpreted measurements.
+With control and shutdown better defined, the next challenge was making the different measurements agree.
 
-That "convert units once" rule sounds boring, but it's important. Otherwise one page can think a number is in raw sensor units while another assumes it's in microlitres per minute.
+A shared sensor backend feeds the live graphs and CSV logging so that values aren't interpreted differently in different pages. For example, raw liquid-flow readings have to be converted to microlitres per minute consistently; converting once in the data pipeline is far safer than letting every widget invent its own conversion.
 
-The microscope workflow has its own problems. Recording frames and displaying a responsive preview aren't identical jobs. If recording or processing falls behind, you need to decide what to buffer and what to drop, or the preview becomes a delayed picture of what happened several seconds ago.
+The camera introduces another trade-off. A responsive live preview and recording every frame aren't the same task. If processing falls behind, a buffer can turn what looks like "live" video into a delayed view of the experiment.
 
-The droplet analysis is another pipeline: define a region of interest, estimate the background, detect droplets, track them between frames, count line crossings, and export measurements. A counted crossing isn't necessarily a *valid* measurement; blurry frames or broken tracks can ruin the estimated length or velocity.
+Then there's droplet analysis itself. The application has to find a region of interest, estimate the background, detect objects, associate detections across frames, count crossings and decide which measurements are actually valid.
 
 ```flow
 Microscope video
@@ -93,17 +101,19 @@ Crossing detection and measurement validation
 CSV and annotated video export
 ```
 
-### What four weeks didn't magically solve
+The diagram is a pipeline, not a guarantee of accuracy. A crossing can be counted even when blurry frames or a broken track make its length or velocity estimate unreliable. That's why it matters to distinguish detecting an event from validating a measurement.
 
-The internship ran from 3 to 28 August 2026. That was enough to build an ambitious experimental application, not enough to turn it into certified laboratory instrumentation.
+### Four weeks can build a lot, but not a finished instrument
 
-The repository has a lot of tests and audit notes. But **software tests are not physical calibration**. I don't have a published measurement-accuracy benchmark for droplet length or velocity, and the code's configurable pump limits aren't proof that those values were measured on the bench.
+The internship ran from 3 to 28 August 2026. I came out of it with a substantial PyQt6 application, a documented serial-command layer and several connected workflows. But there are still limits I wouldn't want a reader to miss.
 
-There are also unfinished areas. The valves page is incomplete, automatic driver identification isn't something I'd call universally reliable, and parts of the image analysis can only process recorded video rather than every possible camera input. Some behavior also relies on a proprietary Dino-Lite library that can't simply be included in the repository.
+The valves page is unfinished. Driver identification isn't universally reliable, and parts of the analysis workflow depend on recorded video or proprietary Dino-Lite components. The repository contains tests and code audits, but **software tests are not a physical calibration certificate**. I don't have a published accuracy benchmark for the droplet measurements.
 
-Still, I learned a lot more than how to build a PyQt interface. The interesting work was understanding a real device's protocol, coordinating several subsystems and realizing that a disconnect button is a hardware-state problem, not just a UI event.
+If I keep developing it, I'd like to make the physical measurements more reproducible and keep tightening the boundary between commands the UI requests and states the hardware has actually confirmed.
 
-For a four-week internship, that was quite a lot. And I'd happily do more work like this.
+When I began, the obvious task seemed to be bringing several instruments into one interface. It took a disappearing connection, a few surprisingly short serial commands and one very badly ordered shutdown trace to teach me what that really involves.
+
+A Disconnect button is easy to draw. Making it mean something trustworthy is the actual engineering problem.
 
 ## In numbers
 
