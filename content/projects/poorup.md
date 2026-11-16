@@ -11,39 +11,43 @@ A multiplayer property game in your browser. You can buy, trade, borrow, build a
 
 ## Story
 
-I wanted to build a game I could play with friends. Somehow that turned into Poorup: a multiplayer property game with auctions, trades, mortgages, bots, a fictional stock market, and a lot more financial decisions than I originally expected.
+I originally wanted to build a game I could play with my friends. The result was Poorup, a browser-based property game where you can buy, trade, mortgage and eventually bankrupt each other. Somehow, auctions, bots, a fictional stock market and several other systems also found their way in.
 
-You open the website, join a room, roll the dice and try not to go broke. Simple enough to explain. Not always simple to implement.
+From the player's perspective, the rules are quite straightforward: join a room, roll the dice, and try not to run out of money.
 
-Because when several browsers are connected to the same game, the really fun question is: **who gets to decide what happened?**
+But that explanation skips the most interesting part. When several people are playing from different devices, who actually decides what happened? If two browsers disagree about who bought a property, it's not enough for both interfaces to look convincing.
+
+And auctions turned out to be a particularly effective way of exposing that problem.
 
 {{figure:0}}
 
-### One room, several players, one version of the truth
+### One room needs one version of the truth
 
-Poorup runs in the browser, but the browser doesn't own the game's rules. It sends an *intent*: roll the dice, place a bid, buy a property, accept a trade. The Node.js server checks whether the action is allowed and updates the room's authoritative game state.
+A player can click a button to bid or buy something, but the browser is not supposed to make the final decision. It sends an **intent** to the Node.js server, which checks the current turn, the amount of money available and the game rules before changing the shared state.
 
-[Socket.IO](https://socket.io/) keeps clients synchronized. It makes real-time messages easier to send, but it does not make distributed systems problems disappear. Two users can click at almost the same time. A request can be delayed. A connection can vanish halfway through a decision.
+[Socket.IO](https://socket.io/) handles real-time communication between clients and the server. It makes messages easier to exchange, but it doesn't guarantee that every message arrives instantly or that everyone sees it at the same time.
 
-If each browser decided what the state was, you'd eventually have two people convinced they'd bought the same property. Not ideal.
+Imagine one player clicking Buy while another player's screen is still showing an older state. If both browsers were allowed to decide the outcome themselves, they could end up displaying two different owners for the same property. That's a pretty bad feature for a property game.
 
-So the server validates actions, checks the current turn and available money, then broadcasts the resulting state. That's an important layer of protection, though it doesn't mean the game is somehow immune to every possible exploit.
+So the server is **authoritative**: it validates the action, updates the room and broadcasts the result. That prevents a whole category of client-side inconsistencies, although it certainly doesn't mean the game is immune to every exploit.
 
 {{figure:1}}
 
-### Auctions were where things got annoying
+Now, buying a property is one action. Auctions are different. They mix several players, changing bids and a deadline that everyone is watching. Which is where a seemingly harmless countdown becomes an engineering problem.
 
-Here's a scenario that caused me trouble: an auction is running, someone places a bid near the end, and another player disconnects. Whose clock matters? What if two bids reach the server in the same second? What if the browser is showing a timer that's a little behind?
+### The countdown was not the real problem
 
-A countdown sounds like a tiny UI feature until money and game state depend on it.
+What happens if my phone says there are 80 milliseconds left, your laptop says 140 milliseconds, and both of us press Bid? Both screens could be telling the truth according to their own clocks, yet only one shared outcome is possible.
 
-The first thing I had to accept was that the **server clock must decide whether a bid is on time**. A phone's countdown is just a display. Browsers have different local clocks and network delays, and users can change the code running in their own browser.
+The easy mistake would be to let each browser decide whether its bid arrived in time. But browser clocks can differ, messages can be delayed, and the code running in a client's browser isn't something the server should blindly trust.
 
-The server currently gives an auction a five-second window, rejects bids arriving at or after its deadline, and applies a short 300 ms bid cooldown. An accepted bid updates the leading bidder and moves the deadline forward.
+So the auction deadline belongs to the **server**. In the current implementation an auction has a five-second window, bids received at or after the deadline are rejected, and accepted bids extend that deadline. There's also a 300 ms bid cooldown.
 
-The client gets a server-time offset from the synchronized game state and uses it to draw the countdown. The actual client code includes this:
+That solves the question of *who decides*. It still leaves the UI needing to show something sensible while network messages travel back and forth.
 
-```js
+The client uses a server-time offset from synchronized game state to draw a countdown closer to the server's timeline. Here is the relevant part of `clientAuctionUi.js`:
+
+```js title=clientAuctionUi.js
 function serverNow() {
   return Date.now() + (state.serverTimeOffset || 0);
 }
@@ -51,51 +55,55 @@ function serverNow() {
 const remaining = a.deadline - serverNow();
 ```
 
-That helps the displayed timer stay aligned with the server's timeline, but it still isn't the source of truth. The server decides whether a bid counts and when the auction ends.
+That calculation helps the timer look consistent. It doesn't grant the browser authority. If a bid reaches the server too late, a countdown still showing a fraction of a second cannot make the bid valid.
 
-There's a second problem: **disconnects**. A player who leaves during an auction isn't the same as a player who voluntarily passes. The code accounts for disconnected seats when accepting bids and checking the eventual winner. If the player who opened an auction leaves during the relevant turn, the server also has a cancellation path.
+Great, so the server owns the clock. Problem solved?
 
-That doesn't make networking predictable. It means the game has rules for handling some of the ways networking is unpredictable.
+Only until a player disconnects.
 
-### Why I cared about timing more than the pretty countdown
+### Disconnecting is not the same as passing
 
-If two bids are submitted almost simultaneously, the server receives and processes them in an order. It checks that a new bid is higher than the current one, that the player can afford it, and that the deadline hasn't passed.
+The awkward scenario I remember is someone leaving while an auction is still active. The server can no longer assume that every participant is connected, but it also can't pretend that a dropped connection was a deliberate decision to pass.
 
-That may mean one browser briefly shows a state that's already out of date. The UI needs to recover when the authoritative update arrives, not stubbornly insist its optimistic guess was correct.
+So the code distinguishes disconnected participants from active bidders. It checks eligibility when a bid comes in and again when the winner is determined. If the player who started an auction leaves during the relevant turn, there's a cancellation path as well.
 
-I also had to think about things such as committing cash to a leading bid: somebody shouldn't be able to promise money in an auction and spend that same money elsewhere before the auction closes.
+And even with disconnects handled, another question appears: what happens to the money behind the winning bid?
 
-The difficult part wasn't drawing five seconds on screen. It was deciding what the game should do when real people and real networks don't behave perfectly.
+If I'm leading an auction with a bid of $500, I shouldn't be able to spend that same $500 on something else and then still expect to win. The server therefore accounts for cash committed to the leading bid when deciding what the player can spend.
 
-### The game got a little out of hand
+This is why the timer problem wasn't really about drawing five seconds on a screen. It was about deciding what the game should do when two messages arrive almost together, one player vanishes, or someone's visible balance is no longer the amount they can actually use.
 
-Poorup has two boards, Standard-40 and Metro-52. There's guest play, private rooms, reconnect support, property development, financing, fictional stock-market events and an optional casino using in-game money.
+The UI has to accept those decisions and recover when its local view is out of date. It cannot simply insist that the optimistic state it displayed a moment ago must be right.
 
-I designed the UI and made the SVG artwork. I also ended up building several visual themes because apparently one theme wasn't enough.
+### Then I kept adding things
+
+Once multiplayer actions worked, there was a lot more room to experiment. Poorup now has Standard-40 and Metro-52 boards, public and private rooms, guest play, trading, property development, financing and fictional market events.
+
+I also designed the interface and SVG artwork, then built multiple visual themes. Because apparently implementing all those game rules wasn't enough; I also wanted the board to look different depending on the mood.
 
 {{figure:2}}
 
-There are deterministic bots and an AI-advisor mode too. The deterministic bot can step in if an AI provider fails, which matters because the game shouldn't freeze just because an external service is unavailable.
+The bots added another reliability problem. There's deterministic bot logic and an AI-advisor mode, with a fallback if an external AI provider isn't available. A multiplayer game shouldn't stop just because another service failed to answer.
 
-A lot of the backend grew beyond what I'd originally written by hand. I used GPT/Codex for debugging and implementation help, especially for bots and refactoring larger backend files after code-health reviews. The interface and SVG designs are my work. I think that distinction matters more than pretending everything was written one keystroke at a time.
+I also used GPT/Codex for debugging and implementation assistance, particularly with bot behavior and larger backend refactors after code reviews. The interface and SVG artwork are my own work. I'd rather explain which parts had assistance than imply that every line appeared without it.
 
-### What I would still fix
+The important thing is that the extra features all have to operate on the same shared game state. It doesn't matter how nice a new auction animation looks if it breaks the rules everyone else is playing by.
 
-Not every feature is polished, and a large codebase doesn't automatically mean a well-engineered one.
+### What I still wouldn't call finished
 
-Poorup persists account and game records in JSON files rather than a database. That's convenient for a single-process deployment, but it makes horizontal scaling much harder. The application explicitly guards against starting a multi-instance setup without a proper storage adapter.
+A bigger codebase also brings more opportunities for things to go wrong.
 
-Turns don't have a fixed time limit, so the system relies on inactivity handling and vote-kicking rather than a strict per-turn deadline.
+The server currently stores accounts and game history in JSON files. That's manageable for the single-process deployment it was designed around, but it makes running several server instances much more complicated. The application guards against that kind of setup without a suitable storage adapter.
 
-And yes, there are still individual features and edge cases that need more attention. For example, the public code and product documentation have described the Parlor Patrol minigame differently across versions; I'd want to verify the deployed behavior before advertising it as universally available.
+There's no strict fixed timer for every turn, either. The game uses inactivity handling and vote-kicking instead. Individual features still need checking, including differences between versions of the Parlor Patrol documentation and the deployed game.
 
-The source code has automated tests, but the best way to understand the product is still to get two people into a room and play an actual game.
+There are automated tests, but a useful test is also getting two people into a real room, watching what happens when their connections don't behave perfectly, and making sure the server still produces one coherent result.
 
 {{figure:3}}
 
-I originally wanted to make something fun for my friends. I ended up learning considerably more about real-time systems, consistency and network timing than I expected.
+I started Poorup because playing a property game with friends sounded fun. The part I didn't anticipate was how much of the work would be about clocks, ordering, consistency and what happens when a person disappears halfway through a decision.
 
-Also, being able to bankrupt your friends in a browser is still pretty funny.
+Then again, if I'm going to let people bankrupt their friends online, I should probably make sure we all agree on who won the auction.
 
 ## In numbers
 
