@@ -30,7 +30,7 @@ const germanStatus = {
 };
 
 // English articles are live; German article translations are not yet published.
-const posts = ["am-i-famous-now", "first-blog"];
+const posts = ["am-i-a-vibe-coder", "am-i-famous-now", "first-blog"];
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
