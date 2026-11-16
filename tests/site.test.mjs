@@ -574,9 +574,9 @@ test("blog content remains unchanged by project case-study work", () => {
 });
 
 
-test("fenced Markdown renders highlighted, escaped and scrollable code", () => {
+test("fenced Markdown becomes a real IDE-like Shiki buffer in both themes", () => {
   const source = [
-    "~~~js",
+    "~~~js title=clientAuctionUi.js",
     "function serverNow() {",
     "  return Date.now() + (state.serverTimeOffset || 0);",
     "}",
@@ -585,45 +585,72 @@ test("fenced Markdown renders highlighted, escaped and scrollable code", () => {
   const html = renderMarkdown(source);
   assert.match(html, /class="code-panel"/);
   assert.match(html, /class="code-panel-title"/);
-  assert.match(html, /<pre tabindex="0"><code class="language-js">/);
-  assert.match(html, /<span class="code-keyword">function<\/span>/);
-  assert.match(html, /<span class="code-builtin">Date<\/span>/);
-  assert.match(html, /<span class="code-number">0<\/span>/);
+  assert.match(html, /class="code-file">clientAuctionUi\.js<\/span>/);
+  assert.match(html, /JavaScript \/ 3 lines/);
+  assert.match(html, /<pre class="shiki/);
+  assert.match(html, /<code class="language-js">/);
+  assert.match(html, /class="line"/);
+  assert.match(html, /--shiki-dark:/);
+  assert.match(html, /--shiki-light:/);
   assert.doesNotMatch(html, /~~~js/);
 
-  // Source snippets must remain text, never become live markup.
-  const unsafe = renderMarkdown("~~~js\nconst x = '<script>alert(1)</script>';\n~~~");
+  const python = renderMarkdown("~~~python\nprint('hi')\n~~~");
+  assert.match(python, /<pre class="shiki/);
+  assert.match(python, /class="language-python"/);
+  const sql = renderMarkdown("~~~sql\nSELECT amount FROM ledger;\n~~~");
+  assert.match(sql, /class="language-sql"/);
+
+  // A source sample or title must not be able to inject executable HTML.
+  const unsafe = renderMarkdown("~~~js title=<script>\nconst x = '<script>alert(1)</script>';\n~~~");
   assert.doesNotMatch(unsafe, /<script>/);
   assert.match(unsafe, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(unsafe, /class="code-file"><script>/);
 });
 
-test("flow Markdown becomes an accessible diagram rather than ASCII art", () => {
+test("flow Markdown becomes a flat accessible process diagram rather than ASCII art", () => {
   const html = renderMarkdown(["~~~flow", "Input images", "Detector", "CSV export", "~~~"].join("\n"));
   assert.match(html, /class="project-flow" role="group" aria-label="Process flow diagram"/);
-  assert.match(html, /<ol><li>Input images<\/li><li>Detector<\/li><li>CSV export<\/li><\/ol>/);
+  assert.match(html, /PIPELINE \/ 3 STEPS/);
+  assert.match(html, /<ol><li><span>Input images<\/span><\/li><li><span>Detector<\/span><\/li><li><span>CSV export<\/span><\/li><\/ol>/);
   assert.doesNotMatch(html, /~~~flow/);
+  const xss = renderMarkdown(["~~~flow", "<script>", "Other step", "~~~"].join("\n"));
+  assert.doesNotMatch(xss, /<script>/);
 });
 
-test("published project pages render code, flow diagrams and inline code correctly", () => {
+test("project pages render source blocks and diagrams and retain technical claims", () => {
   const poorup = page("work/poorup/index.html");
   assert.match(poorup, /class="code-panel"/);
+  assert.match(poorup, /class="code-file">clientAuctionUi\.js<\/span>/);
   assert.match(poorup, /class="language-js"/);
-  assert.match(poorup, /<span class="code-keyword">function<\/span>/);
+  assert.match(poorup, /--shiki-dark:/);
 
   const torch = page("work/torchvk/index.html");
   assert.match(torch, /class="project-flow"/);
   assert.match(torch, /<code>torch\.cuda<\/code>/);
+  assert.match(torch, /no working training backend/);
 
   const fluid = page("work/fluidicstudio/index.html");
   assert.match(fluid, /class="project-flow"/);
-  assert.match(fluid, /class="code-panel"/);
+  assert.match(fluid, /class="code-file">shutdown-trace\.txt<\/span>/);
+  assert.match(fluid, /class="shiki shiki-plain"/);
   assert.match(fluid, /<code>P1ON<\/code>/);
 
   assert.match(page("work/mira/index.html"), /<code>mira-ai<\/code>/);
   assert.match(page("work/abivault/index.html"), /<code>bigint<\/code>/);
+  const mobileNet = page("work/mobilenet-on-fpga/index.html");
+  assert.match(mobileNet, /77\.94%/);
 
   for (const slug of ["poorup", "torchvk", "fluidicstudio", "mira", "abivault"]) {
     const html = page("work/" + slug + "/index.html");
-    assert.doesNotMatch(html, /\\\x60|&#96;&#96;&#96;|&#x60;&#x60;&#x60;/, slug + ": escaped Markdown code leaked into the page");
+    assert.doesNotMatch(html, /\\\x60|&#96;&#96;&#96;|&#x60;&#x60;&#x60;/, slug + ": escaped Markdown leaked onto the page");
   }
+});
+
+test("IDE chrome and flat diagrams follow the portfolio's own styles", () => {
+  const css = readFileSync(join(root, "src/styles/pages.css"), "utf8");
+  assert.match(css, /\.code-panel\s*\{[^}]*border-radius:\s*0;/s);
+  assert.doesNotMatch(css, /\.code-panel-dot/);
+  assert.match(css, /code-panel pre\.shiki \.line::before/);
+  assert.match(css, /\[data-theme="light"\] \.code-panel \.shiki/);
+  assert.match(css, /\.project-flow li\s*\{[^}]*border-left:\s*1px solid var\(--line\);/s);
 });
