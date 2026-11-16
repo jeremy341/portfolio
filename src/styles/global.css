@@ -655,21 +655,29 @@ article > .prose {
 /* A centered reading column on desktop; small screens keep their existing layout. */
 @media (min-width: 1000px) {
   .blog-article {
-    max-width: 110ch;
+    max-width: 96ch;
     margin-inline: auto;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
   }
 
   .blog-article > .prose {
-    max-width: none;
+    max-width: 88ch;
+    margin-inline: auto;
+    font-size: 1.2rem;
+    line-height: 1.7;
   }
 
   .blog-article > .prose > * + * {
-    margin-top: 1.5em;
+    margin-top: 1.2em;
   }
 
   .blog-article > .prose > h2 {
     margin-top: 2.8em;
+  }
+
+  .blog-article > .article-foot {
+    max-width: 88ch;
+    margin-inline: auto;
   }
 }
 

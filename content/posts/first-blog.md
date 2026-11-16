@@ -24,7 +24,9 @@ After actively being part of the community, I thought, "Now I wanna somehow orga
 
 ## [Loadout](https://loadout.dino.icu) planning
 
-So I just noticed I should probably explain [Loadout](https://loadout.dino.icu) in a bit more detail and what I have done, so here I am, ik nice from me, isn't it :). What is [Loadout](https://loadout.dino.icu)? Well, I noticed that most [YSWS](https://project.hackclub.com/overview/info/) go in one of two directions: they're either focused on one specific kind of project, or they allow pretty much anything.
+So I just noticed I should probably explain [Loadout](https://loadout.dino.icu) in a bit more detail and what I have done, so here I am, ik nice from me, isn't it :).
+
+What is [Loadout](https://loadout.dino.icu)? Well, I noticed that most [YSWS](https://project.hackclub.com/overview/info/) go in one of two directions: they're either focused on one specific kind of project, or they allow pretty much anything.
 
 A focused YSWS can help you build a specific skill, but not everyone can take part. A general one is open to more people, but might not help them go deeper in one area. Loadout plans to offer multiple areas while rewarding people for focusing on one.
 
@@ -33,4 +35,6 @@ But let me explain what I needed to do. Basically I was tasked with creating a r
 
 ## Bye till later
 
-Well I pretty much got to say what I wanted, and I'm pretty sure it turned out pretty good. So as I said, things always turn out good, and even if they don't, it's a valuable experience. Well, I hope you liked it, and in case I don't see ya, good afternoon, good evening, and good night! Bye!
+Well I pretty much got to say what I wanted, and I'm pretty sure it turned out pretty good. So as I said, things always turn out good, and even if they don't, it's a valuable experience.
+
+Well, I hope you liked it, and in case I don't see ya, good afternoon, good evening, and good night! Bye!
