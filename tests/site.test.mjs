@@ -178,7 +178,7 @@ test("each project with measurements has an In numbers section, and no page make
   }
   // TorchVK has no code yet and MobileNet has no FPGA part; the pages must keep saying so.
   assert.match(page("work/torchvk/index.html"), /no working training backend, no implemented GPU compute shader and no measured benchmark result/);
-  assert.match(page("work/mobilenet-on-fpga/index.html"), /no.*measured latency/i);
+  assert.match(page("work/mobilenet-on-fpga/index.html"), /no measured hardware resource or latency results/);
 });
 
 test("every page links to its twin in the other language and says so with hreflang", () => {
