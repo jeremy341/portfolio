@@ -65,7 +65,13 @@ test("the site is a home page, project pages and articles", () => {
 test("About and Contact are their own pages with the approved email and profiles only", () => {
   const about = page("about/index.html");
   assert.match(about, /<h1[^>]*>About<\/h1>/);
-  assert.ok(about.includes("Project work with UDE"));
+  assert.ok(about.includes("The pieces are just more expensive now."));
+  assert.ok(about.includes("University of Duisburg-Essen"));
+  assert.ok(about.includes("spring 2027"));
+  assert.ok(about.includes('href="/work/torchvk/"'));
+  assert.ok(about.includes('href="/contact/"'));
+  assert.match(about, /<p>Occasionally\.<\/p>/);
+  assert.ok(!about.includes("Fun facts"));
   const contact = page("contact/index.html");
   assert.match(contact, /<h1[^>]*>Contact<\/h1>/);
   for (const url of [
@@ -206,7 +212,10 @@ test("the German pages carry German text and link only to German pages", () => {
   const projectsPage = page("de/work/index.html");
   assert.ok(projectsPage.includes("6 Projekte"));
   const about = page("de/about/index.html");
-  assert.ok(about.includes("Biografie") && about.includes("Projektarbeit mit der UDE"));
+  assert.ok(about.includes("Universität Duisburg-Essen") && about.includes("Osterferien 2027"));
+  assert.ok(about.includes('href="/de/work/torchvk/"'));
+  assert.ok(about.includes('href="/de/contact/"'));
+  assert.match(about, /<p>Ab und zu\.<\/p>/);
   assert.equal(jsonLd(page("de/blog/index.html"))[0]["@graph"].find((node) => node["@type"] === "Blog").blogPost.length, posts.length);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.

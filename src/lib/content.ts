@@ -74,7 +74,7 @@ const names = {
     source: /source repository/i,
     package: /pypi|package/i,
     certificate: { issuer: "Issued by", kind: "Kind", date: "Date", reference: "Reference", verify: "Verify", image: "Image", alt: "Image description" },
-    about: { profile: "Short profile", biography: "Biography", ude: "Project work with UDE", community: "Community and internships", topics: "What I keep exploring", facts: "Fun facts", mira: "MIRA in public", profiles: "Public profiles" },
+    about: { profile: "Short profile", biography: "Biography", topics: "What I keep exploring" },
     contact: { direct: "Direct", profiles: "Approved public profiles" },
     categories: { systems: "Systems & compute", ml: "Machine learning", hardware: "Hardware & embedded", games: "Games & software" },
   },
@@ -93,7 +93,7 @@ const names = {
     source: /quellcode-repository/i,
     package: /pypi|paket/i,
     certificate: { issuer: "Ausgestellt von", kind: "Art", date: "Datum", reference: "Kennung", verify: "Prüfen", image: "Bild", alt: "Bildbeschreibung" },
-    about: { profile: "Kurzprofil", biography: "Biografie", ude: "Projektarbeit mit der UDE", community: "Community und Praktika", topics: "Was ich weiter erkunde", facts: "Ein paar Fakten", mira: "MIRA in der Öffentlichkeit", profiles: "Öffentliche Profile" },
+    about: { profile: "Kurzprofil", biography: "Biografie", topics: "Was ich weiter erkunde" },
     contact: { direct: "Direkt", profiles: "Öffentliche Profile" },
     categories: { systems: "Systeme & Rechnen", ml: "Maschinelles Lernen", hardware: "Hardware & Embedded", games: "Spiele & Software" },
   },
@@ -330,12 +330,7 @@ function loadAbout(lang: Lang) {
   return {
     profile: section(map, n.profile),
     biography: section(map, n.biography),
-    ude: section(map, n.ude),
-    community: section(map, n.community),
     topics: section(map, n.topics),
-    facts: section(map, n.facts),
-    mira: section(map, n.mira),
-    profiles: section(map, n.profiles),
   };
 }
 
