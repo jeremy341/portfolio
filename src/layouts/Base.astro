@@ -44,16 +44,14 @@ const previews = {
     localizedUrl(lang, `/work/${p.slug}/`),
     { title: p.name, text: p.summary, image: projectImages[p.slug] },
   ]),
-  ["/cv/", { title: "CV", text: "Experience, education, skills and personal projects." }],
+  [localizedUrl(lang, "/cv/"), { title: t.cvTitle, text: t.cvDescription(site.name) }],
 ]),
   ...outsidePreviews(lang),
 };
 const fullTitle = home && title ? `${site.name} | ${title}` : title ? `${title} | ${site.name}` : site.name;
 const url = canonical(Astro.url.pathname);
 const english = canonical(otherPath(Astro.url.pathname, "en"));
-const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(Astro.url.pathname);
 const alternates = (["en", "de"] as const)
-  .filter((code) => !englishOnlyArticle || code === "en")
   .map((code) => ({ code, href: canonical(otherPath(Astro.url.pathname, code)) }));
 const other = lang === "de" ? "en" : "de";
 // The share card in the page's language. Link previews need an absolute address, so it exists only with a domain.

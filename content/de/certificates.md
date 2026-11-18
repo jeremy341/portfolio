@@ -1,6 +1,6 @@
 # Zertifikate
 
-Jede Urkunde und jede Bescheinigung nennt, wer sie ausgestellt hat. Wo ein Dokument private Angaben enthält, sind sie im Bild selbst abgedeckt.
+Bei jedem Zertifikat steht dabei, wer es ausgestellt hat und was genau es bedeutet. Private Angaben sind in den Bildern selbst abgedeckt.
 
 ## Hack Club Stardance Challenge
 
@@ -12,7 +12,7 @@ Jede Urkunde und jede Bescheinigung nennt, wer sie ausgestellt hat. Wo ein Dokum
 - Bild: certificates/stardance.png
 - Bildbeschreibung: Urkunde der [Hack Club](https://hackclub.com/) Stardance Challenge für Jeremy Darko, unterschrieben von Zach Latta, dem Gründer von [Hack Club](https://hackclub.com/). Sie nennt ein veröffentlichtes Projekt und 197 Stunden Arbeit.
 
-[Hack Club](https://hackclub.com/) hat mir die Urkunde für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Sie beziffert die Arbeit mit 197 Stunden, und unterschrieben hat sie Zach Latta, der Gründer von [Hack Club](https://hackclub.com/). Zum Prüfen gibst du die Kennung auf der Stardance-Website ein.
+[Hack Club](https://hackclub.com/) hat mir die Urkunde für Poorup verliehen, das ich in der Stardance-Challenge veröffentlicht habe. Auf der Urkunde stehen 197 dokumentierte Stunden; unterschrieben hat sie Zach Latta, der Gründer von [Hack Club](https://hackclub.com/). Zur Überprüfung gibst du die Kennung auf der Stardance-Website ein.
 
 ## Praktikum an der Universität Duisburg-Essen
 
@@ -22,7 +22,7 @@ Jede Urkunde und jede Bescheinigung nennt, wer sie ausgestellt hat. Wo ein Dokum
 - Bild: certificates/ude-internship.jpg
 - Bildbeschreibung: Zweite Seite des Praktikumszeugnisses der Universität Duisburg-Essen für Jeremy Darko, unterschrieben von Prof. Dr.-Ing. Karsten Seidl. Die Zeile mit Geburtsdatum und Geburtsort ist durch einen schwarzen Balken abgedeckt.
 
-Das Praktikum war freiwillig und dauerte vier Wochen im Fachgebiet EBS. Dort habe ich an einem Steuerungs- und Bildanalysesystem für tröpfchenbasierte mikrofluidische Systeme mitgearbeitet. Mein Anteil war:
+Das Praktikum war freiwillig und dauerte vier Wochen im Fachgebiet EBS. Dort habe ich an einem Steuerungs- und Bildanalysesystem für mikrofluidische Tröpfchen mitgearbeitet. Mein Anteil war:
 
 - verschiedene Hard- und Softwarekomponenten zu einem Gesamtsystem integrieren und die grafische Benutzeroberfläche zur Steuerung und Auswertung bauen
 - Versuche durchführen und bei Inbetriebnahme, Validierung und Optimierung des Systems helfen
@@ -40,4 +40,4 @@ Aus dieser Arbeit ist [FluidicStudio](projects/fluidicstudio.md) geworden. Ich z
 - Bild: certificates/nasa-roman-pixel.jpg
 - Bildbeschreibung: NASA-Urkunde, nach der Jeremy Darko ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope offiziell adoptiert hat, mit der eindeutigen Pixelnummer 00828475.
 
-Die Urkunde besagt, dass ich ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope adoptiert habe. Sie ist ein Andenken und keine Qualifikation, aber sie steht hier, weil ich sie mag. Also keine Sorge.
+Die Urkunde besagt, dass ich ein Pixel aus den ersten Bildern des Nancy Grace Roman Space Telescope adoptiert habe. Das ist ein Andenken, keine Qualifikation. Es steht hier einfach, weil ich es mag.

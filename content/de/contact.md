@@ -1,8 +1,8 @@
 # Kontakt
 
-Eine Frage zu einem Projekt, eine Idee, die man ausprobieren könnte, oder ein Gespräch über ein Praktikum.
+Eine Frage zu einem Projekt, eine Idee, die wir gemeinsam ausprobieren könnten, oder ein Praktikum? Schreib mir.
 
-Ich wohne in Nordrhein-Westfalen und suche praktische Erfahrung in den Schulferien. Am schnellsten erreichst du mich per E-Mail. Mein Lebenslauf und meine öffentlichen Profile zeigen den Rest.
+Ich wohne in NRW und suche gerade ein Praktikum für die Osterferien 2027, am liebsten rund um Computer Engineering, Machine Learning oder Hardware. Auch für andere Projekte und Ideen bin ich offen. Am schnellsten erreichst du mich per E-Mail. Meinen Lebenslauf und meine Profile findest du hier.
 
 ## Direkt
 

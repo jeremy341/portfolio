@@ -7,73 +7,109 @@
 
 ## Zusammenfassung
 
-Ich bringe einer Kamera bei, Abfall auseinanderzuhalten. Es ist Computer Vision, angewendet auf ein Recyclingproblem, das ich wirklich anfassen kann.
+Ich habe einer Kamera beigebracht, Müll zu erkennen – erst mit einem Klassifikator, dann mit YOLO. Warum ein guter Validierungswert nicht alles ist.
 
-## Kontext und Motivation
+## Story
 
-MIRA steht für Machine Intelligence for Recycling Automation. Es begann mit einer einfachen Frage: Kann eine günstige Kamera mit einem kleinen Modell verschiedene Abfallarten gut genug unterscheiden, um beim Sortieren zu helfen? Das langfristige Ziel ist automatisches Sortieren. Das kurzfristige Ziel ist bescheidener, dafür aber nützlicher: Ich will herausfinden, wie nah die aktuellen Modelle daran wirklich sind.
+Ich weiß noch, wie ich bei der Validierung von MIRA die **90,6 % mAP50** gesehen habe. Nach all den Trainingsläufen, Änderungen am Datensatz und Ideen, die nicht funktioniert hatten, stand da endlich eine Zahl, bei der sich die ganze Arbeit gelohnt zu haben schien.
 
-Deshalb bin ich beim Schreiben so genau. Das Projekt ist als deutsche Forschungsarbeit für [Jugend forscht](https://www.jugend-forscht.de/) aufgeschrieben, und ich versuche, Arbeit und Code aufeinander abgestimmt zu halten. Alles, was ich über ein Ergebnis schreibe, muss deshalb sagen, was gemessen wurde, auf welchen Daten und was es nicht zeigt.
+Dachte ich zumindest.
 
-## Im Projekt
+Als ich anfing, die Modelle unter weniger kontrollierten Bedingungen zu testen, war ich mir da plötzlich nicht mehr so sicher. In meinen eigenen Praxistests wirkte das neuere Modell nicht durchgehend so zuverlässig wie EXP-014, ein älterer Versuch mit deutlich weniger beeindruckendem Validierungswert.
 
-MIRA ist eine Pipeline vom einzelnen Foto bis zur Live-Kameraansicht. Ich habe sie in zwei Stufen gebaut, und die zweite hat das Projekt stärker verändert, als ich erwartet hatte.
+Wie kann ein Modell auf dem Papier *besser* werden und mich im Einsatz trotzdem weniger überzeugen? Genau diese Frage hat die nächsten Schritte bei MIRA bestimmt.
 
-### Stufe A: Kann ein Modell die Materialien unterscheiden?
+### Vom Bild zum einzelnen Objekt
 
-Am Anfang standen selbst gesammelte Fotos: 796 Bilder in vier Klassen. Zuerst trainierte ich ein kleines eigenes CNN, aber dann übernahm ein vortrainiertes MobileNetV2. Das feinabgestimmte MobileNetV2 erreichte etwa 87 % Validierungsgenauigkeit, und eine INT8-TFLite-Version davon behielt diese Genauigkeit bei nur 2,6 MB Dateigröße.
+MIRA steht für **Machine Intelligence for Recycling Automation**. Langfristig möchte ich mithilfe einer Kamera und eines kleinen Modells Müll sortieren. Bevor ich mir überhaupt Gedanken über eine Sortiermaschine machen konnte, musste ich allerdings herausfinden, ob die Software den Müll überhaupt erkennt.
 
-Das zeigte, dass sich die Materialien unterscheiden lassen, aber es blieb eine Lücke. Ein Klassifikator gibt jedem Foto genau ein Etikett. Er kann also sagen: „Das ist Plastik“. Ein Sortierer muss aber auch wissen, wo das Plastik liegt und ob es drei Flaschen oder eine sind. Diese Lücke hat mich zur Stufe B gebracht.
+Angefangen habe ich mit 796 Fotos in vier Klassen und einem kleinen Convolutional Neural Network (CNN). Später habe ich MobileNetV2 per Fine-Tuning angepasst. Der Klassifikator erreichte etwa 87 % Validierungsgenauigkeit; die exportierte INT8-TFLite-Version war 2,6 MB groß.
 
-### Stufe B: Wo liegt das Objekt?
+Ein guter Anfang. Stell dir aber vor, vor der Kamera liegen zwei Flaschen und ein Stück Papier. Ein Klassifikator kann dir sagen, welche Kategorie am besten zum *gesamten Bild* passt. Wo die einzelnen Gegenstände liegen, weißt du damit noch nicht. Dafür brauchte ich **Objekterkennung**: Das Modell bestimmt nicht nur die Klasse, sondern auch eine Bounding Box um den Gegenstand.
 
-Stufe B ist der Wechsel von der Klassifikation zur Detektion. Ich habe mit YOLOv8n angefangen und dann auf YOLO11n gewechselt. Trainiert habe ich mit [Ultralytics](https://www.ultralytics.com/) auf [Kaggle](https://www.kaggle.com/) und auf Colab-GPUs vom Typ T4, 120 Epochen bei 640 Pixeln.
+Also bin ich auf YOLOv8n und schließlich auf YOLO11n umgestiegen. Damit erkannte MIRA Glas, Metall, Papier, Plastik und die Klasse Trash. Das löste die Frage, welche Art von Problem mein Modell bearbeiten sollte. Nicht aber die wesentlich lästigere Frage, welchen Daten ich eigentlich trauen konnte.
 
-Es gibt fünf Klassen: Glas, Metall, Papier, Plastik und Trash. Die Trainingsdaten kommen aus vier Quellen: [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet) (mit SAM beschriftet), dem Trash-Detection-Datensatz von [Roboflow](https://roboflow.com/) und einem Datensatz von dmedhi. Ein Skript baut daraus den endgültigen Satz mit festem Seed, SHA-256-Prüfung gegen Duplikate und einem Herkunftsnachweis. So kann ich bei jedem Bild sagen, woher es stammt. Am Ende stehen 6.898 Bilder mit 12.832 Boxen, klassenausgeglichen. Eine Quelle, WaRP, habe ich wieder herausgenommen, weil sie die Ergebnisse verschlechtert hat. Den größten Sprung bei der Genauigkeit hat die Datenarbeit gebracht, nicht eine Änderung am Modell.
+### Der Datensatz war selbst Teil des Experiments
 
-### Zwei gute Läufe, zwei verschiedene Antworten
+Meine Bilder kamen aus ganz unterschiedlichen Quellen: [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet), [Roboflow](https://roboflow.com/) und einem Datensatz von dmedhi. Auf manchen Bildern lagen einzelne Gegenstände vor sauberem Hintergrund, andere zeigten Müll mitten in unübersichtlichen Alltagssituationen.
 
-Welches Modell das beste ist, hängt davon ab, wie man es misst. Das war die wichtigste Erkenntnis aus Stufe B.
+Mehr Bilder schienen mir zunächst eine ziemlich naheliegende Verbesserung zu sein. Mehr Beispiele, mehr lernen, oder? Nur unterschieden sich die Quellen bei den Labels, der Verteilung der Klassen und den Aufnahmebedingungen. Mehr Daten sind eben nicht unbedingt *bessere* Daten.
 
-EXP-019 hat die besten Validierungswerte. Es wiederholt EXP-018 auf dem sauberen, klassenausgeglichenen Datensatz und erreicht 90,6 % mAP50 auf dem Split mit 415 Bildern vom Tisch. Beim zweiten Mal kam fast genau dasselbe heraus. Das sind aber saubere Fotos auf einem schlichten Tisch. Der Wert zeigt, dass das Modell diesen Datensatz gut gelernt hat, aber nicht, wie es sich auf einem echten Sortierband verhält. Auf echten Fotos hat es nicht schlecht abgeschnitten, war dort aber auch nicht das beste Modell.
+Ich habe verschiedene Kombinationen getestet, WaRP wieder entfernt, nachdem sich die Ergebnisse verschlechtert hatten, und schließlich einen ausgewogenen Datensatz neu aufgebaut. Ein fester Zufalls-Seed und eine Deduplizierung mit SHA-256 sollten das Risiko senken, dieselben Dateien im Training und bei der Auswertung zu verwenden. Am Ende waren es **6.898 Bilder und 12.832 Bounding Boxes**: 5.108 Trainings-, 415 Validierungs- und 1.375 Testbilder.
 
-EXP-014 war im Feld-Benchmark am besten, und das hat mich am meisten überrascht. Es wurde auf der älteren Mischung aus [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet) und [Roboflow](https://roboflow.com/) trainiert. Auf seinem eigenen Validierungssplit kam es nur auf 60,7 % mAP50. Im Benchmark mit 805 Bildern, der Fotos aus der freien Natur und vom Tisch mischt, erreichte es 85,8 % F1 bei der Klassenpräsenz pro Bild. Das war der beste Wert von 11 getesteten Modellen. Ich führe das auf die wilden Fotos mit gemischtem Hintergrund zurück, mit denen es trainiert wurde. Der F1-Wert für Trash war mit 54 % trotzdem der schwächste. EXP-019 war nicht Teil dieses Benchmarks, und die Benchmark-Bilder sind nicht dieselben wie die 415 Bilder des Splits. Deshalb kann ich die beiden nicht direkt gegeneinander einordnen.
+Danach machten die Validierungswerte der einzelnen Klassen einen ziemlich großen Sprung:
 
-Daraus folgt das nächste Experiment. Auf dem Tischsplit erreicht Trash 97,5 % mAP50, im Feld-Benchmark aber nur 54 % F1. Meine Vermutung: Ein Validierungssatz mit meist einfachen, gut beleuchteten Fotos schönt das Ergebnis, und der Feld-Benchmark kommt dem näher, was ein Sortierer tatsächlich sieht. Bewiesen habe ich das noch nicht.
+{{figure:1}}
 
-EXP-020 läuft gerade. Es soll die beiden Richtungen verbinden: den sauberen, ausgeglichenen Datensatz hinter dem Validierungswert von EXP-019 und die Fotos aus der freien Natur mit gemischtem Hintergrund, mit denen EXP-014 im Feld besser funktioniert hat. Ziel ist ein Modell, das den Validierungswert hält und auch im Feld-Benchmark gut abschneidet. Es ist noch nicht protokolliert, deshalb gibt es auf dieser Seite dazu noch keine Zahlen.
+Sieht nach einer enormen Verbesserung aus. Auf diesem Validierungssplit war es das auch. Nur hatte ich ein Detail zunächst unterschätzt: Die 415 Validierungsbilder waren vergleichsweise sauber, häufig sahen sie aus wie Aufnahmen auf einer Tischplatte.
 
-### Was es heute kann
+Die Frage war also nicht mehr bloß, ob die Zahl gestiegen war. Ich wollte wissen, ob das Modell Müll besser erkannte oder ob es besonders gut geworden war, *solche Bilder* zu erkennen.
 
-- Mit der Kommandozeile `mira` läuft die Live-Erkennung von einer Webcam oder einem IP/RTSP-Stream, optional mit ByteTrack-Tracking.
-- Ein lokales Dashboard mit [FastAPI](https://fastapi.tiangolo.com/) und einer Web-Oberfläche zeigt Erkennungen, Klassenzahlen, FPS, Latenz, CPU und Speicher.
-- Es gibt Werkzeuge zum Bauen von Datensätzen, zum Auswerten der Modelle und für den Feld-Benchmark. Dahinter stehen etwa 25 Testdateien.
-- Exporte nach [ONNX](https://onnx.ai/) und [LiteRT](https://ai.google.dev/edge/litert)/[TFLite](https://www.tensorflow.org/lite) bei 320 und 640 Pixeln. Das Paket `mira-ai` auf [PyPI](https://pypi.org/) enthält die Modelle, und die Gewichte liegen auf [Hugging Face](https://huggingface.co/).
+### Zwei gute Ergebnisse. Aber was heißt eigentlich gut?
+
+EXP-014 kam mit seinem älteren, vielfältigeren Datensatz auf **60,7 % mAP50** im damaligen Validierungssplit. Nach dem Neuaufbau erreichten EXP-018 und EXP-019 etwa **90,6 % mAP50** auf den 415 saubereren Bildern. Selbst beim zweiten Lauf kam fast dieselbe Zahl heraus.
+
+Dasselbe Projekt, deutlich höherer Wert, reproduzierbares Ergebnis. Du kannst dir vorstellen, warum ich so begeistert war. Das neuere Modell hatte also gewonnen, oder?
+
+Na ja. Auf weniger kontrollierten Bildern wurde mir diese Schlussfolgerung etwas unangenehm.
+
+{{figure:0}}
+
+In einem *separaten* Feld-Benchmark mit 805 Bildern erreichte EXP-014 **85,8 % F1 für die Anwesenheit von Klassen pro Bild**. Das war das beste Ergebnis unter elf dort getesteten Modellen. Klingt, als könnte man die 85,8 % einfach mit den 90,6 % vergleichen. Kann man aber nicht. Die Zahlen messen Unterschiedliches, und **EXP-019 war gar nicht Teil dieses Feld-Benchmarks**.
+
+Bei **mAP50** werden vorhergesagte Klassen und Bounding Boxes bei einem Intersection-over-Union-Schwellenwert von 0,5 bewertet. Der **F1-Wert auf Bildebene** prüft dagegen, ob die richtigen Klassen irgendwo im Bild vorkommen, ohne die Boxen direkt zu bewerten. Unterschiedliche Metriken und unterschiedliche Datensätze – damit lässt sich keine Rangfolge aus 85,8 % und 90,6 % ableiten.
+
+Ich habe also keinen fairen direkten Vergleich, der beweist, dass EXP-014 besser als EXP-019 ist. Dafür habe ich etwas weniger Befriedigendes, aber wesentlich Nützlicheres: einen Grund, daran zu zweifeln, ob mein sauberer Validierungssplit die Situationen abbildet, auf die es mir ankommt.
+
+### Hinter der Zahl steckte ein anderes Problem
+
+Bei der Klasse Trash wird das besonders deutlich. Auf den sauberen Validierungsbildern erreichte sie **97,5 % mAP50**. Bei EXP-014 lag ihr F1-Wert in der separaten Feldauswertung bei **54 %**. Auch hier lassen sich die Zahlen nicht direkt vergleichen. Sie zeigen mir aber, wie unterschiedlich dieselbe Klasse unter anderen Bedingungen abschneiden kann.
+
+In der Realität ist Papier zerknüllt, Metall sieht aus verschiedenen Winkeln unterschiedlich aus und Gegenstände liegen übereinander. Gutes Licht und aufgeräumte Hintergründe sind keineswegs selbstverständlich. Wenn ich hauptsächlich auf sauberen Bildern trainiere und validiere, kann das Modell auf dem Papier wesentlich zuverlässiger aussehen als vor einem echten Müllhaufen.
+
+Das macht EXP-019 nicht wertlos und EXP-014 nicht automatisch zum besseren Modell. Es zeigt vielmehr, dass mir noch ein Teil der Auswertung fehlt. Bevor ich beide Modelle auf denselben unabhängigen Bildern teste, einen Sieger auszurufen, wäre genau der Fehler, der mich überhaupt hierhergebracht hat.
+
+### Raus aus dem Notebook
+
+Selbst wenn ich dem Modell vertraute, blieb noch eine praktische Frage: Wie soll jemand es eigentlich benutzen?
+
+MIRA hat inzwischen ein Kommandozeilentool für Webcam- und RTSP-Inferenz, optionales ByteTrack-Tracking, ein FastAPI-Dashboard, Datensatzwerkzeuge und verschiedene exportierte Modelle. Das Paket `mira-ai` liegt auf PyPI, die Modelldateien auf Hugging Face.
+
+Beim Export kam der nächste Kompromiss dazu. Die ursprünglichen PyTorch-Gewichte sind etwa **5,47 MB** groß, der LiteRT/TFLite-Export für 320 Pixel etwa **3,02 MB**. Für ein kleines Zielgerät ist das attraktiv. Der dokumentierte Validierungswert des Exports lag aber bei **86,2 % mAP50**, nicht bei 90,6 %. Und eine kleinere Datei garantiert noch keine schnellere Inferenz.
+
+{{figure:2}}
+
+Für den finalen Detektor habe ich bisher keine Messwerte aus einem Deployment auf dem Raspberry Pi. Das ist ein weiteres Experiment, kein Erfolg, den ich schon mal vorsorglich auf die Projektseite schreiben kann.
+
+Und die über 9.000 „Downloads“ auf Hugging Face? Das sind Abrufe von Modelldateien seit der Veröffentlichung, **nicht** 9.000 verschiedene Personen. Warum diese Unterscheidung wichtig ist, habe ich in einem [eigenen Blogartikel](/blog/am-i-famous-now/) erklärt. Offenbar hat sogar mein Downloadzähler ein Validierungsproblem.
+
+### Und was wird jetzt aus EXP-020?
+
+Mit EXP-020 möchte ich die naheliegende nächste Hypothese testen: die ausgewogenen, saubereren Trainingsdaten hinter EXP-019 mit den abwechslungsreichen Hintergründen kombinieren, wegen derer EXP-014 überhaupt wieder interessant wurde. Danach sollen die Modelle unter tatsächlich vergleichbaren Bedingungen ausgewertet werden.
+
+Ein verifiziertes Ergebnis für EXP-020 habe ich hier noch nicht. Auch die unabhängigen 1.375 Testbilder wurden noch nicht für eine abschließende Bewertung dieser Läufe verwendet. MIRA ist weiterhin ein Experiment, kein autonomer Recyclingroboter.
+
+Würde ich mich über einen höheren Wert freuen? Natürlich. Aber ich möchte, dass mir die Zahl auch etwas darüber sagt, was das Modell *außerhalb* des Validierungssplits kann.
+
+Über die 90,6 % habe ich mich damals riesig gefreut. Finde ich immer noch ein schönes Ergebnis. Nur war das Interessanteste daran letztlich die Frage, die der Wert nicht beantworten konnte.
 
 ## In Zahlen
 
-- Protokollierte Experimente: 19 (EXP-001 bis EXP-019), jedes mit Einstellungen und Ergebnis im Log; EXP-020 läuft gerade
-- Feld-Benchmark: EXP-014 mit 85,8 % F1 pro Bild (92,9 % Präzision, 79,7 % Recall) auf 805 Bildern, der beste von 11 getesteten Modellen
-- Endgültiger Datensatz: 6.898 Bilder und 12.832 Boxen (5.108 Training, 415 Validierung, 1.375 Test)
-- Modell: YOLO11n, 2,58 Millionen Parameter und 6,3 GFLOPs
-- Bestes Validierungsergebnis: 90,6 % mAP50 und 82,2 % mAP50-95 auf dem Validierungssplit mit 415 Bildern, in einem zweiten Lauf mit 90,58 % wiederholt
-- Vor dem Neubau des Datensatzes: 60,7 % mAP50 (EXP-014)
-- Größe des endgültigen Modells: 5,47 MB als PyTorch-Gewichte, 3,02 MB als LiteRT-Datei mit 320 Pixeln
-- LiteRT-Export mit 320 Pixeln: 86,2 % mAP50, die kleinere Datei verliert also etwa 4 Punkte
-- Geschwindigkeit: 1,5 bis 3,6 ms pro Bild auf einer T4-GPU; noch keine Messung auf einem Raspberry Pi
-- Downloads: rund 9.100 Modell-Downloads auf [Hugging Face](https://huggingface.co/) insgesamt (ein Download-Zähler, keine Zahl von Personen)
+- Protokollierte Experimente: EXP-001 bis EXP-019; EXP-020 geplant/im Training, hier noch ohne Ergebnis
+- Bester dokumentierter Wert auf sauberen Validierungsdaten: 90,6 % mAP50 (EXP-018), 90,58 % beim zweiten Lauf (EXP-019), 415 Bilder
+- Feld-Benchmark: EXP-014, 85,8 % F1 für Klassenanwesenheit pro Bild (92,9 % Precision, 79,7 % Recall), 805 Bilder
+- Datensatz: 6.898 Bilder, 12.832 Boxen (5.108 Training / 415 Validierung / 1.375 Test)
+- Detektor: YOLO11n, etwa 2,58 Millionen Parameter
+- Modellgrößen: PyTorch 5,47 MB; LiteRT-Export mit 320 Pixeln 3,02 MB
+- Dokumentierter Validierungswert des 320-Pixel-LiteRT-Exports: 86,2 % mAP50
+- GPU-Inferenz: 1,5 bis 3,6 ms pro Bild auf einer T4 im dokumentierten Aufbau, keine Messung auf dem Raspberry Pi
+- Downloads: über 9.100 Modellabrufe insgesamt auf Hugging Face (Dateiabrufe, keine Anzahl von Personen)
 
 ## Abbildungen
 
 - ![Liniendiagramm der Validierungs-mAP50 für die YOLO11n-Läufe EXP-013 bis EXP-019. Die ersten fünf Läufe liegen zwischen 55 und 61 Prozent, die letzten beiden bei 90,6 Prozent.](mira/detector-history.de.png) Validierungs-mAP50 über die YOLO11n-Läufe.
 - ![Balkendiagramm der mAP50 pro Klasse, früherer Datensatz gegen sauberen Datensatz: Glas 50,2 zu 90,8, Metall 71,3 zu 94,8, Papier 82,9 zu 88,7, Plastik 72,1 zu 81,1, Trash 26,9 zu 97,5.](mira/class-map.de.png) mAP50 pro Klasse, vor und nach dem Neubau der Daten.
 - ![Balkendiagramm der Dateigröße des endgültigen Modells: PyTorch 5,47 MB, ONNX 10,61 MB, LiteRT mit 320 Pixeln 3,02 MB und mit 640 Pixeln 3,04 MB.](mira/export-sizes.de.png) Dateigröße des Modells nach Exportformat.
-
-## Aktueller Stand
-
-Der Sortierroboter ist noch nicht fertig, und auf einem Raspberry Pi hat bisher nichts gelaufen. EXP-020 trainiert noch und hat deshalb noch keine protokollierten Ergebnisse.
-
-Die 90,6 % stammen von einem Validierungssplit im Stil von [TrashNet](https://github.com/garythung/trashnet), also von Tischaufnahmen, die im Vergleich zu einer echten Sortierstrecke einfach sind. Der Testsplit mit 1.375 Bildern wurde für die endgültigen Läufe nicht ausgewertet. Der Feld-Benchmark prüft nur, ob eine Klasse im Bild vorkommt, nicht wo sie liegt. Deshalb sagt er wenig über die Qualität der Erkennung. Quantisierte Exporte verlieren Genauigkeit, wie das LiteRT-Ergebnis mit 320 Pixeln zeigt. Zerknülltes Papier, überlappende Objekte, Dosen, die man von der Öffnung her sieht, und ungewöhnliches Licht bleiben schwierige Fälle. Ein gutes Ergebnis auf dem Datensatz ist keine Garantie für echtes Sortieren. Die README sagt außerdem, dass KI-Werkzeuge bei Teilen des Programmierens und Debuggens geholfen haben.
 
 ## Links
 

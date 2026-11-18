@@ -10,13 +10,13 @@ Ich bin Jeremy, Schüler aus NRW, und ich habe ein kleines Problem damit, Dinge 
 
 Als ich jünger war, habe ich die übrigen Teile meiner LEGO-Sets zusammengeworfen, weil mir das Bauen nach Anleitung irgendwann zu langweilig wurde. Jahre später hat sich daran offenbar nicht viel geändert. Die Teile sind nur teurer geworden.
 
-Wie ich zu Computern gekommen bin, war eher Zufall. Ich habe angefangen zu programmieren, mich über meinen langsamen PC geärgert und beschlossen, dass es die vernünftigste Lösung wäre, erst mal zu lernen, wie das ganze Ding funktioniert. Dann habe ich PCs für Freunde konfiguriert, ein paar davon zusammengebaut, 400 € gespart und schließlich meinen Vater davon überzeugt, mir einen eigenen PC aus gebrauchten Teilen bauen zu lassen.
+Wie ich zu Computern gekommen bin, war eher Zufall. Ich habe angefangen zu programmieren, mich über meinen langsamen PC geärgert und beschlossen, dass es die vernünftigste Lösung wäre, erst mal zu lernen, wie das ganze Ding funktioniert. Dann habe ich PCs für Freunde konfiguriert, ein paar davon zusammengebaut, 400 € gespart und schließlich meinen Vater davon überzeugt, mich meinen eigenen PC aus gebrauchten Teilen zusammenbauen zu lassen.
 
 Den benutze ich übrigens immer noch.
 
 Das war wohl der Punkt, an dem mir Software allein nicht mehr gereicht hat.
 
-Heute interessiert mich vor allem, was darunter passiert. Warum kann meine AMD-GPU Millionen von Pixeln zeichnen, aber PyTorch will darauf nicht trainieren? Warum kann ein Modell in der Validierung 90,6 % erreichen und ich werde trotzdem nervös, sobald ich eine Kamera auf echten Müll richte? Warum wird aus einem Klick auf einen Button mit der Aufschrift „Start pump“ plötzlich ein Problem mit dem seriellen Protokoll?
+Heute interessiert mich vor allem, was darunter passiert. Warum kann meine AMD-GPU Millionen von Pixeln zeichnen, aber PyTorch will darauf nicht trainieren? Warum werde ich bei einem Modell mit 90,6 % in der Validierung trotzdem nervös, sobald ich die Kamera auf echten Müll richte? Warum wird aus einem Klick auf einen Button mit der Aufschrift „Start pump“ plötzlich ein Problem mit dem seriellen Protokoll?
 
 Aus diesen Fragen sind [TorchVK](/work/torchvk/), [MIRA](/work/mira/) und [FluidicStudio](/work/fluidicstudio/) entstanden.
 
@@ -28,13 +28,13 @@ Ich verbringe auch viel Zeit bei [Hack Club](https://hackclub.com/). Die Communi
 
 Wo das alles genau hinführt, finde ich noch heraus. Computer Engineering trifft es wahrscheinlich am besten: ML-Systeme, GPU-Computing, Embedded Hardware und alles, was irgendwo dazwischen liegt.
 
-Mir geht es nicht darum, eine Technologie nur zu kennen, damit ich sie auf eine Liste schreiben kann. Ich mag den Moment in einem Projekt, in dem etwas plötzlich keinen Sinn mehr ergibt, weil ich dabei meistens am meisten lerne.
+Ich will Technologien nicht nur kennen, damit sie irgendwo auf einer Liste stehen. Ich mag den Moment in einem Projekt, in dem etwas plötzlich keinen Sinn mehr ergibt, weil ich dabei meistens am meisten lerne.
 
-Ich suche auch aktiv nach Möglichkeiten, mit anderen zusammenzuarbeiten. Falls du also gerade etwas Interessantes baust, an einem Projekt arbeitest oder einfach denkst, dass wir zusammen etwas Cooles machen könnten, [melde dich gerne](/contact/). Besonders suche ich nach einem Praktikum in den Osterferien 2027, am liebsten im Bereich Computer Engineering, Machine Learning oder Hardware. Für andere Richtungen bin ich aber auch offen.
+Ich suche auch aktiv nach Möglichkeiten, mit anderen zusammenzuarbeiten. Falls du also gerade etwas Interessantes baust, an einem Projekt arbeitest oder einfach denkst, dass wir zusammen etwas Cooles machen könnten, [melde dich gerne](/contact/). Konkret suche ich gerade ein Praktikum für die Osterferien 2027, am liebsten im Bereich Computer Engineering, Machine Learning oder Hardware. Für andere Richtungen bin ich aber auch offen.
 
-Und anders als der Rest dieser Seite vielleicht vermuten lässt, mache ich ab und zu auch Dinge, die nichts mit einem Computer zu tun haben.
+Und anders als der Rest dieser Seite vielleicht vermuten lässt, mache ich gelegentlich sogar Dinge, die nichts mit Computern zu tun haben.
 
-Ab und zu.
+Gelegentlich.
 
 ## Was ich weiter erkunde
 
