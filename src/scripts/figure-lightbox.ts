@@ -25,10 +25,6 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
   dialog.setAttribute("aria-label", t.figureViewer);
   dialog.setAttribute("data-lenis-prevent", "");
 
-  const caption = document.createElement("p");
-  caption.id = "figure-lightbox-caption";
-  caption.className = "lb-caption";
-
   const close = document.createElement("button");
   close.type = "button";
   close.className = "lb-close";
@@ -39,13 +35,42 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
 
   const image = document.createElement("img");
   image.className = "lb-img";
+  const stage = document.createElement("div");
+  stage.className = "lb-stage";
+  stage.append(image);
 
-  dialog.append(close, image, caption);
+  const caption = document.createElement("p");
+  caption.id = "figure-lightbox-caption";
+  caption.className = "lb-caption";
+  const captionText = document.createElement("span");
+  const hint = document.createElement("span");
+  hint.className = "lb-zoom-hint";
+  hint.textContent = ` · ${t.figureZoom}`;
+  caption.append(captionText, hint);
+
+  dialog.append(close, stage, caption);
   document.body.append(dialog);
+
+  let zoomed = false;
+  function setZoom(on: boolean) {
+    zoomed = on;
+    dialog.classList.toggle("is-zoomed", on);
+    hint.textContent = ` · ${on ? t.figureFit : t.figureZoom}`;
+    stage.scrollLeft = 0;
+    stage.scrollTop = 0;
+    if (on) {
+      requestAnimationFrame(() => {
+        stage.scrollLeft = Math.max(0, (image.offsetWidth - stage.clientWidth) / 2);
+        stage.scrollTop = Math.max(0, (image.offsetHeight - stage.clientHeight) / 2);
+      });
+    }
+  }
+  image.addEventListener("click", () => setZoom(!zoomed));
 
   let trigger: HTMLAnchorElement | undefined;
   dialog.addEventListener("close", () => {
     if (dialog.open) return;
+    setZoom(false);
     trigger?.focus({ preventScroll: true });
     trigger = undefined;
   });
@@ -72,17 +97,13 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
       event.preventDefault();
       trigger = link;
 
-      caption.textContent = link.closest("figure")?.querySelector("figcaption")?.innerText.trim() ?? "";
-      if (caption.textContent) dialog.setAttribute("aria-describedby", caption.id);
+      captionText.textContent = link.closest("figure")?.querySelector("figcaption")?.innerText.trim() ?? "";
+      if (captionText.textContent) dialog.setAttribute("aria-describedby", caption.id);
       else dialog.removeAttribute("aria-describedby");
 
-      const width = Number(visible.getAttribute("width"));
-      const height = Number(visible.getAttribute("height"));
-      // Reserve the scaled image box even before the full-size file loads.
-      image.style.width = width && height ? `min(${width}px, calc(var(--lb-image-height) * ${width / height}))` : "";
-      image.style.aspectRatio = width && height ? `${width} / ${height}` : "";
       image.alt = images.find((img) => img.alt)?.alt ?? "";
       image.src = largestSrc(visible);
+      setZoom(false);
       dialog.showModal();
     });
   }

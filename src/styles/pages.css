@@ -463,15 +463,38 @@ html:not([data-js]) .find-btn {
   background: var(--hover);
 }
 
+.figure-lightbox .lb-stage {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
 .figure-lightbox .lb-img {
   display: block;
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: var(--lb-image-height);
+  max-height: 100%;
+  margin: auto;
   border: 1px solid var(--line);
   background: var(--panel);
   object-fit: contain;
+  cursor: zoom-in;
+}
+
+/* A second tap shows the image at its natural size; the stage pans in both directions. */
+.figure-lightbox.is-zoomed .lb-stage {
+  overflow: auto;
+}
+
+.figure-lightbox.is-zoomed .lb-img {
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  cursor: zoom-out;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -487,11 +510,21 @@ html:not([data-js]) .find-btn {
 
 .figure-lightbox .lb-caption {
   max-width: min(100ch, 100%);
-  margin-top: 14px;
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.6;
   text-align: center;
+}
+
+.figure-lightbox .lb-zoom-hint {
+  display: none;
+}
+
+@media (hover: none) {
+  .figure-lightbox .lb-zoom-hint {
+    display: inline;
+    color: var(--accent);
+  }
 }
 
 .fig figcaption {

@@ -99,6 +99,8 @@ const en = {
   linksAria: "Where to find the project",
   figureOpen: "Open the full-size image",
   figureViewer: "Image viewer",
+  figureZoom: "tap to zoom",
+  figureFit: "tap to fit",
   figureClose: "Close image",
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
@@ -241,6 +243,8 @@ const de: Strings = {
   linksAria: "Links zum Projekt",
   figureOpen: "Bild in voller Größe öffnen",
   figureViewer: "Bildansicht",
+  figureZoom: "zum Zoomen tippen",
+  figureFit: "zum Einpassen tippen",
   figureClose: "Bild schließen",
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 
