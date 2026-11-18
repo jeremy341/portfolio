@@ -25,5 +25,22 @@
     "axe-core": "^4.14.1",
     "jsdom": "^31.0.1",
     "typescript": "^6.0.3"
-  }
+  },
+  "description": "My personal site: projects, articles, certificates, a CV, about and contact. It's built with [Astro](https://astro.build), and the text lives in Markdown files, so most changes happen in `content/`.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremy341/portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeremy341/portfolio/issues"
+  },
+  "homepage": "https://github.com/jeremy341/portfolio#readme"
 }
