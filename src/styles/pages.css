@@ -402,73 +402,96 @@ html:not([data-js]) .find-btn {
   border-color: var(--accent);
 }
 
-/* Full-size figure viewer: a modal over the article, not a new tab (src/scripts/figure-lightbox.ts). */
+/* Full-size figure viewer. */
+:root:has(.figure-lightbox[open]) {
+  overflow: hidden;
+}
+
 .figure-lightbox {
+  --lb-edge: clamp(12px, 3vw, 40px);
+  --lb-top: calc(60px + env(safe-area-inset-top));
+  --lb-bottom: max(var(--lb-edge), env(safe-area-inset-bottom));
+  --lb-image-height: calc(100dvh - var(--lb-top) - var(--lb-bottom));
+
   position: fixed;
   inset: 0;
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
   height: 100dvh;
-  max-height: 100dvh;
+  max-width: none;
+  max-height: none;
   margin: 0;
-  padding: clamp(16px, 4vw, 40px);
+  padding-block: var(--lb-top) var(--lb-bottom);
+  padding-inline: max(var(--lb-edge), env(safe-area-inset-left)) max(var(--lb-edge), env(safe-area-inset-right));
+  overflow: hidden;
   border: 0;
-  background: var(--bg);
+  background: transparent;
   color: var(--fg);
 }
 
 .figure-lightbox[open] {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
 }
 
 .figure-lightbox::backdrop {
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-}
-
-.figure-lightbox figure {
-  display: grid;
-  justify-items: center;
-  gap: 14px;
-  margin: 0;
-}
-
-.figure-lightbox .lb-img {
-  display: block;
-  max-width: min(92vw, 1400px);
-  max-height: 78dvh;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border: 1px solid var(--line);
-  background: var(--panel);
-}
-
-.figure-lightbox .lb-caption {
-  max-width: 100ch;
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  text-align: center;
+  background: var(--bg);
 }
 
 .figure-lightbox .lb-close {
   position: absolute;
-  top: clamp(12px, 3vw, 28px);
-  right: clamp(12px, 3vw, 28px);
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 1ch;
-  border: 1px solid var(--line);
-  background: var(--panel);
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--fg);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 1.75rem;
+  line-height: 1;
   cursor: pointer;
 }
 
-.figure-lightbox .lb-close:hover {
+.figure-lightbox .lb-close:is(:hover, :focus-visible) {
   border-color: var(--accent);
+  background: var(--hover);
+}
+
+.figure-lightbox .lb-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--lb-image-height);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .figure-lightbox[open] .lb-img {
+    animation: figure-lightbox-in 160ms var(--ease) both;
+  }
+}
+
+@keyframes figure-lightbox-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.figure-lightbox .lb-caption {
+  max-width: min(100ch, 100%);
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .fig figcaption {
