@@ -206,7 +206,7 @@ const de: Strings = {
 
   workTitle: "Projekte",
   workLead: (n) => `${n} Projekte. Mit dem Stand, den sie wirklich haben.`,
-  workDescription: (name) => `Projekte von ${name} rund um Machine Learning, GPU-Computing, Hardware und Spiele – mit ihrem tatsächlichen Entwicklungsstand.`,
+  workDescription: (name) => `Projekte von ${name} rund um Machine Learning, GPU-Computing, Hardware und Spiele, mit ihrem tatsächlichen Entwicklungsstand.`,
   filterBy: "Nach Kategorie filtern",
   all: "Alle",
   filterNote: (shown, total) => `${shown} von ${total} Projekten`,
