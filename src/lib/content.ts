@@ -95,7 +95,7 @@ const names = {
     certificate: { issuer: "Ausgestellt von", kind: "Art", date: "Datum", reference: "Kennung", verify: "Prüfen", image: "Bild", alt: "Bildbeschreibung" },
     about: { profile: "Kurzprofil", biography: "Biografie", topics: "Was ich weiter erkunde" },
     contact: { direct: "Direkt", profiles: "Öffentliche Profile" },
-    categories: { systems: "Systeme & Rechnen", ml: "Maschinelles Lernen", hardware: "Hardware & Embedded", games: "Spiele & Software" },
+    categories: { systems: "Systeme & Compute", ml: "Maschinelles Lernen", hardware: "Hardware & Embedded", games: "Spiele & Software" },
   },
 } as const;
 

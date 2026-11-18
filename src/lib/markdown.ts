@@ -81,7 +81,8 @@ function editorCode(source: string, grammar: string | null, key: string): string
   return '<pre class="shiki shiki-plain" tabindex="0"><code class="language-' + safeLanguage + '">' + lines + "</code></pre>";
 }
 
-md.renderer.rules.fence = (tokens, idx) => {
+md.renderer.rules.fence = (tokens, idx, _options, env) => {
+  const german = (env as { lang?: Lang })?.lang === "de";
   const token = tokens[idx];
   const info = token.info.trim().split(/\s+/).filter(Boolean);
   const key = (info[0] || "text").toLowerCase();
@@ -93,8 +94,8 @@ md.renderer.rules.fence = (tokens, idx) => {
     const steps = source.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     if (steps.length > 1 && steps.length <= 16) {
       const content = steps.map((step) => "<li><span>" + esc(step) + "</span></li>").join("");
-      return '<div class="project-flow" role="group" aria-label="Process flow diagram">' +
-        '<p class="project-flow-label">PIPELINE / ' + steps.length + ' STEPS</p><ol>' +
+      return '<div class="project-flow" role="group" aria-label="' + (german ? "Ablaufdiagramm" : "Process flow diagram") + '">' +
+        '<p class="project-flow-label">PIPELINE / ' + steps.length + (german ? ' SCHRITTE' : ' STEPS') + '</p><ol>' +
         content + "</ol></div>\n";
     }
   }

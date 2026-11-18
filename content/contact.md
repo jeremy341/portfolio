@@ -2,7 +2,7 @@
 
 A project question, an idea to explore, or an internship conversation.
 
-I'm based in North Rhine-Westphalia, Germany, and I'm looking for hands-on experience during the school holidays. Email is the quickest way to reach me, and my CV and public profiles show the rest.
+I'm based in North Rhine-Westphalia, Germany, and I'm currently looking for an internship during the Easter school holidays in spring 2027, preferably in computer engineering, machine learning or hardware. I'm also open to other projects and collaborations. Email is the quickest way to reach me; my CV and public profiles are below.
 
 ## Direct
 

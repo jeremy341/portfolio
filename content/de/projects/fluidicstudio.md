@@ -7,51 +7,129 @@
 
 ## Zusammenfassung
 
-Eine Desktop-App, mit der sich ein Mikrofluidik-Labor aus einem Fenster steuern lässt: Pumpen, Durchflusssensor, Mikroskopkamera und Tröpfchenanalyse.
+Meine Python-Desktop-App aus dem UDE-Praktikum vereint Pumpensteuerung, Durchflusssensoren, Mikroskopkamera und Tröpfchenanalyse.
 
-## Kontext und Motivation
+## Story
 
-FluidicStudio ist aus meinem Praktikum am Lehrstuhl für Elektronische Bauelemente und Schaltungen (EBS) an der Universität Duisburg-Essen entstanden, das vom 3. bis 28. August 2026 dauerte. Ich habe allein für Dr. Lin an einem System zur Steuerung und Bildanalyse für tröpfchenbasierte Mikrofluidik gearbeitet. Das Repository heißt Microdroplets UI, und FluidicStudio ist der Name der App darin.
+Als ich mein Praktikum an der Universität Duisburg-Essen anfing, hatte ich von Mikrofluidik so gut wie keine Ahnung. Die Geräte konnten winzige Flüssigkeitsmengen steuern, den Durchfluss messen und Tröpfchen aufnehmen, die sich durch kleine Kanäle bewegen. Meine Aufgabe war es, die einzelnen Komponenten in einer benutzbaren Desktop-App zusammenzubringen.
 
-Ich kam mit fast keinem Wissen über Mikrofluidik an, und der Plan war für vier Wochen ambitioniert. Die Idee war, die Software von [Bartels](https://www.bartels-mikrotechnik.de/) zu ersetzen und den ganzen Ablauf an einem Ort zusammenzuführen: vom Betrieb der Pumpen bis zur Auswertung der Aufnahmen, mit Unterstützung für das Dino-Lite-Mikroskop. Dafür musste ich verschiedene Hard- und Softwareteile miteinander ins Gespräch bringen. Ich habe die Oberfläche gebaut, die den Aufbau steuert und die Ergebnisse zeigt, bei Versuchen mitgeholfen und Code geschrieben, der Tröpfchen in Kamerabildern findet und vermisst. Das Zeugnis listet diese Aufgaben, und die meisten davon sind in diesem Projekt gelandet. Als ich die Ergebnisse den Leuten am Lehrstuhl gezeigt habe, waren sie begeistert.
+Klang nach einem Softwareprojekt. War es technisch gesehen auch. Nur habe ich bei der Arbeit mit der Hardware gemerkt, dass einen Button mit der Aufschrift „Start pump“ zu zeichnen der einfachste Teil war.
 
-Das Schwierige ist, was man misst. Die spannenden Ereignisse sind winzige Tröpfchen, die durch Kanäle wandern, die nur Bruchteile eines Millimeters breit sind. Ein Versuch heißt deshalb, die Pumpen am Laufen zu halten, einen Durchflusssensor im Blick zu behalten, mit dem Mikroskop aufzunehmen und das Ergebnis danach aus dem Video abzulesen. Wenn man das über mehrere Programme und eine Tabelle macht, geht vieles langsam und einiges schief. Deshalb versucht FluidicStudio, alles aus einem Fenster zu erledigen und die Daten zusammenzuhalten.
+Schwierig war die Frage, was *nach* dem Klick passiert.
 
-## Im Projekt
+In vier Wochen entstand meine App **FluidicStudio**, veröffentlicht im Repository Microdroplets UI. Sie ist ein eigenständiges Projekt aus der Arbeit an der Universität und nicht das Produkt des Herstellers, das zufälligerweise ebenfalls *Bartels FluidicStudio* heißt. Unglückliche Namenswahl, aber immerhin wissen wir jetzt, worüber ich spreche.
 
-FluidicStudio ist eine Desktop-Anwendung in Python mit [PyQt6](https://riverbankcomputing.com/software/pyqt/). Sie steuert den Versuchsaufbau von einer Stelle aus: Pumpen, einen Durchflusssensor, eine Mikroskopkamera und eine Offline-Analyse der aufgezeichneten Videos.
+### Erst mal musste ich die Sprache des Boards lernen
 
-### Die Teile
+Der Aufbau bestand aus einem [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/), einem mp-Highdriver4, Durchflusssensoren und einem Dino-Lite-Mikroskop. Statt einer fertigen Python-API für den gesamten Aufbau kommuniziert das Board über eine serielle USB-Schnittstelle. Man schickt kurze Zeichenfolgen an die Firmware und versucht, mit den Antworten etwas anzufangen.
 
-- **Pumpen und Wellenformen.** Die App steuert Bartels-Mikropumpen über eine Treiberplatine mit mehreren Kanälen. Alle vier Kanäle teilen sich eine Treiberfrequenz, haben aber jeweils eigene Amplitude und Ein/Aus-Zustand. Jeder Kanal hat außerdem einen Besitzer, entweder die Handsteuerung oder eine laufende Wellenform. So können sich zwei Quellen nie um dieselbe Pumpe streiten. Die Wellenformen sind Sinus, Dreieck, Sägezahn und Rechteck.
-- **Sensoren.** Messwerte eines Durchflusssensors von [Sensirion](https://sensirion.com/) (SLF3S-1300F) laufen über einen Protokoll-Parser in einen gemeinsamen Datenspeicher. Daraus versorgen sich die Live-Diagramme und ein CSV-Logger. Die Einheiten werden einmal an der Eingangsstelle umgerechnet, damit später niemand raten muss, was eine Zahl bedeutet.
-- **Kamera.** Vorschau und Aufnahme von einem USB-Mikroskop laufen über [OpenCV](https://opencv.org/). Helligkeit, Belichtung und LED steuert man über die DNX64-Bibliothek des Herstellers. Die Aufnahme läuft in einem eigenen Worker. Wenn er hinterherhinkt, verwirft er alte Bilder, damit die Verzögerung zwischen Kamerabild und Anzeige begrenzt bleibt.
-- **Tröpfchenanalyse.** Dieser Teil kommt aus der Bildanalyse im Praktikum. Die Analyse läuft in Schritten über ein aufgezeichnetes Video. Zuerst legt man eine Region of Interest fest und schätzt den Hintergrund. Dann findet die Analyse die Tröpfchen in jedem Bild, verfolgt sie, fügt die Spuren zusammen und zählt die Linienüberquerungen. Am Ende werden gemessen, kalibriert und als CSV mit Überlagerungen im Video exportiert. Der Code trennt ein gezähltes Ereignis von einer gültigen Messung, denn ein Tröpfchen kann die Linie überqueren und trotzdem zu unscharf sein, um es zu vermessen.
-- **Arbeitsbereich.** Eine Ansicht mit zwei Feldern für schnelles Arbeiten. Sie liest denselben Backend-Zustand wie die vollen Seiten, damit die Logik nicht doppelt existiert und auseinanderlaufen kann.
+Die grundlegenden Befehle dokumentiert Bartels bereits im [Softwarehandbuch](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf). Ich habe also kein geheimes Protokoll entschlüsselt. Die Arbeit bestand darin, die Dokumentation mit den tatsächlichen Firmware-Antworten und den angeschlossenen Treibern und Sensoren in Einklang zu bringen.
 
-### Wie es gebaut ist
+Einige der wichtigsten Befehle sehen dabei geradezu verdächtig einfach aus:
 
-Jede physische Platine bekommt ein eigenes Dienstebündel für Verbindung, Kanalbesitz, Pumpensteuerung und das Ausführen der Wellenformen. So können mehrere Platinen gleichzeitig angeschlossen sein.
+```text title=board-commands.txt
+V        Firmware-Version abfragen
+F0=100   Frequenz der ersten Treibergruppe einstellen
+P1V120   Amplitude von Pumpe 1 auf 120 Vpp setzen
+P1ON     Pumpe 1 einschalten
+P1OFF    Pumpe 1 ausschalten
+POFF     Abschaltung aller Pumpen anfordern
+```
 
-Am meisten Sorgfalt hat das Herunterfahren gebraucht. Ein Code-Audit hat hier einen echten Fehler gefunden. Trennte sich die Platine im falschen Moment, konnte ein Einschaltbefehl für die Pumpe nach dem Stoppbefehl geschrieben werden, und die Pumpe lief dann ohne Kontrolle weiter. Die Lösung ist eine Sperre beim Abbau, die neue Befehle blockiert, sobald das Herunterfahren begonnen hat. Dazu kommt ein Regressionstest, damit der Fehler nicht unbemerkt zurückkommt.
+Das sind Beispiele für das Protokoll, keine Aufforderung, sie an unbekannte Hardware zu schicken. Der Aufbau kommuniziert mit 115200 Baud, 8N1 und CRLF als Zeilenende. Welche Werte sicher sind, hängt vom angeschlossenen Gerät ab.
+
+Einfache Befehle, oder? Nur ist ein Befehl erst die Hälfte des Gesprächs. Ich musste noch herausfinden, welche eingehenden Zeilen Bestätigungen waren, welche Sensormessungen enthielten und wie ich die Firmware erkennen konnte, ohne versehentlich eine Einstellung zu ändern.
+
+Und sobald mehrere Teile der App Befehle schickten, reichte es nicht mehr, zu wissen, was `P1ON` bedeutet.
+
+### Ein Board, mehrere Stellen, die es steuern wollen
+
+Die App sollte manuelle Pumpensteuerung, Wellenformen, Sensordiagramme, Kameravorschau und einen Workspace mit zwei Ansichten bieten. Wenn alles dieselbe Hardware benutzt, können sich diese Funktionen nicht wie voneinander unabhängige Skripte verhalten.
+
+Angenommen, auf einem Kanal läuft gerade eine Wellenform, während über die manuelle Steuerung dieselbe Pumpe geändert werden soll. Wer darf den nächsten Befehl schreiben? Wenn es beide tun, kann die UI etwas anderes anzeigen als das, was beim Board ankommt.
+
+Daraus entstand eine klare Zuständigkeit pro Kanal: Zu einem bestimmten Zeitpunkt gehört er entweder der manuellen Steuerung oder dem Waveform-Controller. Das Backend unterscheidet außerdem zwischen Einstellungen für eine einzelne Pumpe und solchen, die für eine ganze Treibergruppe gelten.
+
+Ich habe die Arbeit in den [Notizen zur Board-Kommunikation](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md) und zur [Pumpensteuerung](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md) festgehalten. Dokumentierte Befehle und während der Integration beobachtetes Verhalten sind dort getrennt.
+
+Die kurzen Befehle fand ich am Anfang fast ein bisschen lustig. Wie sie koordiniert werden, stellte sich aber als wesentlich wichtiger heraus als ihre Länge.
+
+Und dann fiel bei einem Code-Audit ein Fall auf, bei dem es darauf ganz besonders ankam.
+
+### Wenn nach „aus“ plötzlich wieder „an“ kommt
+
+Stell dir vor, die App startet eine Pumpe. Das ist nicht unbedingt ein einzelner Schreibvorgang. Die Startsequenz kann erst eine Frequenz, dann eine Wellenform und die Amplitude setzen und schließlich die Pumpe aktivieren.
+
+Jetzt stell dir vor, du klickst auf „Disconnect“, während diese Sequenz noch läuft.
+
+Eigentlich erwartet man, dass der abschließende Befehl zum Ausschalten aller Pumpen Vorrang hat. Wozu sonst ein Disconnect-Button, wenn ein älterer Befehl die Pumpe hinterher wieder einschalten kann?
+
+Ein ausführbares Regressionsszenario zeichnete **vor der Korrektur** diese Reihenfolge auf:
+
+```text title=shutdown-trace.txt
+0.001 s   F0=100
+0.007 s   CS0=0
+0.012 s   P1V120
+0.613 s   POFF
+0.618 s   P1ON    <- nach dem globalen Off-Befehl gesendet
+```
+
+Schau dir die letzten beiden Zeilen an. Bei 0,613 Sekunden wurde `POFF` gesendet. Fünf Millisekunden später schickte der noch ausstehende Startvorgang trotzdem `P1ON`.
+
+Die App konnte also davon ausgehen, dass alles abgeschaltet war, während sie gerade selbst einen Befehl zum Einschalten einer Pumpe schickte. Bei physischer Hardware ist das mehr als ein nerviger UI-Bug.
+
+Die Korrektur ergänzte den Serial Manager um eine **Sperre während des Shutdowns**. Sobald das Herunterfahren beginnt, werden keine neuen Befehle angenommen. Ausstehende Schreibvorgänge werden mit dem abschließenden Off-Befehl koordiniert. Ein Regressionstest prüft, dass das verspätete `P1ON` über die simulierte serielle Verbindung nicht mehr gesendet wird.
+
+Das beweist nicht, dass sich jede reale Pumpe immer sicher abschaltet. Fällt die Verbindung aus oder fehlt die Bestätigung für den Off-Befehl, kann der Zustand der Hardware weiterhin unbekannt sein. Die Software muss diese Unsicherheit anzeigen, statt das Schließen eines Fensters als Nachweis einer erfolgreichen Abschaltung zu behandeln.
+
+### Und dann waren da noch die Messwerte
+
+Nachdem Steuerung und Abschaltung klarer definiert waren, mussten die Messwerte an verschiedenen Stellen der App übereinstimmen.
+
+Ein gemeinsames Sensor-Backend versorgt Live-Diagramme und CSV-Aufzeichnung, damit unterschiedliche Ansichten dieselben Werte nicht unterschiedlich interpretieren. Rohe Durchflussmesswerte müssen beispielsweise konsistent in Mikroliter pro Minute umgerechnet werden. Lieber mache ich das einmal im Datenpfad, als jedes Widget seine eigene Umrechnung erfinden zu lassen.
+
+Bei der Kamera kommt ein anderer Kompromiss dazu: eine flüssige Live-Vorschau und die Aufzeichnung jedes einzelnen Frames sind nicht dieselbe Aufgabe. Wenn die Verarbeitung nicht hinterherkommt, kann ein Puffer aus dem vermeintlichen Live-Bild eine zeitversetzte Ansicht des Experiments machen.
+
+Und dann die Tröpfchenanalyse: Die App muss einen Bildbereich auswählen, den Hintergrund abschätzen, Objekte erkennen, Erkennungen über mehrere Frames zuordnen, Überquerungen zählen und entscheiden, welche Messungen tatsächlich gültig sind.
+
+```flow
+Mikroskopvideo
+Bildbereich wählen und Hintergrund schätzen
+Tröpfchen erkennen
+Tracking über mehrere Frames
+Überquerungen erkennen und Messwerte validieren
+CSV und annotiertes Video exportieren
+```
+
+Das Diagramm zeigt den Ablauf, keine Garantie für Messgenauigkeit. Eine Überquerung kann gezählt werden, obwohl unscharfe Frames oder ein unterbrochener Track die Schätzung von Länge oder Geschwindigkeit unzuverlässig machen. Ein Ereignis zu erkennen ist eben etwas anderes, als eine Messung zu validieren.
+
+### Vier Wochen reichen für vieles. Nicht für ein fertiges Messgerät.
+
+Das Praktikum lief vom 3. bis zum 28. August 2026. Herausgekommen sind eine umfangreiche PyQt6-App, eine dokumentierte Kommunikationsschicht und mehrere integrierte Arbeitsabläufe. Es gibt aber Grenzen, die ich nicht unter den Tisch fallen lassen möchte.
+
+Die Ventilseite ist noch nicht fertig. Die Treibererkennung funktioniert nicht in jeder Konfiguration zuverlässig, und Teile der Analyse hängen von aufgezeichneten Videos oder proprietären Dino-Lite-Komponenten ab. Das Repository enthält Tests und Code-Audits. **Softwaretests sind aber kein physischer Kalibriernachweis.** Einen veröffentlichten Genauigkeits-Benchmark für die Tröpfchenmessung habe ich nicht.
+
+Wenn ich das Projekt weiterentwickle, möchte ich die physischen Messungen reproduzierbarer machen und noch deutlicher zwischen angeforderten Aktionen der UI und bestätigten Zuständen der Hardware unterscheiden.
+
+Am Anfang dachte ich, ich müsste lediglich mehrere Geräte in einer Oberfläche zusammenbringen. Es brauchte eine unterbrochene Verbindung, ein paar verblüffend kurze serielle Befehle und eine wirklich ungünstige Reihenfolge beim Shutdown, bis ich verstand, was da alles dranhängt.
+
+Einen Disconnect-Button zu zeichnen ist einfach. Dafür zu sorgen, dass man ihm vertrauen kann, ist das eigentliche Engineering-Problem.
 
 ## In Zahlen
 
-- Code: etwa 23.700 Zeilen Python in App, Backend und Oberfläche und 7.600 Zeilen Tests
-- Tests: 386 Testfunktionen in 50 Dateien; ich habe sie für diese Seite nicht erneut laufen lassen und behaupte deshalb nicht, dass alle bestehen
-- Dokumentation: 39 Dateien, darunter zwei Code-Audits (das erste behob 30 Backend-Fehler)
-- Geprüfte Kameravoreinstellungen für das Mikroskop: 1280 mal 1024 Pixel bei 10 oder 20 FPS und 640 mal 480 bei bis zu 30 FPS
-- In der Software eingestellter Bereich des Pumpentreibers: 10 bis 250 Vss bei 50 bis 800 Hz für die Platine Highdriver4 (eine Softwaregrenze, kein Messergebnis)
-- Benchmarks und Messgenauigkeit: keine
-
-## Aktueller Stand
-
-Das ist experimentelle Laborsoftware, und das Repository sagt das selbst. Es gibt keine Liste unterstützter Geräte, keine Messgenauigkeit, keine validierten Versuchsergebnisse und keine Aussage zur Produktionsreife. Die automatische Treibererkennung ist experimentell, die Seite für Ventile ist ein Platzhalter, und die Analyse funktioniert nur mit aufgezeichneten Videos, nicht mit einzelnen Bildern.
-
-Softwaretests und Hardwarevalidierung sind aber zwei verschiedene Dinge. Für die meisten Bereiche gibt es einen Softwaretest, aber kein festgehaltenes Ergebnis vom Messplatz. Die Pumpenbereiche im Code sind deshalb Grenzen, die ich in der Software gesetzt habe, und keine Werte, die ich an der Hardware gemessen habe.
-
-Bricht die serielle Verbindung ab, weiß die Software nicht mehr, was die Pumpen tun. Ihr physischer Zustand ist dann unbekannt, bis jemand nachsieht. Die DNX64-Bibliothek des Kameraherstellers ist proprietär und nicht im Repository enthalten. Einen Screenshot der Anwendung habe ich außerdem noch nicht veröffentlicht.
+- Praktikum: 3.–28. August 2026, Universität Duisburg-Essen
+- Implementierung: Python mit PyQt6, serielle Kommunikation, OpenCV und gemeinsames Sensor-Backend
+- Hardware: Bartels mp-Multiboard2, mp-Highdriver4, Sensirion SLF3S-1300F und Dino-Lite-Mikroskop
+- Code: etwa 23.700 Zeilen Python und 7.600 Zeilen Tests im dokumentierten Stand
+- Dokumentierte Tests: 386 Funktionen in 50 Dateien; für diese Seite nicht alle unabhängig erneut ausgeführt
+- Serielles Herstellerprotokoll: 115200 Baud, 8N1, CRLF
+- Dokumentierte Kameramodi: 1280×1024 bei 10 oder 20 FPS; 640×480 bei bis zu 30 FPS
+- Softwaregrenzen der Pumpensteuerung: 10–250 Vpp und 50–800 Hz beim Highdriver4, keine gemessene Leistung
+- Verifizierte Genauigkeit der Labormessungen: öffentlich nicht nachgewiesen
 
 ## Links
 
 - [Quellcode-Repository: microdroplets-ui](https://github.com/jeremy341/microdroplets-ui)
+- [Notizen zur Board-Kommunikation](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BOARD_COMMUNICATION.md)
+- [Untersuchung zur Pumpensteuerung](https://github.com/jeremy341/microdroplets-ui/blob/main/docs/BARTELS_PUMP_CONTROL_RESEARCH.md)
+- [Softwarehandbuch von Bartels](https://bartels-mikrotechnik.de/wp-content/uploads/2025/03/software-manual.pdf)

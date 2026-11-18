@@ -13,8 +13,6 @@ export const url = (lang: Lang, path: string) => prefix(lang) + path;
 /** The same page in the other language: /de/work/ <-> /work/. */
 export function otherPath(pathname: string, to: Lang): string {
   const bare = pathname.replace(/^\/de(?=\/|$)/, "") || "/";
-  // Blog entries are currently English-only. Never send the language switch to a 404.
-  if (to === "de" && /^\/blog\/[^/]+\/?$/.test(bare)) return "/de/blog/";
   return url(to, bare);
 }
 
@@ -32,7 +30,7 @@ export const sections = [
 // One sentence about the person, used after "Jeremy Darko is" and after "About Jeremy Darko:".
 const summary = {
   en: "a student from North Rhine-Westphalia, Germany, who builds in machine learning, GPU computing and hardware.",
-  de: "ein Schüler aus Nordrhein-Westfalen, der in Machine Learning, GPU-Computing und Hardware baut.",
+  de: "ein Schüler aus Nordrhein-Westfalen, der an Projekten rund um Machine Learning, GPU-Computing und Hardware arbeitet.",
 };
 
 const en = {
@@ -103,7 +101,6 @@ const en = {
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Writing",
-  writingEnglishOnly: "Articles are currently published in English.",
   writingDescription: (name: string) => `Writing by ${name} on machine-learning systems, computer engineering and learning by building.`,
   articlesAria: "Articles",
   minRead: (n: number) => `${n} min read`,
@@ -137,7 +134,7 @@ const en = {
 
   // Search index (/search.json)
   idxHomeTitle: "Home",
-  idxHome: "The numbered index of the four sections.",
+  idxHome: "The numbered index of the five sections.",
   idxWork: (n: number) => `${n} projects, each with its honest status.`,
   idxWriting: (n: number) => `${n} articles on machine-learning systems and learning by building.`,
   idxContact: "Email, my CV and where to find me online.",
@@ -181,13 +178,13 @@ const de: Strings = {
   htmlLang: "de",
   dateLocale: "de-DE",
   ogLocale: "de_DE",
-  description: "Offizielles Portfolio von Jeremy Darko (Jeremy Yeboah Darko), einem Schüler aus Deutschland mit Projekten in Computer Engineering, Machine Learning, GPU-Computing und Hardware.",
+  description: "Portfolio von Jeremy Darko (Jeremy Yeboah Darko), Schüler aus NRW. Projekte rund um Computer Engineering, Machine Learning, GPU-Computing und Hardware.",
   homeTitle: "Computer Engineering, Machine Learning, GPU-Computing und Hardware",
   jobTitle: "Schüler und Entwickler",
   personDescription: (name: string) => `${name} ist ${summary.de}`,
   region: "Nordrhein-Westfalen",
   shareAlt: "Jeremy Darko: Schüler und Entwickler für Machine Learning, GPU-Computing und Hardware.",
-  feedTitle: "Jeremy Darko: Texte",
+  feedTitle: "Jeremy Darko: Blog",
 
   nav: { work: "Projekte", writing: "Blog", certificates: "Zertifikate", about: "Über mich", contact: "Kontakt" },
   homeKeys: ["p", "t", "z", "m", "c"],
@@ -195,27 +192,27 @@ const de: Strings = {
     `${projects} Projekte`,
     `${articles} Artikel`,
     `${certificates} Zertifikate`,
-    "Über mich und was mich beschäftigt",
-    "Wo man mich findet",
+    "Wer ich bin und was mich interessiert",
+    "So erreichst du mich",
   ],
   sections: "Bereiche",
   mainNav: "Hauptnavigation",
   menu: "Menü",
   skip: "Zum Inhalt springen",
   search: "Suche",
-  commandLine: "Befehlszeile",
+  commandLine: "Kommandozeile",
   language: "Sprache",
   languageName: { en: "English", de: "Deutsch" },
 
   workTitle: "Projekte",
-  workLead: (n) => `${n} Projekte, jedes mit ehrlichem Stand.`,
-  workDescription: (name) => `Projekte von ${name}: Machine Learning, GPU-Computing, Hardware und Spiele, jeweils mit ehrlichem Stand.`,
+  workLead: (n) => `${n} Projekte. Mit dem Stand, den sie wirklich haben.`,
+  workDescription: (name) => `Projekte von ${name} rund um Machine Learning, GPU-Computing, Hardware und Spiele, mit ihrem tatsächlichen Entwicklungsstand.`,
   filterBy: "Nach Kategorie filtern",
   all: "Alle",
   filterNote: (shown, total) => `${shown} von ${total} Projekten`,
   projectsAria: "Projekte",
 
-  why: "Warum es existiert",
+  why: "Wie es dazu kam",
   how: "Wie es funktioniert",
   numbers: "In Zahlen",
   figures: "Abbildungen",
@@ -225,7 +222,7 @@ const de: Strings = {
   category: "Kategorie",
   builtWith: "Gebaut mit",
   onThisPage: "Auf dieser Seite",
-  projectRecord: "Projektdaten",
+  projectRecord: "Projekt auf einen Blick",
   moreProjects: "Weitere Projekte",
   previous: "[ zurück",
   next: "weiter ]",
@@ -239,22 +236,21 @@ const de: Strings = {
     article: "Artikel lesen",
   },
   linkShort: { source: "GitHub", site: "Website", demo: "Live-Demo", models: "Hugging Face", package: "PyPI", article: "Artikel" },
-  linksAria: "Wo man das Projekt findet",
+  linksAria: "Links zum Projekt",
   figureOpen: "Bild in voller Größe öffnen",
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 
-  writingTitle: "Texte",
-  writingEnglishOnly: "Meine Blogartikel sind derzeit nur auf Englisch verfügbar.",
-  writingDescription: (name) => `Texte von ${name} über Machine-Learning-Systeme, Computer Engineering und Lernen durch Bauen.`,
+  writingTitle: "Blog",
+  writingDescription: (name) => `${name} schreibt über Machine Learning, Computer Engineering und was er bei eigenen Projekten lernt.`,
   articlesAria: "Artikel",
   minRead: (n) => `${n} Min. Lesezeit`,
   updated: "aktualisiert",
   older: "Älter:",
   newer: "Neuer:",
-  moreWriting: "Weitere Texte",
+  moreWriting: "Weitere Artikel",
 
   certificatesTitle: "Zertifikate",
-  certificatesLead: (n) => `${n} Zertifikate und Bescheinigungen, jeweils mit Aussteller.`,
+  certificatesLead: (n) => `${n} Zertifikate und Bescheinigungen. Bei jedem steht dabei, wer es ausgestellt hat.`,
   certificatesDescription: (name) => `Zertifikate und Bescheinigungen von ${name}: wer sie ausgestellt hat, wann und wofür.`,
   certificatesAria: "Zertifikate",
   certFacts: { issuer: "Ausgestellt von", kind: "Art", date: "Datum", reference: "Kennung", verify: "Prüfen" },
@@ -265,7 +261,7 @@ const de: Strings = {
   aboutDescription: (name) => `Über ${name}: ${summary.de}`,
 
   contactTitle: "Kontakt",
-  contactDescription: (name) => `Kontakt zu ${name} für eine Projektfrage, eine Idee zum Ausprobieren oder ein Gespräch über ein Praktikum.`,
+  contactDescription: (name) => `${name} kontaktieren: Fragen zu Projekten, Ideen für eine Zusammenarbeit oder Praktikumsmöglichkeiten.`,
 
   cvTitle: "Lebenslauf",
   cvDescription: (name) => `Lebenslauf von ${name}: Praktika, Schule, Kenntnisse und eigene Projekte.`,
@@ -273,15 +269,15 @@ const de: Strings = {
 
   notFoundTitle: "Seite nicht gefunden",
   notFoundDescription: "Diese Seite gibt es nicht.",
-  notFoundText: "Der Link ist vielleicht alt, oder die Seite ist umgezogen.",
+  notFoundText: "Vielleicht ist der Link veraltet oder die Seite ist umgezogen.",
   notFoundBack: "Zurück zu den Projekten",
 
   idxHomeTitle: "Start",
-  idxHome: "Das nummerierte Verzeichnis der vier Bereiche.",
-  idxWork: (n) => `${n} Projekte, jedes mit ehrlichem Stand.`,
-  idxWriting: (n) => `${n} Artikel über Machine-Learning-Systeme und Lernen durch Bauen.`,
+  idxHome: "Die Übersicht über die fünf Bereiche der Website.",
+  idxWork: (n) => `${n} Projekte. Mit dem Stand, den sie wirklich haben.`,
+  idxWriting: (n) => `${n} Artikel über Technik und die Erfahrungen hinter meinen Projekten.`,
   idxContact: "E-Mail, mein Lebenslauf und wo du mich online findest.",
-  idxCertificates: (n) => `${n} Zertifikate und Bescheinigungen mit Aussteller.`,
+  idxCertificates: (n) => `${n} Zertifikate und Bescheinigungen mit Angaben zur Herkunft.`,
   idxKinds: { index: "index", projects: "projekte", articles: "artikel", certificates: "zertifikate", profile: "profil", profiles: "profile", cv: "lebenslauf" },
   idxContactTags: ["email", "e-mail"],
   idxCvTitle: "Lebenslauf",
@@ -289,23 +285,23 @@ const de: Strings = {
 
   soundOn: "Ton an",
   soundOff: "Ton aus",
-  keysOn: "Tasten an",
-  keysOff: "Tasten aus",
+  keysOn: "Tastenkürzel an",
+  keysOff: "Tastenkürzel aus",
   themeDark: "Dunkelmodus",
   themeLight: "Hellmodus",
   preview: { button: (title: string) => `Vorschau: ${title}`, close: "Vorschau schließen", open: "Seite öffnen" },
   help: "/ suchen   j k Zeilen oder scrollen   d u scrollen   gg G Anfang Ende   yy Link kopieren   H zurück   p t z m c Bereiche   :e {Datei}   :set nokeys   :set nosound   :set light   :set dark   :intro   :q",
   copied: "kopiert",
   finder: {
-    placeholder: "Projekte, Texte und Seiten durchsuchen",
+    placeholder: "Projekte, Artikel und Seiten durchsuchen",
     close: "Suche schließen",
-    hint: "hoch/runter bewegen   Enter öffnen   Esc schließen",
-    kinds: { page: "Seite", project: "Projekt", post: "Text" },
+    hint: "↑/↓ auswählen   Enter öffnen   Esc schließen",
+    kinds: { page: "Seite", project: "Projekt", post: "Artikel" },
     results: (n) => `${n} Treffer`,
     none: "Keine Treffer",
     unavailable: "Die Suche ist nicht verfügbar.",
     failed: "Der Suchindex konnte nicht geladen werden.",
-    nothing: (query) => `Nichts passt zu "${query}".`,
+    nothing: (query) => `Keine Treffer für „${query}“.`,
     loading: "Lädt...",
     inText: "im Text  ",
     searchAria: "Suche",

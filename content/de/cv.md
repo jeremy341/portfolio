@@ -13,7 +13,7 @@ Technikbegeisterter Gymnasiast (Gymnasium Broich, EF) mit praktischer Erfahrung 
 Jan 2026 - Feb 2026 · Mülheim an der Ruhr
 
 - Erstellung und Analyse technischer Zeichnungen für Energiekomponenten im industriellen Umfeld
-- Einblick in 3D-Konstruktions- und CAD-Prozesse (Produktentwicklung & Designprozesse)
+- Einblick in 3D-Konstruktions- und CAD-Prozesse (Produktentwicklung und Konstruktionsprozesse)
 - Mitarbeit in Teamprojekten mit Ingenieuren; Verständnis technischer Abläufe in einem Großkonzern
 
 ### MINT-Ferienprogramm, Hochschule Ruhr West
@@ -21,14 +21,14 @@ Jan 2026 - Feb 2026 · Mülheim an der Ruhr
 Mär 2026 - Apr 2026 · Mülheim an der Ruhr
 
 - Technische Projekte mit Fokus auf Elektronik und Programmierung (Arduino / Python)
-- Erste praktische Erfahrungen mit Microcontrollern und Schaltkreisen
+- Erste praktische Erfahrungen mit Mikrocontrollern und Schaltkreisen
 - Kreatives Problemlösen und Teamarbeit im interdisziplinären MINT-Kontext
 
 ### Universität Duisburg-Essen
 
 Aug 2026 - Sep 2026
 
-- Entwicklung und Aufbau einer Microfluidics-Plattform für universitäre Forschungs- und Entwicklungsanwendungen
+- Entwicklung und Aufbau einer Mikrofluidik-Plattform für universitäre Forschungs- und Entwicklungsanwendungen
 - Praktische Mitarbeit an technischen Aufbauten, Versuchsabläufen und der Weiterentwicklung der Plattform
 - Arbeit im wissenschaftlichen Umfeld mit Fokus auf sorgfältige Dokumentation und systematisches Problemlösen
 
@@ -51,9 +51,9 @@ Aug 2026 - Sep 2026
 ## Kenntnisse & Fähigkeiten
 
 - **Technisch:** Python, KiCAD, CAD (Fusion 360 / FreeCAD), MS Office, C++
-- **Hardware:** Microcontroller, TFT-Displays, SPI/I2C-Protokolle
+- **Hardware:** Mikrocontroller, TFT-Displays, SPI- und I²C-Schnittstellen
 - **Sprachen:** Deutsch (Muttersprache) · Englisch (Muttersprache) · Twi/Akan (Muttersprache)
-- **Persönlich:** Teamfähig, selbstständig, lernbereit, strukturiert, technisches Verständnis
+- **Persönlich:** Teamfähig, selbstständig, lernbereit und strukturiert; gutes technisches Verständnis
 
 ## Eigene Projekte
 
@@ -61,7 +61,7 @@ Aug 2026 - Sep 2026
 
 2026 · abgeschlossen · [github.com/jeremy341/esp32-alarm-clock](https://github.com/jeremy341/esp32-alarm-clock)
 
-- Modulare Smart-Uhr auf ESP32-Basis mit TFT-Display (ILI9341), WiFi-NTP-Synchronisierung und Buzzer-Alarm
+- Modularer ESP32-Wecker mit TFT-Display (ILI9341), Zeitsynchronisierung per WLAN/NTP und Summer
 - Selbst entwickelte Firmware in C++ (PlatformIO) mit lokaler Datenspeicherung über LittleFS
 - KI-gestützte Implementierung einer Web-App zur Konfiguration über USB (WebSerial) sowie der Kommunikationsschnittstelle
 - Drei Display-Layouts (Minimal, Digital, Retro Pixel), Schaltungsplanung in KiCAD und CAD-Gehäuseplanung

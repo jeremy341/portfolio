@@ -8,7 +8,7 @@ type Entry = { en: Card; de: Card };
 export const outside: Record<string, Entry> = {
   "https://en.wikipedia.org/wiki/Vibe_coding": {
     en: { title: "Vibe coding", text: "An informal term for building software by directing an AI to generate code. It often implies relying on the result without closely examining the implementation; people use the term differently." },
-    de: { title: "Vibe Coding", text: "Ein informeller Begriff für das Entwickeln von Software durch KI-generierten Code. Oft meint er, dass man das Ergebnis übernimmt, ohne die Umsetzung genau zu prüfen; der Begriff wird unterschiedlich verwendet." },
+    de: { title: "Vibe Coding", text: "Ein Begriff für Softwareentwicklung, bei der man KI Code schreiben lässt. Oft meint er, dass man das Ergebnis übernimmt, ohne die Umsetzung genau zu prüfen; der Begriff wird unterschiedlich verwendet." },
   },
   "https://en.wikipedia.org/wiki/Integrated_development_environment": {
     en: { title: "IDE", text: "An integrated development environment: an editor with tools to navigate, run and debug a codebase. Jeremy works in an IDE so he can inspect and edit the project files directly." },
@@ -28,7 +28,7 @@ export const outside: Record<string, Entry> = {
   },
   "https://huggingface.co/docs/hub/models-download-stats": {
     en: { title: "config.json", text: "The main setup file of a model. Hugging Face counts requests to it as downloads, so one person loading a model can count more than once.", image: "/previews/terms/hfdocs.png" },
-    de: { title: "config.json", text: "Die wichtigste Einstellungsdatei eines Modells. Hugging Face zählt Abfragen dieser Datei als Downloads, deshalb kann eine Person, die ein Modell lädt, mehrfach zählen.", image: "/previews/terms/hfdocs.png" },
+    de: { title: "config.json", text: "Die wichtigste Einstellungsdatei eines Modells. Hugging Face zählt Abrufe dieser Datei als Downloads. Dieselbe Person kann also mehrmals im Zähler auftauchen.", image: "/previews/terms/hfdocs.png" },
   },
   "https://en.wikipedia.org/wiki/Overfitting": {
     en: { title: "Benchmaxxed", text: "A model tuned so hard for one test that it scores well there but does worse in real use. The term comes from benchmark plus maxxing, and Wikipedia calls the general idea overfitting.", image: "/previews/terms/overfitting.png" },
@@ -68,7 +68,7 @@ export const outside: Record<string, Entry> = {
   },
   "https://github.com/jeremy341/abi-vault": {
     en: { title: "AbiVault source", text: "The source code for AbiVault, a shared money workspace for school committees.", image: "/previews/terms/repo-abivault.png" },
-    de: { title: "AbiVault Quellcode", text: "Der Quellcode von AbiVault, einem gemeinsamen Geldbereich für Schulkomitees.", image: "/previews/terms/repo-abivault.png" },
+    de: { title: "AbiVault Quellcode", text: "Der Quellcode von AbiVault, einem Finanz-Dashboard für Abikomitees.", image: "/previews/terms/repo-abivault.png" },
   },
   "https://abi-vault-demo.vercel.app/": {
     en: { title: "AbiVault demo", text: "A live demo of AbiVault with sample data. It isn't meant for real financial data.", image: "/previews/abivault-dashboard-1920.jpg" },
@@ -76,7 +76,7 @@ export const outside: Record<string, Entry> = {
   },
   "https://github.com/jeremy341/TorchVK": {
     en: { title: "TorchVK source", text: "The source code for TorchVK, an early research plan for PyTorch training through Vulkan.", image: "/previews/terms/repo-torchvk.png" },
-    de: { title: "TorchVK Quellcode", text: "Der Quellcode von TorchVK, einem frühen Forschungsplan für PyTorch-Training über Vulkan.", image: "/previews/terms/repo-torchvk.png" },
+    de: { title: "TorchVK Quellcode", text: "Der Quellcode von TorchVK, einem Forschungsprojekt zu PyTorch-Training über Vulkan.", image: "/previews/terms/repo-torchvk.png" },
   },
   "https://github.com/jeremy341/Mobilenet-fpga": {
     en: { title: "Mobilenet-fpga source", text: "The source code for the MobileNet quantization work. It has no FPGA code yet.", image: "/previews/terms/repo-mobilenet.png" },

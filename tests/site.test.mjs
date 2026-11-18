@@ -29,7 +29,7 @@ const germanStatus = {
   abivault: "Privates Projekt",
 };
 
-// English articles are live; German article translations are not yet published.
+// Articles share their slug and publication date across languages.
 const posts = ["am-i-a-vibe-coder", "am-i-famous-now", "first-blog"];
 
 function htmlFiles(dir) {
@@ -55,7 +55,7 @@ test("the site is a home page, project pages and articles", () => {
     ...posts.map((slug) => `blog/${slug}/index.html`),
   ];
   // Every page also exists in German, at the same address under /de/.
-  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html" && !/^blog\/[^/]+\/index\.html$/.test(p))) {
+  for (const path of expected.filter((p) => p.endsWith("index.html") && p !== "404.html")) {
     expected.push(`de/${path}`);
   }
   expected.push("search.json", "de/search.json", "llms.txt", "llms-full.txt", "og-card.png", "og-card-de.png");
@@ -187,7 +187,7 @@ test("each project with measurements has an In numbers section, and no page make
   assert.match(page("work/mobilenet-on-fpga/index.html"), /no measured hardware resource or latency results/);
 });
 
-test("translated pages link to their twin, and untranslated articles fall back safely", () => {
+test("all translated pages link to their twin", () => {
   const files = htmlFiles(dist).filter((file) => !file.endsWith("404.html"));
   for (const file of files) {
     const html = readFileSync(file, "utf8");
@@ -196,13 +196,8 @@ test("translated pages link to their twin, and untranslated articles fall back s
     const german = rel.startsWith("/de/");
     const twin = german ? rel.slice("/de".length) || "/" : `/de${rel}`;
     const group = html.match(/<div class="lang"[\s\S]*?<\/div>/)?.[0] ?? "";
-    const englishOnlyArticle = /^\/blog\/[^/]+\/?$/.test(rel);
-    if (englishOnlyArticle) {
-      assert.ok(group.includes('href="/de/blog/"'), `${rel} must fall back to the German blog index`);
-    } else {
-      assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
-      assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
-    }
+    assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
+    assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
     assert.match(group, new RegExp(`<a [^>]*href="${rel}"[^>]*aria-current="true"`), `${rel} does not mark its own language`);
     assert.match(html, new RegExp(`<html lang="${german ? "de" : "en"}"`));
   }
@@ -215,7 +210,7 @@ test("the German pages carry German text and link only to German pages", () => {
   assert.ok(about.includes("Universität Duisburg-Essen") && about.includes("Osterferien 2027"));
   assert.ok(about.includes('href="/de/work/torchvk/"'));
   assert.ok(about.includes('href="/de/contact/"'));
-  assert.match(about, /<p>Ab und zu\.<\/p>/);
+  assert.match(about, /<p>Gelegentlich\.<\/p>/);
   assert.equal(jsonLd(page("de/blog/index.html"))[0]["@graph"].find((node) => node["@type"] === "Blog").blogPost.length, posts.length);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.
@@ -223,8 +218,7 @@ test("the German pages carry German text and link only to German pages", () => {
     const internal =[...html.matchAll(/ href="(\/[^"#?]*)"/g)].map((m) => m[1]);
     for (const href of internal) {
       if (/\.\w+$/.test(href)) continue; // files such as the favicon and the PDF are shared
-      const englishArticle = file.split("\\").join("/").endsWith("/de/blog/index.html") && posts.some((slug) => href === `/blog/${slug}/`);
-      assert.ok(href.startsWith("/de/") || href === "/de" || englishArticle, `${file} links to ${href}, which is not German`);
+      assert.ok(href.startsWith("/de/") || href === "/de", `${file} links to ${href}, which is not German`);
     }
   }
 });
@@ -295,9 +289,9 @@ test("each project page carries its record", () => {
     const de = page(`de/work/${slug}/index.html`);
     assert.match(de, new RegExp(`<h1[^>]*>${project.name}</h1>`));
     assert.ok(de.includes(germanStatus[slug]), `German ${slug} lacks its status`);
-    for (const heading of ["Warum es existiert", "Wie es funktioniert", "Aktueller Stand"]) {
-      assert.ok(de.includes(heading), `German ${slug} lacks "${heading}"`);
-    }
+    assert.match(de, /class="work-story"/, `${slug}: German edition should render its story`);
+    assert.match(de, /id="story-1"/, `${slug}: German edition needs a chapter outline`);
+    assert.doesNotMatch(de, /id="figures"/, `${slug}: figures belong inline in the German story`);
   }
 });
 
@@ -453,7 +447,7 @@ test("German pages are described in German by the same structured data", () => {
 
 test("the feeds, sitemap, canonical links and share images use absolute addresses", () => {
   const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
-  for (const [feed, lang, count] of [["rss.xml", "en", posts.length], ["de/rss.xml", "de", 0]]) {
+  for (const [feed, lang, count] of [["rss.xml", "en", posts.length], ["de/rss.xml", "de", posts.length]]) {
     const xml = page(feed);
     assert.equal(xml.match(/<item>/g)?.length ?? 0, count, `${feed} lists articles in that language`);
     for (const [, link] of xml.matchAll(/<link>([^<]+)<\/link>/g)) assert.ok(link.startsWith(origin), `${lang} feed link ${link} is not absolute`);
@@ -663,4 +657,40 @@ test("IDE chrome and flat diagrams follow the portfolio's own styles", () => {
   assert.match(css, /code-panel pre\.shiki \.line::before/);
   assert.match(css, /\[data-theme="light"\] \.code-panel \.shiki/);
   assert.match(css, /\.project-flow li\s*\{[^}]*border-left:\s*1px solid var\(--line\);/s);
+});
+
+
+test("published blog articles have matching German editions and reciprocal hreflang", () => {
+  const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
+  const en = readdirSync(join(root, "content/posts")).filter((name) => name.endsWith(".md") && name !== "README.md").sort();
+  const de = readdirSync(join(root, "content/de/posts")).filter((name) => name.endsWith(".md") && name !== "README.md").sort();
+  assert.deepEqual(de, en);
+  for (const file of en) {
+    const english = readFileSync(join(root, "content/posts", file), "utf8");
+    const german = readFileSync(join(root, "content/de/posts", file), "utf8");
+    for (const field of ["slug", "publishedAt", "tags"]) {
+      const pattern = new RegExp("^" + field + ": (.+)$", "m");
+      assert.equal(german.match(pattern)?.[1], english.match(pattern)?.[1], file + ": " + field);
+    }
+    const slug = english.match(/^slug: (.+)$/m)[1];
+    for (const path of ["blog/" + slug + "/index.html", "de/blog/" + slug + "/index.html"]) {
+      const html = page(path);
+      assert.ok(html.includes('hreflang="de" href="' + origin + '/de/blog/' + slug + '/"'));
+      assert.ok(html.includes('hreflang="en" href="' + origin + '/blog/' + slug + '/"'));
+    }
+  }
+});
+
+
+test("German project stories preserve the English chapter and figure structure and reference links", () => {
+  for (const slug of Object.keys(projects)) {
+    const en = readFileSync(join(root, "content/projects", slug + ".md"), "utf8");
+    const de = readFileSync(join(root, "content/de/projects", slug + ".md"), "utf8");
+    const story = (text) => text.split(/^## Story\s*$/m)[1].split(/^## /m)[0];
+    assert.equal((story(de).match(/^### /gm) || []).length, (story(en).match(/^### /gm) || []).length, slug + ": chapter count");
+    const figures = (text) => [...story(text).matchAll(/\{\{figure:(\d+)\}\}/g)].map(m => m[1]);
+    assert.deepEqual(figures(de), figures(en), slug + ": inline figure order");
+    const refs = (text) => [...text.split(/^## Links\s*$/m)[1].matchAll(/^- \[[^\]]+\]\(([^)]+)\)/gm)].map(m => m[1]);
+    assert.deepEqual(refs(de), refs(en), slug + ": reference link parity");
+  }
 });

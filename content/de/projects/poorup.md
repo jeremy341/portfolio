@@ -7,53 +7,117 @@
 
 ## Zusammenfassung
 
-Ein Multiplayer-Brettspiel, das im Browser läuft. Alle sehen denselben Spielstand, Züge können überraschen, und ein bisschen freundlicher Wettbewerb gehört auch dazu.
+Ein Multiplayer-Brettspiel im Browser: kaufen, handeln, bauen und Freunde in den Bankrott treiben. Spannend wurde es beim gemeinsamen Spielzustand.
 
-## Kontext und Motivation
+## Story
 
-Ich habe Poorup angefangen, weil ich lernen wollte, wie Echtzeit-Webanwendungen funktionieren und wie man Spiellogik auf dem Server schreibt. Die meisten meiner Projekte haben in der Hack-Club-Community angefangen, und dieses auch. Außerdem wollte ich etwas, das meine Freunde und ich wirklich zusammen spielen können. Als es draußen war, haben die Leute es geliebt.
+Eigentlich wollte ich ein Spiel bauen, das ich mit meinen Freunden spielen kann. Daraus wurde Poorup, ein Immobilien-Brettspiel im Browser, in dem man Grundstücke kaufen, handeln, beleihen und sich gegenseitig in den Bankrott treiben kann. Irgendwie fanden auch Auktionen, Bots, eine fiktive Börse und ein paar weitere Systeme ihren Weg ins Spiel.
 
-Es ist ein Spiel im Stil von Monopoly. Man würfelt, kauft, handelt und versucht, als Letzter noch Miete zahlen zu können. Man muss nichts herunterladen und braucht kein Konto. Man öffnet einen Link, wählt einen Namen und teilt den Raumcode mit allen, die am Tisch sitzen sollen.
+Aus Spielersicht sind die Regeln recht einfach: einem Raum beitreten, würfeln und möglichst nicht pleitegehen.
 
-Die schwierigen Teile merkt man aber meist erst, wenn sie kaputtgehen. Was passiert, wenn jemand mitten in einer Auktion die Verbindung verliert? Was, wenn zwei Spieler in derselben Sekunde dasselbe Grundstück kaufen wollen? Was, wenn ein Spieler einfach geht? Mit diesen Fragen habe ich mich am meisten beschäftigt, und dabei habe ich das Meiste gelernt, was ich aus diesem Projekt mitgenommen habe.
+Damit überspringt man aber den interessantesten Teil. Wenn mehrere Leute auf verschiedenen Geräten spielen, wer entscheidet eigentlich, was passiert ist? Wenn sich zwei Browser nicht darüber einig sind, wer ein Grundstück gekauft hat, reicht es nicht, dass beide Oberflächen überzeugend aussehen.
 
-## Im Projekt
+Auktionen haben sich als besonders gute Möglichkeit erwiesen, dieses Problem sichtbar zu machen.
 
-Der Server besitzt das Spiel. Der Browser schickt nur, was der Spieler tun will, also würfeln, kaufen, bieten oder einen Handel annehmen, über [Socket.IO](https://socket.io/). Der Server prüft jede Aktion gegen die Regeln und schickt den neuen Zustand zurück. Deshalb kann ein manipulierter Browser nicht schummeln, denn er entscheidet nichts. Der Server läuft mit Node.js und Express. Der Client ist einfaches HTML, CSS und JavaScript ohne Framework, sodass die einzigen Laufzeitabhängigkeiten `express` und `socket.io` sind.
+{{figure:0}}
 
-### Was im Spiel steckt
+### Ein Raum braucht einen gemeinsamen Spielstand
 
-- Es gibt zwei Spielbretter, Standard-40 und Metro-52. Beide sind als Daten beschrieben und nicht als zwei getrennte Regelwerke.
-- Räume gibt es öffentlich oder privat mit Code. Dazu kommen Gasteinstieg, Chat, Wiederverbinden nach einem Abbruch, das Entfernen inaktiver Spieler und ein Rauswurf per Abstimmung.
-- Beim Grundstücksspiel geht es um Kaufen, Miete kassieren, gleichmäßiges Bauen innerhalb einer Farbgruppe, Beleihen, Versteigern und Handeln.
-- Geld zwischen Spielern geht über die Grundlagen hinaus: Handels- und Finanzierungsangebote auch außerhalb des eigenen Zugs, Bankkredite und Kredite zwischen Spielern mit Sicherheiten und festen Regeln für den Ausfall. Dazu kommen gesponserte Käufe, bei denen ein Spieler das Grundstück eines anderen gegen einen vereinbarten Anteil bezahlt.
-- Es gibt eine optionale Börse in Spielgeld mit gemeinsamen Kursen. Globale Ereignisse bewegen den Markt und können sogar die Regeln für eine Runde ändern. Ein optionales Casino, ebenfalls in Spielgeld, ist auch dabei.
-- Bots gibt es in zwei Modi. Der eine ist ein deterministischer Bot namens House Brain. Der andere ist ein KI-Berater, der nur Züge ordnet, die die Regel-Engine ohnehin für erlaubt hält. Fällt sein Anbieter aus oder braucht er länger als vier Sekunden, spielt House Brain den Zug stattdessen.
-- Profile zeigen Spielverlauf, Erfolge, Freunde und Ranglisten.
-- Sechs Themenwelten mit Pixel-Art-SVGs und ein optionaler Musikplayer.
+Ein Spieler kann auf einen Button klicken, um zu bieten oder etwas zu kaufen. Aber sein Browser soll nicht die letzte Entscheidung treffen. Er schickt eine **Aktionsanfrage** an den Node.js-Server. Der prüft, wer am Zug ist, wie viel Geld zur Verfügung steht und was die Regeln erlauben, bevor er den gemeinsamen Spielzustand ändert.
 
-### Hinter dem Bildschirm
+[Socket.IO](https://socket.io/) kümmert sich um die Echtzeitkommunikation zwischen Clients und Server. Das vereinfacht den Nachrichtenaustausch, heißt aber nicht, dass jede Nachricht sofort ankommt oder alle sie gleichzeitig sehen.
 
-Der Server ist nach Aufgaben aufgeteilt. Auktionen, Handel, Miete, Karten, Bankrott, Flughäfen, die Wirtschaft und gesponserte Käufe haben jeweils ein eigenes Modul. Die Regeln liegen in getrennten Dateien, damit eine Änderung an einer Regel nicht überall etwas anderes kaputt macht. Jedes Socket-Ereignis läuft durch eine Ratenbegrenzung und eine Liste erlaubter Herkunftsadressen, bevor überhaupt etwas passiert.
+Stell dir vor, jemand klickt auf „Buy“, während der Bildschirm eines anderen Spielers noch einen älteren Spielstand zeigt. Wenn beide Browser selbst entscheiden dürften, könnte dasselbe Grundstück plötzlich zwei verschiedene Eigentümer haben.
 
-Es gibt keine Datenbank. Konten, Spiele und soziale Daten liegen als JSON-Dateien mit Sicherungskopien und Prüfsummen. Ein Health-Endpunkt und ein Drain-Modus machen es aber leichter, eine neue Version auszurollen, ohne laufende Spiele abzubrechen.
+Für ein Immobilien-Brettspiel wäre das ein ziemlich schlechtes Feature.
 
-### Wie ich es gebaut habe
+Der Server ist deshalb **autoritativ**: Er prüft die Aktion, aktualisiert den Raum und verteilt das Ergebnis. Damit lassen sich viele Inkonsistenzen auf Client-Seite vermeiden. Gegen jeden denkbaren Exploit ist das Spiel dadurch natürlich noch nicht geschützt.
 
-Die gesamte Oberfläche habe ich selbst entworfen und geschrieben, und alle SVG-Grafiken habe ich selbst gezeichnet. [GPT](https://openai.com/)/[Codex](https://openai.com/) hat beim Debuggen und beim Backend geholfen und den größten Teil der Bots im Spiel mitgebaut. Ein Code-Health-Werkzeug hat einige meiner größten Dateien als Problemstellen markiert, deshalb habe ich sie mit [Codex](https://openai.com/) in kleinere Module aufgeteilt.
+{{figure:1}}
 
-Die Musik ist nicht von mir. Sie stammt von Dritten und ist offen lizenziert, die Nachweise stehen im Repository. Außerdem habe ich die Git-Historie absichtlich neu geschrieben, deshalb zeigt das Commit-Protokoll nicht die ganze Entwicklung.
+Ein Grundstück zu kaufen ist aber nur eine einzelne Aktion. Bei Auktionen kommen mehrere Spieler, sich ständig ändernde Gebote und eine Deadline zusammen, auf die alle schauen. Und plötzlich wird aus einem harmlosen Countdown ein Engineering-Problem.
+
+### Eigentlich ging es gar nicht um den Countdown
+
+Was passiert, wenn auf meinem Handy noch 80 Millisekunden übrig sind, auf deinem Laptop 140 und wir beide auf „Bid“ drücken? Gemessen an ihren eigenen Uhren könnten beide Geräte recht haben. Trotzdem kann es nur ein gemeinsames Ergebnis geben.
+
+Naheliegend wäre es, jeden Browser selbst entscheiden zu lassen, ob sein Gebot rechtzeitig kam. Nur gehen Browseruhren nicht immer gleich, Nachrichten können sich verspäten und dem Code im Browser eines Clients sollte der Server nicht blind vertrauen.
+
+Die Auktionsfrist liegt deshalb beim **Server**. In der aktuellen Implementierung dauert sie fünf Sekunden. Gebote, die ab Erreichen der Deadline eintreffen, werden abgelehnt; akzeptierte Gebote verlängern die Frist. Außerdem gibt es zwischen Geboten einen Cooldown von 300 ms.
+
+Damit ist geklärt, *wer entscheidet*. Die UI muss aber weiterhin etwas Sinnvolles anzeigen, während Nachrichten zwischen Browser und Server unterwegs sind.
+
+Der Client verwendet einen Zeitversatz aus dem synchronisierten Spielzustand, damit der Countdown näher an der Serverzeit liegt. Der relevante Ausschnitt aus `clientAuctionUi.js`:
+
+```js title=clientAuctionUi.js
+function serverNow() {
+  return Date.now() + (state.serverTimeOffset || 0);
+}
+
+const remaining = a.deadline - serverNow();
+```
+
+Die Berechnung sorgt für eine konsistentere Anzeige. Sie gibt dem Browser keine Entscheidungsgewalt. Kommt ein Gebot zu spät beim Server an, hilft es auch nicht, wenn der Countdown auf dem Bildschirm noch einen Sekundenbruchteil zeigt.
+
+Super, die Uhr gehört also dem Server. Problem gelöst?
+
+Bis jemand die Verbindung verliert.
+
+### Wer die Verbindung verliert, hat nicht automatisch gepasst
+
+Ich erinnere mich besonders an eine unangenehme Situation: Jemand verlässt den Raum mitten in einer Auktion. Der Server kann nicht mehr voraussetzen, dass alle Teilnehmer verbunden sind. Er kann aber auch nicht einfach so tun, als wäre ein Verbindungsabbruch eine bewusste Entscheidung gewesen, nicht weiterzubieten.
+
+Der Code unterscheidet deshalb zwischen getrennten Teilnehmern und aktiven Bietern. Er prüft die Berechtigung sowohl beim Eingang eines Gebots als auch bei der Ermittlung des Gewinners. Verlässt der Spieler, der die Auktion gestartet hat, während des betreffenden Zugs den Raum, gibt es außerdem einen Pfad, um die Auktion abzubrechen.
+
+Und selbst wenn die Verbindungsabbrüche behandelt werden, bleibt die nächste Frage: Was passiert mit dem Geld hinter dem Höchstgebot?
+
+Wenn ich mit einem Gebot von 500 $ führe, sollte ich dieselben 500 $ nicht gleichzeitig für etwas anderes ausgeben können und trotzdem erwarten, die Auktion zu gewinnen. Der Server berücksichtigt deshalb das Geld, das durch mein Höchstgebot gebunden ist, wenn er prüft, was ich ausgeben darf.
+
+Deshalb ging es beim Timer im Grunde nie darum, fünf Sekunden auf einem Bildschirm darzustellen. Es ging darum, was das Spiel tun soll, wenn zwei Nachrichten fast gleichzeitig ankommen, ein Spieler verschwindet oder der angezeigte Kontostand nicht mehr dem tatsächlich verfügbaren Geld entspricht.
+
+Die UI muss diese Entscheidungen übernehmen und sich wieder synchronisieren, wenn ihre lokale Ansicht veraltet ist. Sie kann nicht darauf bestehen, dass der optimistisch angezeigte Zustand von eben schon stimmen muss.
+
+### Und dann kamen immer mehr Dinge dazu
+
+Als die Multiplayer-Aktionen funktionierten, blieb viel Platz für Experimente. Poorup hat inzwischen die Bretter Standard-40 und Metro-52, öffentliche und private Räume, einen Gastmodus, Handel, Immobilienentwicklung, Finanzierung und fiktive Marktereignisse.
+
+Ich habe außerdem die Oberfläche und die SVG-Grafiken gestaltet und mehrere Themes entwickelt. Offenbar waren all die Spielregeln noch nicht genug. Das Spielbrett sollte auch je nach Stimmung anders aussehen.
+
+{{figure:2}}
+
+Mit den Bots kam ein weiteres Zuverlässigkeitsproblem dazu. Es gibt deterministische Bot-Logik und einen KI-Beratermodus, mit einem Fallback, falls der externe KI-Anbieter nicht verfügbar ist. Ein Multiplayer-Spiel sollte nicht stehen bleiben, nur weil irgendein anderer Dienst nicht antwortet.
+
+GPT/Codex habe ich auch beim Debugging und bei der Implementierung eingesetzt, insbesondere beim Bot-Verhalten und bei größeren Backend-Refactorings nach Code-Reviews. Die UI und die SVG-Grafiken stammen von mir. Mir ist lieber, ich erkläre, wobei ich Unterstützung hatte, als so zu tun, als wäre jede einzelne Zeile ohne sie entstanden.
+
+Alle zusätzlichen Features müssen mit demselben Spielzustand arbeiten. Eine schöne neue Auktionsanimation bringt nichts, wenn sie die Regeln durcheinanderbringt, nach denen alle anderen spielen.
+
+### Was ich noch nicht als fertig bezeichnen würde
+
+Mehr Code bedeutet auch mehr Gelegenheiten, dass irgendetwas schiefgeht.
+
+Der Server speichert Accounts und Spielverläufe momentan in JSON-Dateien. Für das Deployment mit einem einzelnen Serverprozess ist das überschaubar, mehrere Instanzen gleichzeitig zu betreiben wäre dagegen deutlich komplizierter. Ohne geeigneten Storage-Adapter verhindert die Anwendung so einen Aufbau.
+
+Auch einen festen Timer für jeden Zug gibt es nicht. Stattdessen arbeitet das Spiel mit Inaktivitätserkennung und Abstimmungen, um Spieler aus dem Raum zu entfernen. Einzelne Features müssen noch überprüft werden, darunter Unterschiede zwischen Versionen der Parlor-Patrol-Dokumentation und dem veröffentlichten Spiel.
+
+Es gibt automatisierte Tests. Aber manchmal besteht ein ziemlich guter Test auch einfach darin, zwei Leute in denselben Raum zu setzen, zu beobachten, was bei schlechten Verbindungen passiert, und zu prüfen, ob der Server trotzdem ein einheitliches Ergebnis liefert.
+
+{{figure:3}}
+
+Ich habe Poorup angefangen, weil ein Immobilien-Brettspiel mit Freunden Spaß machen sollte. Nicht erwartet hatte ich, wie viel der Arbeit sich um Uhren, Reihenfolgen, Konsistenz und Menschen drehen würde, die mitten in einer Entscheidung verschwinden.
+
+Andererseits: Wenn ich schon Leute ihre Freunde online in den Bankrott treiben lasse, sollten wir uns wenigstens darüber einig sein, wer die Auktion gewonnen hat.
 
 ## In Zahlen
 
-- Spielbretter: 2, Standard-40 mit 40 Feldern und Metro-52 mit 52 Feldern
-- Themen: 6, mit 12 offen lizenzierten Musikstücken
-- Erfolge: 48
-- Spielaktionen: 47 im Haupt-Socket-Modul des Spiels
-- Code: etwa 61.000 Zeilen JavaScript in Server und Client (nur Dateien auf oberster Ebene) und etwa 39.000 Zeilen Tests
-- Tests: 229 Testsuiten im vollen Lauf, und die CI lässt den Build unter 88 % Zeilenabdeckung scheitern
-- Laufzeitabhängigkeiten: 2 (`express` und `socket.io`)
-- Code-Health: Die durchschnittliche Quelldatei erreichte in einer CodeScene-Prüfung im Oktober 2026 9,2 von 10
+- Spielbretter: 2, Standard-40 und Metro-52
+- Themes: 6
+- Erfolge: 48 im dokumentierten Projektstand
+- Spielaktionen: 47 im zentralen Game-Socket-Modul
+- Code: etwa 61.000 Zeilen JavaScript und 39.000 Zeilen Tests im dokumentierten Stand
+- Tests: 229 Testsuiten im dokumentierten vollständigen Lauf; CI verlangt mindestens 88 % Zeilenabdeckung
+- Laufzeitabhängigkeiten: Express und Socket.IO
+- Architektur: einzelner Serverprozess mit JSON-Speicherung; keine allgemeine Unterstützung mehrerer Instanzen
+- Auktionen: serverseitige Fünf-Sekunden-Frist, nach akzeptiertem Gebot neu gesetzt, mit 300 ms Cooldown
 
 ## Abbildungen
 
@@ -61,12 +125,6 @@ Die Musik ist nicht von mir. Sie stammt von Dritten und ist offen lizenziert, di
 - ![Ein Poorup-Raum auf dem Standard-40-Brett. Links steht die Spielerliste, in der Mitte die Würfel und der Knopf Roll Dice, rechts die Tabs Holdings, Deals und Activity.](poorup/board.png) Ein Testtisch auf dem Brett mit 40 Feldern.
 - ![Poorups Startbildschirm im Wintermotiv: ein Pixel-Art-Dorf unter einem Mond, mit den Knöpfen Play, Create Room und Join Room.](poorup/theme-winter.png) Der Startbildschirm im Wintermotiv.
 - ![Eine Poorup-Profilseite auf dem Tab History, oben mit Spielen, Siegen und Siegquote und darunter eine Liste abgeschlossener Runden, eine davon aufgeklappt.](poorup/profile-history.png) Ein Profil mit Spielverlauf.
-
-## Aktueller Stand
-
-Ein laufendes Spiel liegt im Arbeitsspeicher, und Konten, Spiele und soziale Daten sind JSON-Dateien. Ohne Datenbank läuft Poorup als einzelner Prozess und ist nicht darauf ausgelegt, auf mehrere Instanzen zu skalieren. Deshalb verweigert eine Sperre den Start in einem Setup mit mehreren Instanzen, bis es einen echten Datenbankadapter gibt.
-
-Einiges ist noch rau. Das Minispiel Parlor Patrol ist abgeschaltet, weil es nicht zuverlässig funktioniert. Außerdem gibt es keine Zugzeit. Ein langsamer Spieler kann deshalb einen Tisch aufhalten, bis das Entfernen inaktiver Spieler oder ein Rauswurf per Abstimmung greift. Das Quellcode-Repository ist der beste Anhaltspunkt dafür, was heute funktioniert. Die Demo läuft separat, weshalb sie ab und zu nicht erreichbar sein kann.
 
 ## Links
 
