@@ -101,6 +101,8 @@ const en = {
   figureViewer: "Image viewer",
   figureZoom: "tap to zoom",
   figureFit: "tap to fit",
+  figureZoomButton: "Zoom in",
+  figureFitButton: "Fit to screen",
   figureClose: "Close image",
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
@@ -245,6 +247,8 @@ const de: Strings = {
   figureViewer: "Bildansicht",
   figureZoom: "zum Zoomen tippen",
   figureFit: "zum Einpassen tippen",
+  figureZoomButton: "Vergrößern",
+  figureFitButton: "An Bildschirm anpassen",
   figureClose: "Bild schließen",
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 

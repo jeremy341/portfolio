@@ -37,7 +37,7 @@ export const GET: APIRoute = () => {
     `- Based in: ${t.region}, Germany`,
     `- Email: ${email}`,
     ...(downloads ? [`- MIRA: ${plainText(downloads)}`] : []),
-    "- University of Duisburg-Essen: project work with the Chair of Electronic Components and Circuits (EBS). He spent four weeks there from 3 to 28 August 2026 on FluidicStudio. It is project work, not a university role or an internship.",
+    "- University of Duisburg-Essen: a voluntary four-week internship from 3 to 28 August 2026 with the Chair of Electronic Components and Circuits (EBS), working on FluidicStudio. It was project work at the chair, not a university role.",
     "- Languages: English at the root of the site, German under /de/ with the same paths.",
     "",
     "## Questions and answers",

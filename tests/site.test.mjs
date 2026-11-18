@@ -444,7 +444,8 @@ test("llms.txt and llms-full.txt say who the person is, list every page, and kee
     assert.ok(index.includes(href), `llms.txt lacks ${href}`);
   }
   assert.ok(index.includes("9.1K+ lifetime model downloads"), "llms.txt states the MIRA download count with its caveat");
-  assert.doesNotMatch(index, /community and internships|an internship from 3 to 28 August/, "llms.txt does not describe removed About sections or call the UDE work an internship");
+  assert.doesNotMatch(index, /community and internships|not an internship/, "llms.txt does not describe removed About sections or deny the UDE internship");
+  assert.match(index, /voluntary four-week internship from 3 to 28 August 2026/, "llms.txt describes the UDE internship accurately");
   const full = page("llms-full.txt");
   assert.match(full, /^## About Jeremy Darko$/m, "llms-full.txt carries the biography");
   assert.match(full, /^## CV$/m, "llms-full.txt carries the CV");

@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
@@ -111,9 +111,17 @@ export function shareCards() {
           const output = new URL(`og/${lang}/${flat}.png`, dir);
           mkdirSync(new URL("og/", dir), { recursive: true });
           mkdirSync(new URL(`og/${lang}/`, dir), { recursive: true });
-          await sharp(Buffer.from(svg({ path: pseudo, title, description, footer: footerFor(html, route, lang) })))
+          const png = await sharp(Buffer.from(svg({ path: pseudo, title, description, footer: footerFor(html, route, lang) })))
             .png()
-            .toFile(fileURLToPath(output));
+            .toBuffer();
+          writeFileSync(fileURLToPath(output), png);
+
+          // The PNGs in public/og/ are committed. Fail the build when they drift from what the
+          // content now generates, so a renamed title cannot leave a stale share card behind.
+          const committed = fileURLToPath(new URL(`../public/og/${lang}/${flat}.png`, import.meta.url));
+          if (existsSync(committed) && !readFileSync(committed).equals(png)) {
+            throw new Error(`share-cards: ${committed} is stale; regenerate the committed share cards`);
+          }
           count++;
         }
         console.log(`share-cards: wrote ${count} page-specific social cards`);

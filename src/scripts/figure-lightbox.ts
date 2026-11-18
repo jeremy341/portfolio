@@ -33,6 +33,13 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
   close.autofocus = true;
   close.addEventListener("click", () => dialog.close());
 
+  const zoomButton = document.createElement("button");
+  zoomButton.type = "button";
+  zoomButton.className = "lb-zoom";
+  zoomButton.textContent = "+";
+  zoomButton.setAttribute("aria-label", t.figureZoomButton);
+  zoomButton.addEventListener("click", () => setZoom(!zoomed));
+
   const image = document.createElement("img");
   image.className = "lb-img";
   const stage = document.createElement("div");
@@ -48,7 +55,7 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
   hint.textContent = ` · ${t.figureZoom}`;
   caption.append(captionText, hint);
 
-  dialog.append(close, stage, caption);
+  dialog.append(close, zoomButton, stage, caption);
   document.body.append(dialog);
 
   let zoomed = false;
@@ -56,6 +63,8 @@ if (links.length > 0 && typeof dialog.showModal === "function") {
     zoomed = on;
     dialog.classList.toggle("is-zoomed", on);
     hint.textContent = ` · ${on ? t.figureFit : t.figureZoom}`;
+    zoomButton.textContent = on ? "−" : "+";
+    zoomButton.setAttribute("aria-label", on ? t.figureFitButton : t.figureZoomButton);
     stage.scrollLeft = 0;
     stage.scrollTop = 0;
     if (on) {

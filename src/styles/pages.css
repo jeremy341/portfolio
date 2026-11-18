@@ -32,7 +32,7 @@
   transition: color 150ms var(--ease);
 }
 
-.site-nav .lang a[aria-current="true"] {
+.site-nav .lang a[aria-current="page"] {
   color: var(--bg);
   font-weight: 700;
 }
@@ -463,6 +463,29 @@ html:not([data-js]) .find-btn {
   background: var(--hover);
 }
 
+.figure-lightbox .lb-zoom {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  right: calc(max(8px, env(safe-area-inset-right)) + 52px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.figure-lightbox .lb-zoom:is(:hover, :focus-visible) {
+  border-color: var(--accent);
+  background: var(--hover);
+}
+
 .figure-lightbox .lb-stage {
   display: flex;
   flex: 1 1 auto;
@@ -491,6 +514,7 @@ html:not([data-js]) .find-btn {
 }
 
 .figure-lightbox.is-zoomed .lb-img {
+  align-self: flex-start;
   max-width: none;
   max-height: none;
   margin: 0;
