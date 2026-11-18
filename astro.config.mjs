@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { shareCards } from "./tools/share-cards.mjs";
 
 // The public origin. PUBLIC_SITE_URL overrides it; an empty value turns off the output that
 // needs an origin (canonical URLs, the sitemap, the feeds and absolute share images).
@@ -65,5 +66,5 @@ export default defineConfig({
   compressHTML: true,
   prefetch: { prefetchAll: true, defaultStrategy: "hover" },
   devToolbar: { enabled: false },
-  integrations: [writingDesk(), sitemap()],
+  integrations: [writingDesk(), sitemap(), shareCards()],
 });

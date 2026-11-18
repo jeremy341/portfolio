@@ -54,8 +54,13 @@ const english = canonical(otherPath(Astro.url.pathname, "en"));
 const alternates = (["en", "de"] as const)
   .map((code) => ({ code, href: canonical(otherPath(Astro.url.pathname, code)) }));
 const other = lang === "de" ? "en" : "de";
-// The share card in the page's language. Link previews need an absolute address, so it exists only with a domain.
-const shareImage = canonical(lang === "de" ? "/og-card-de.png" : "/og-card.png");
+// A share card for this exact page, in its language. Link previews need an absolute address,
+// so images only exist when the build knows its domain. The home keeps its hand-made card;
+// every other page gets one generated from its title and description (tools/share-cards.mjs).
+const barePath = lang === "de" ? Astro.url.pathname.replace(/^\/de(?=\/)/, "") : Astro.url.pathname;
+const cardSlug = barePath.startsWith("/404") ? "" : barePath.replace(/^\/+|\/+$/g, "").replace(/\//g, "-");
+const shareImage = canonical(cardSlug ? `/og/${lang}/${cardSlug}.png` : lang === "de" ? "/og-card-de.png" : "/og-card.png");
+const shareAlt = cardSlug ? `${fullTitle}: ${description}` : t.shareAlt;
 // Every page's structured data is one @graph; a missing node (no domain, so no breadcrumbs) is dropped.
 const nodes = (Array.isArray(schema) ? schema : [schema]).filter((node) => node !== undefined);
 
@@ -100,7 +105,7 @@ const speculation = {
     {shareImage && <meta property="og:image" content={shareImage} />}
     {shareImage && <meta property="og:image:width" content="1200" />}
     {shareImage && <meta property="og:image:height" content="630" />}
-    {shareImage && <meta property="og:image:alt" content={t.shareAlt} />}
+    {shareImage && <meta property="og:image:alt" content={shareAlt} />}
     <meta name="twitter:card" content={shareImage ? "summary_large_image" : "summary"} />
     {shareImage && <meta name="twitter:image" content={shareImage} />}
     <meta name="color-scheme" content="light dark" />

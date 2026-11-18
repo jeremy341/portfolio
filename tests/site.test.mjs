@@ -467,6 +467,35 @@ test("the feeds, sitemap, canonical links and share images use absolute addresse
   assert.ok(page("work/mira/index.html").includes(`"item":"${origin}/work/mira/"`), "breadcrumbs use absolute addresses");
 });
 
+test("every non-home page has its own generated 1200x630 share card", () => {
+  const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
+  const imageOf = (html) => html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+  let checked = 0;
+  for (const file of htmlFiles(dist)) {
+    const html = readFileSync(file, "utf8");
+    if (html.includes('http-equiv="refresh"')) continue;
+    const rel = file.slice(dist.length).split("\\").join("/").replace(/index\.html$/, "");
+    if (rel === "/" || rel === "/de/" || rel.startsWith("/404")) continue;
+
+    const image = imageOf(html);
+    assert.ok(image, `${rel} has no og:image`);
+    const path = new URL(image).pathname;
+    assert.match(path, /^\/og\/(en|de)\//, `${rel} does not use a per-page card`);
+    const card = join(dist, path.slice(1));
+    assert.ok(existsSync(card), `${rel} points at a card that does not exist: ${path}`);
+    const bytes = readFileSync(card);
+    assert.equal(bytes.readUInt32BE(16), 1200, `${path} is not 1200px wide`);
+    assert.equal(bytes.readUInt32BE(20), 630, `${path} is not 630px tall`);
+    const alt = html.match(/<meta property="og:image:alt" content="([^"]+)"/)?.[1] ?? "";
+    assert.notEqual(alt, page("index.html").match(/<meta property="og:image:alt" content="([^"]+)"/)[1], `${rel} reuses the home alt text`);
+    checked++;
+  }
+  assert.ok(checked >= 30, `only ${checked} pages were checked`);
+  assert.notEqual(imageOf(page("work/mira/index.html")), imageOf(page("work/poorup/index.html")), "projects do not share a card");
+  assert.notEqual(imageOf(page("blog/first-blog/index.html")), imageOf(page("about/index.html")), "pages do not share a card");
+  assert.ok(imageOf(page("index.html")).startsWith(`${origin}/og-card`), "home keeps its hand-made card");
+});
+
 test("every page has a skip link and one h1", () => {
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, "utf8");
