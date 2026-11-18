@@ -1,5 +1,5 @@
 ---
-title: "Bin ich eigentlich ein Vibe Coder?"
+title: "Bin ich ein Vibe Coder?"
 description: "Bei Hack Club bewerte ich Projekte, die mit KI entstanden sind. Bei meinen eigenen nutze ich Claude und Codex. Und wo stehe ich damit?"
 slug: am-i-a-vibe-coder
 publishedAt: 2026-11-16
