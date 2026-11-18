@@ -122,7 +122,6 @@ const en = {
 
   aboutTitle: "About",
   aboutDescription: (name: string) => `About ${name}: ${summary.en}`,
-  aboutHeadings: { biography: "Biography", ude: "Project work with UDE", community: "Community and internships", topics: "What I keep exploring", facts: "Fun facts", mira: "MIRA in public", profiles: "Public profiles" },
 
   contactTitle: "Contact",
   contactDescription: (name: string) => `Contact ${name} for a project question, an idea to explore or an internship conversation.`,
@@ -264,7 +263,6 @@ const de: Strings = {
 
   aboutTitle: "Über mich",
   aboutDescription: (name) => `Über ${name}: ${summary.de}`,
-  aboutHeadings: { biography: "Biografie", ude: "Projektarbeit mit der UDE", community: "Community und Praktika", topics: "Was ich weiter erkunde", facts: "Ein paar Fakten", mira: "MIRA in der Öffentlichkeit", profiles: "Öffentliche Profile" },
 
   contactTitle: "Kontakt",
   contactDescription: (name) => `Kontakt zu ${name} für eine Projektfrage, eine Idee zum Ausprobieren oder ein Gespräch über ein Praktikum.`,
