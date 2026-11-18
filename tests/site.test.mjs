@@ -323,6 +323,8 @@ test("articles have dates and structured data", () => {
     assert.match(html, /"@type":"BlogPosting"/);
     assert.match(html, /<article\b[^>]*>/);
   }
+  assert.match(page("blog/am-i-a-vibe-coder/index.html"), /7 min read/, "the long article uses its reading-time override");
+  assert.match(page("de/blog/am-i-a-vibe-coder/index.html"), /7 Min\. Lesezeit/, "the German edition uses the same override");
 });
 
 test("Markdown never renders raw HTML", () => {
@@ -334,8 +336,8 @@ test("Markdown never renders raw HTML", () => {
 
 test("crawler policy and no origin-dependent output without a domain", () => {
   const robots = page("robots.txt");
-  assert.match(robots, /User-agent: OAI-SearchBot\nAllow: \//);
-  assert.match(robots, /User-agent: GPTBot\nDisallow: \//);
+  assert.match(robots, /User-agent: \*\nAllow: \//);
+  assert.doesNotMatch(robots, /Disallow:/, "no crawler is blocked");
 });
 
 /* Search and AI discovery */

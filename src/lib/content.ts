@@ -282,6 +282,8 @@ interface Frontmatter {
   updatedAt?: string | Date;
   tags?: string[];
   draft?: boolean;
+  /** Override the estimated reading time in minutes when the word-count estimate is off. */
+  readingMinutes?: number;
 }
 
 function parsePost(lang: Lang, path: string): Post | undefined {
@@ -302,7 +304,7 @@ function parsePost(lang: Lang, path: string): Post | undefined {
     html: renderMarkdown(match[2], lang),
     text,
     markdown: match[2],
-    minutes: Math.max(1, Math.round(words / 220)),
+    minutes: meta.readingMinutes ?? Math.max(1, Math.round(words / 220)),
   };
 }
 
