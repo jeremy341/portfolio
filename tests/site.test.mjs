@@ -198,7 +198,7 @@ test("all translated pages link to their twin", () => {
     const group = html.match(/<div class="lang"[\s\S]*?<\/div>/)?.[0] ?? "";
     assert.ok(group.includes(`href="${twin}"`), `${rel} does not link to ${twin}`);
     assert.ok(existsSync(join(dist, twin, "index.html")), `${twin} does not exist`);
-    assert.match(group, new RegExp(`<a [^>]*href="${rel}"[^>]*aria-current="true"`), `${rel} does not mark its own language`);
+    assert.match(group, new RegExp(`<a [^>]*href="${rel}"[^>]*aria-current="page"`), `${rel} does not mark its own language`);
     assert.match(html, new RegExp(`<html lang="${german ? "de" : "en"}"`));
   }
 });
@@ -429,7 +429,11 @@ test("llms.txt and llms-full.txt say who the person is, list every page, and kee
     assert.ok(index.includes(href), `llms.txt lacks ${href}`);
   }
   assert.ok(index.includes("9.1K+ lifetime model downloads"), "llms.txt states the MIRA download count with its caveat");
+  assert.doesNotMatch(index, /community and internships|an internship from 3 to 28 August/, "llms.txt does not describe removed About sections or call the UDE work an internship");
   const full = page("llms-full.txt");
+  assert.match(full, /^## About Jeremy Darko$/m, "llms-full.txt carries the biography");
+  assert.match(full, /^## CV$/m, "llms-full.txt carries the CV");
+  assert.match(full, /^## Certificates$/m, "llms-full.txt carries the certificates");
   assert.equal(full.match(/^## Project: /gm)?.length, Object.keys(projects).length);
   assert.equal(full.match(/^## Article: /gm)?.length ?? 0, posts.length);
   for (const name of ["llms.txt", "llms-full.txt"]) {

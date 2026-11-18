@@ -3,9 +3,13 @@ import { getContent, type Post, type Project } from "../lib/content";
 import { plainText } from "../lib/markdown";
 import { isoDate, site } from "../lib/site";
 
-// Every project and article in full, as plain text, for language models that read one file. The
-// companion of llms.txt. English only.
-const prose = (text: string) => text.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").trim();
+// Every project, article and page in full, as plain text, for language models that read one file.
+// The companion of llms.txt. English only.
+const prose = (text: string) =>
+  text
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .trim();
 
 const project = (p: Project) =>
   [
@@ -28,10 +32,21 @@ const article = (p: Post) =>
   [`## Article: ${p.title}`, `Published ${isoDate(p.publishedAt)}. Tags: ${p.tags.join(", ")}.`, p.description, prose(p.markdown)].join("\n\n");
 
 export const GET: APIRoute = () => {
-  const { posts, projects } = getContent("en");
+  const { about, certificates, certificatesIntro, cv, posts, projects } = getContent("en");
   const text = [
     `# ${site.name}: full text`,
-    `Projects and articles by ${site.name}, in full. The short index is at /llms.txt. German versions are under /de/.`,
+    `Projects, articles and pages by ${site.name}, in full. The short index is at /llms.txt. German versions are under /de/.`,
+    `## About ${site.name}`,
+    prose(about.profile),
+    prose(about.biography),
+    `### What I keep exploring`,
+    about.topics.trim(),
+    `## ${cv.title}`,
+    `${site.fullName}. ${cv.tagline}`,
+    prose(cv.body),
+    `## Certificates`,
+    prose(certificatesIntro),
+    ...certificates.map((cert) => `- ${cert.title}: ${cert.issuer}, ${cert.date}. ${prose(cert.text)}`),
     ...projects.map(project),
     ...posts.map(article),
   ];
