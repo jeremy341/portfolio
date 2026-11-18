@@ -177,6 +177,21 @@ test("project pages say where to find the project and show their figures with de
   }
 });
 
+test("figures use the in-page lightbox instead of advertising a new tab", () => {
+  let figures = 0;
+  for (const file of htmlFiles(dist)) {
+    for (const link of readFileSync(file, "utf8").match(/<a class="fig-img"[^>]*>/g) ?? []) {
+      assert.match(link, /data-figure/, `${file}: figure link is not wired to the lightbox`);
+      assert.doesNotMatch(link, /new tab/, `${file}: figure still advertises a new tab`);
+      figures++;
+    }
+  }
+  assert.ok(figures > 0, "no figures were checked");
+  const assets = join(dist, "_astro");
+  const bundled = readdirSync(assets).some((name) => name.endsWith(".js") && readFileSync(join(assets, name), "utf8").includes("figure-lightbox"));
+  assert.ok(bundled, "the lightbox script is not in the built JavaScript");
+});
+
 test("each project with measurements has an In numbers section, and no page makes up what is missing", () => {
   for (const slug of Object.keys(projects)) {
     assert.ok(page(`work/${slug}/index.html`).includes('id="numbers"'), `${slug} lacks In numbers`);

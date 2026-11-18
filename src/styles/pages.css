@@ -402,6 +402,75 @@ html:not([data-js]) .find-btn {
   border-color: var(--accent);
 }
 
+/* Full-size figure viewer: a modal over the article, not a new tab (src/scripts/figure-lightbox.ts). */
+.figure-lightbox {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(16px, 4vw, 40px);
+  border: 0;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  color: var(--fg);
+}
+
+.figure-lightbox[open] {
+  display: grid;
+  place-items: center;
+}
+
+.figure-lightbox::backdrop {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+
+.figure-lightbox figure {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.figure-lightbox .lb-img {
+  display: block;
+  max-width: min(92vw, 1400px);
+  max-height: 78dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.figure-lightbox .lb-caption {
+  max-width: 100ch;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.figure-lightbox .lb-close {
+  position: absolute;
+  top: clamp(12px, 3vw, 28px);
+  right: clamp(12px, 3vw, 28px);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 1ch;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.figure-lightbox .lb-close:hover {
+  border-color: var(--accent);
+}
+
 .fig figcaption {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

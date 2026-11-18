@@ -98,7 +98,7 @@ const en = {
   linkShort: { source: "GitHub", site: "Website", demo: "Live demo", models: "Hugging Face", package: "PyPI", article: "Article" },
   linksAria: "Where to find the project",
   figureOpen: "Open the full-size image",
-  figureNewTab: "opens in a new tab",
+  figureClose: "Close image",
   figureNo: (n: number) => `fig ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Writing",
@@ -239,7 +239,7 @@ const de: Strings = {
   linkShort: { source: "GitHub", site: "Website", demo: "Live-Demo", models: "Hugging Face", package: "PyPI", article: "Artikel" },
   linksAria: "Links zum Projekt",
   figureOpen: "Bild in voller Größe öffnen",
-  figureNewTab: "in neuem Tab öffnen",
+  figureClose: "Bild schließen",
   figureNo: (n) => `Abb. ${String(n).padStart(2, "0")}`,
 
   writingTitle: "Blog",

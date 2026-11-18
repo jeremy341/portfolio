@@ -20,7 +20,7 @@ const t = ui[lang];
 ---
 
 <figure class="fig">
-  <a class="fig-img" href={src.src} target="_blank" rel="noopener" aria-label={`${t.figureOpen} (${t.figureNewTab}): ${alt}`}>
+  <a class="fig-img" href={src.src} target="_blank" rel="noopener" data-figure aria-label={`${t.figureOpen}: ${alt}`}>
     <Image
       class={light ? "chart-dark" : undefined}
       src={src}
