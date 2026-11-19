@@ -11,8 +11,8 @@ const de = ui.de;
 const navEn = Object.values(en.nav);
 const navDe = Object.values(de.nav);
 const strings = {
-  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, nav: navEn },
-  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, nav: navDe },
+  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, error: en.notFoundError, nav: navEn },
+  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, error: de.notFoundError, nav: navDe },
 };
 ---
 
@@ -21,6 +21,7 @@ const strings = {
     <canvas class="koi-pond" aria-hidden="true"></canvas>
     <div class="notfound-inner">
       <div class="notfound-copy">
+        <p class="notfound-path" id="nf-path" aria-hidden="true">~/jeremy-darko/404.md <span class="notfound-error" id="nf-error">no such file</span></p>
         <p class="notfound-code" aria-hidden="true">404</p>
         <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
         <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
@@ -45,6 +46,9 @@ const strings = {
         link.textContent = t.back;
         line.append(link, ".");
         document.getElementById("nf-hint").textContent = t.hint;
+        document.getElementById("nf-error").textContent = t.error;
+        var lost = location.pathname.replace(/\/+$/, "") || "/index";
+        document.getElementById("nf-path").firstChild.textContent = "~/jeremy-darko" + lost + ".md ";
         var desktopLinks = document.querySelectorAll(".site-nav > a");
         var mobileLinks = document.querySelectorAll(".mobile-panel > a");
         for (var i = 0; i < desktopLinks.length; i++) {
@@ -87,7 +91,7 @@ const strings = {
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
           const parts = [
-            ...document.querySelectorAll<HTMLElement>(".site-header, .notfound-code, #nf-title, #nf-text, .notfound-hint"),
+            ...document.querySelectorAll<HTMLElement>(".site-header, #nf-path, .notfound-code, #nf-title, #nf-text, .notfound-hint"),
           ];
           const clears = parts
             .map((part) => part.getBoundingClientRect())
@@ -109,17 +113,33 @@ const strings = {
           dim: dimText,
           most: 7,
           reduce: matchMedia("(prefers-reduced-motion: reduce)").matches,
-        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void };
+        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void; paw: (x: number, y: number) => void };
 
         const resize = () => pond.size(pondSection.clientWidth, pondSection.clientHeight);
         resize();
         new ResizeObserver(resize).observe(pondSection);
         pond.start();
 
-        pondCanvas.addEventListener("pointerdown", (event) => {
+        const point = (event: MouseEvent | PointerEvent) => {
           const box = pondCanvas.getBoundingClientRect();
-          pond.feed(event.clientX - box.left, event.clientY - box.top);
+          return { x: event.clientX - box.left, y: event.clientY - box.top };
+        };
+
+        pondCanvas.addEventListener("pointerdown", (event) => {
+          const at = point(event);
+          if (event.button === 2) {
+            pond.paw(at.x, at.y);
+            return;
+          }
+          if (event.button !== 0) return;
+          // A quick tap feeds; holding calls the paw and scatters the shoal.
+          const timer = setTimeout(() => pond.paw(at.x, at.y), 450);
+          const release = () => clearTimeout(timer);
+          pondCanvas.addEventListener("pointerup", release, { once: true });
+          pondCanvas.addEventListener("pointercancel", release, { once: true });
+          pond.feed(at.x, at.y);
         });
+        pondCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
         addEventListener("pagehide", () => pond.stop(), { once: true });
       });
     }

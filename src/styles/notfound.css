@@ -63,9 +63,23 @@ body:has(.notfound-pond) .site-header {
   text-align: center;
 }
 
+/* The attempted address, shown like the path of a file the editor could not open. */
+.notfound-path {
+  max-width: min(90vw, 70ch);
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.notfound-error {
+  color: var(--error);
+}
+
 /* The numeral labels the heading instead of rivalling it: about the height of the title's two
    lines, so the h1 reads first. */
 .notfound-code {
+  margin-top: clamp(12px, 2vw, 20px);
   color: var(--accent);
   font-size: clamp(2.75rem, 7vw, 5rem);
   font-weight: 700;
