@@ -1,7 +1,7 @@
 ---
 title: "The Vibe Coding Dilemma: Balancing Productivity, Understanding and Learning"
 description: "I review AI-assisted projects for Hack Club while using Claude and Codex in my own work. So where does that leave me?"
-slug: am-i-a-vibe-coder
+slug: the-vibe-coding-dilemma
 publishedAt: 2026-11-16
 readingMinutes: 7
 tags: [ai, programming, hack-club, vibe-coding]
