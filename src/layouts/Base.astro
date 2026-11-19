@@ -115,6 +115,7 @@ const speculation = {
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" type="application/manifest+json" />
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     {nodes.length > 0 && (
       <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": nodes }).replace(/</g, "\\u003c")} />
@@ -213,5 +214,17 @@ const speculation = {
       import "../scripts/external-links";
       import "../scripts/figure-lightbox";
     </script>
+    {import.meta.env.PROD && (
+      <script is:inline>
+        if ("serviceWorker" in navigator) {
+          const firstVisit = !navigator.serviceWorker.controller;
+          navigator.serviceWorker.register("/sw.js").then(async () => {
+            if (!firstVisit) return;
+            const { active } = await navigator.serviceWorker.ready;
+            active?.postMessage("cache-current-page");
+          }).catch(() => {});
+        }
+      </script>
+    )}
   </body>
 </html>

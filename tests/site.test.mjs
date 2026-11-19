@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderMarkdown } from "../src/lib/markdown.ts";
+import { renderArticle, renderMarkdown, slugify } from "../src/lib/markdown.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = join(root, "dist");
@@ -45,6 +45,8 @@ test("the site is a home page, project pages and articles", () => {
     "index.html",
     "work/index.html",
     "about/index.html",
+    "now/index.html",
+    "colophon/index.html",
     "contact/index.html",
     "certificates/index.html",
     "cv/index.html",
@@ -341,6 +343,56 @@ test("articles have dates and structured data", () => {
   assert.match(page("de/blog/am-i-a-vibe-coder/index.html"), /7 Min\. Lesezeit/, "the German edition uses the same override");
 });
 
+test("the About page carries one FAQPage with the llms.txt answers, and no second person", () => {
+  const graph = jsonLd(page("about/index.html"))[0]["@graph"];
+  const faq = graph.filter((node) => node["@type"] === "FAQPage");
+  assert.equal(faq.length, 1, "one FAQPage on the English About page");
+  assert.equal(graph.filter((node) => node["@type"] === "Person").length, 0, "no second Person node beside the profile");
+  assert.equal(JSON.stringify(graph).match(/"jobTitle"/g).length, 1, "the person is described once, inside the ProfilePage");
+  const questions = faq[0].mainEntity;
+  assert.ok(questions.length >= 5);
+  const llms = page("llms.txt");
+  for (const question of questions) {
+    assert.equal(question["@type"], "Question");
+    assert.equal(question.acceptedAnswer["@type"], "Answer");
+    assert.ok(llms.includes(`### ${question.name}
+${question.acceptedAnswer.text}
+`), `${question.name} differs from llms.txt`);
+    assert.doesNotMatch(question.acceptedAnswer.text, /[*_`\[\]]|\]\(/, `${question.name} carries Markdown`);
+    assert.ok(question.acceptedAnswer.text.length > 20, `${question.name} has no real answer`);
+  }
+  assert.doesNotMatch(JSON.stringify(faq), /7189960|Aktienstr|Zeugnis-Schnitt|12\.08\.2009|DE40 ?3605/, "no private detail in the FAQ");
+  assert.match(llms, /9\.1K\+ lifetime model downloads on Hugging Face \(file requests, not unique people\)\./, "the MIRA answer reads cleanly");
+  assert.ok(!jsonLd(page("de/about/index.html"))[0]["@graph"].some((node) => node["@type"] === "FAQPage"), "the German page has no English-only FAQ");
+});
+
+test("heading ids and the outline come from the parsed Markdown, not from text patterns", () => {
+  const { html, headings } = renderArticle(["## Über den Plan: ß & más", "", "```", "## not a heading", "```", "", "## [Loadout](https://x.test) planning", "", "## Über den Plan: ß & más", "", "### Detail", "", "##", ""].join("\n"));
+  assert.deepEqual(headings.map((h) => h.id), ["uber-den-plan-ss-mas", "loadout-planning", "uber-den-plan-ss-mas-2", "detail", "section"]);
+  assert.equal(headings[1].title, "Loadout planning", "a link in a heading contributes its label only");
+  assert.match(html, /<h2 id="loadout-planning">/);
+  assert.doesNotMatch(html, /id="not-a-heading"/, "a code fence is not a heading");
+  assert.equal(slugify("What's next?"), "what-s-next");
+  assert.doesNotMatch(renderMarkdown("## Plain"), /id=/, "renderMarkdown keeps its markup");
+});
+
+test("each article outline links to real heading ids, in both languages", () => {
+  for (const base of ["", "de/"]) {
+    for (const slug of posts) {
+      const html = page(`${base}blog/${slug}/index.html`);
+      const label = `${base}blog/${slug}`;
+      const article = html.match(/<article\b[\s\S]*<\/article>/)[0];
+      const h2s = [...article.matchAll(/<h2 id="([^"]+)"/g)].map((m) => m[1]);
+      const links = [...article.matchAll(/<a href="#([^"]+)" data-spy="\1"/g)].map((m) => m[1]);
+      const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+      assert.equal(new Set(ids).size, ids.length, `${label} repeats an id`);
+      assert.ok(h2s.length >= 3, `${label} has too few sections for an outline`);
+      assert.deepEqual(links, h2s, `${label}: the outline does not list the h2 sections in order`);
+      assert.match(article, /<nav class="outline" aria-label="(On this page|Auf dieser Seite)"/, `${label} outline is labelled`);
+    }
+  }
+});
+
 test("Markdown never renders raw HTML", () => {
   const html = renderMarkdown('<script>alert(1)</script>\n\n<b>bold</b> and [link](posts/x.md)');
   assert.doesNotMatch(html, /<script>|<b>/);
@@ -421,6 +473,44 @@ test("each English page declares x-default for the language choice", () => {
   }
 });
 
+test("Now and Colophon are localized, linked from About and indexed in the sitemap", () => {
+  const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
+  const sitemap = page("sitemap.xml");
+  for (const [slug, titles] of [["now", { en: "Now", de: "Aktuell" }], ["colophon", { en: "Colophon", de: "Kolophon" }]]) {
+    const languages = { en: `/${slug}/`, de: `/de/${slug}/` };
+    const descriptions = {};
+    for (const [lang, path] of Object.entries(languages)) {
+      const base = lang === "de" ? "de/" : "";
+      const html = page(`${base}${slug}/index.html`);
+      const title = titles[lang];
+      assert.ok(html.includes(`<html lang="${lang}">`));
+      assert.ok(html.includes(`<title>${title} | Jeremy Darko</title>`));
+      assert.ok(html.includes(`<link rel="canonical" href="${origin}${path}">`));
+      assert.ok(html.includes(`<meta property="og:image" content="${origin}/og/${lang}/${slug}.png">`));
+      assert.ok(page(`${base}about/index.html`).includes(`href="${path}"`));
+      const homeLabel = lang === "de" ? "Zur Startseite" : "Back to home";
+      assert.match(html, new RegExp(`<a href="/${base}"[^>]*>${homeLabel}</a>`));
+      const graph = jsonLd(html)[0]["@graph"];
+      const webPage = graph.find((node) => node["@type"] === "WebPage");
+      assert.equal(webPage.name, title);
+      assert.equal(webPage.url, `${origin}${path}`);
+      assert.equal(webPage.inLanguage, lang);
+      assert.ok(webPage.description);
+      descriptions[lang] = webPage.description;
+      assert.ok(existsSync(join(root, "public", "og", lang, `${slug}.png`)), `${path} is missing its source share card`);
+      const trail = graph.find((node) => node["@type"] === "BreadcrumbList").itemListElement;
+      assert.deepEqual(trail.map((item) => item.item), [`${origin}/${base}`, `${origin}${path}`]);
+      const sitemapEntry = sitemap.split("</url>").find((entry) => entry.includes(`<loc>${origin}${path}</loc>`));
+      assert.ok(sitemapEntry, `${path} is missing from the sitemap`);
+      for (const [alternate, twin] of Object.entries({ ...languages, "x-default": languages.en })) {
+        assert.ok(html.includes(`hreflang="${alternate}" href="${origin}${twin}"`));
+        assert.ok(sitemapEntry.includes(`hreflang="${alternate}" href="${origin}${twin}"`));
+      }
+    }
+    assert.notEqual(descriptions.en, descriptions.de);
+  }
+});
+
 test("every internal link and picture resolves to a file in the build", () => {
   for (const [file, html] of pagesOf()) {
     if (isRedirect(html)) continue;
@@ -456,6 +546,9 @@ test("llms.txt and llms-full.txt say who the person is, list every page, and kee
   assert.match(index, /^# Jeremy Darko$/m);
   for (const slug of Object.keys(projects)) assert.ok(index.includes(`/work/${slug}/`), `llms.txt lacks ${slug}`);
   for (const slug of posts) assert.ok(index.includes(`/blog/${slug}/`), `llms.txt lacks ${slug}`);
+  const pages = index.match(/^## Pages\n([\s\S]*?)(?=\n## )/m)?.[1] ?? "";
+  assert.match(pages, /^- \[Now\]\([^)]*\/now\/\): /m);
+  assert.match(pages, /^- \[Colophon\]\([^)]*\/colophon\/\): /m);
   for (const href of ["https://github.com/jeremy341", "https://huggingface.co/Jeremy341", "https://de.linkedin.com/in/jeremy-darko-a0a850413"]) {
     assert.ok(index.includes(href), `llms.txt lacks ${href}`);
   }
@@ -758,4 +851,130 @@ test("German project stories preserve the English chapter and figure structure a
     const refs = (text) => [...text.split(/^## Links\s*$/m)[1].matchAll(/^- \[[^\]]+\]\(([^)]+)\)/gm)].map(m => m[1]);
     assert.deepEqual(refs(de), refs(en), slug + ": reference link parity");
   }
+});
+
+test("production links an installable manifest with the existing PNG icons", () => {
+  const manifest = JSON.parse(page("manifest.webmanifest"));
+  assert.equal(manifest.name, "Jeremy Darko");
+  assert.ok(manifest.short_name && manifest.description);
+  assert.equal(manifest.start_url, "/");
+  assert.equal(manifest.display, "standalone");
+  assert.equal(manifest.theme_color, "#1a1b26");
+  assert.equal(manifest.background_color, manifest.theme_color);
+  assert.deepEqual(manifest.icons.map(({ src, sizes, type }) => [src, sizes, type]), [
+    ["/favicon-192.png", "192x192", "image/png"],
+    ["/favicon-512.png", "512x512", "image/png"],
+  ]);
+  for (const { src, sizes } of manifest.icons) {
+    const png = readFileSync(join(dist, src.slice(1)));
+    assert.equal(`${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`, sizes);
+  }
+  assert.match(page("index.html"), /<link rel="manifest" href="\/manifest\.webmanifest" type="application\/manifest\+json"/);
+  assert.match(page("index.html"), /navigator\.serviceWorker\.register\(["']\/sw\.js["']\)/);
+  assert.match(readFileSync(join(root, "src/layouts/Base.astro"), "utf8"), /import\.meta\.env\.PROD[\s\S]*?serviceWorker\.register/);
+});
+
+test("the worker caches public pages network-first and static assets cache-first", async () => {
+  const { runInNewContext } = await import("node:vm");
+  const origin = "https://portfolio.test";
+  const listeners = new Map();
+  const stores = new Map([["jd-portfolio-v0", new Map()], ["unrelated", new Map()]]);
+  const hits = [];
+  const fixtures = new Map();
+  let offline = false;
+  let claimed = false;
+  const keyFor = (request) => new URL(request.url ?? request, origin).href;
+  runInNewContext(page("sw.js"), {
+    URL, Request, Response,
+    self: {
+      location: { origin },
+      addEventListener: (name, listener) => listeners.set(name, listener),
+      clients: { claim: () => { claimed = true; } },
+    },
+    caches: {
+      keys: async () => [...stores.keys()],
+      delete: async (name) => stores.delete(name),
+      open: async (name) => {
+        if (!stores.has(name)) stores.set(name, new Map());
+        const store = stores.get(name);
+        return {
+          match: async (request) => store.get(keyFor(request))?.clone(),
+          put: async (request, response) => store.set(keyFor(request), response),
+          delete: async (request) => store.delete(keyFor(request)),
+        };
+      },
+    },
+    fetch: async (request) => {
+      const key = keyFor(request);
+      hits.push(key);
+      if (offline) throw new TypeError("offline");
+      return fixtures.get(key)?.clone() ?? new Response("Not found", { status: 404 });
+    },
+  });
+  const set = (path, body, type = "text/html", status = 200, headers = {}) => fixtures.set(keyFor(path), new Response(body, {
+    status, headers: { "Content-Type": type, ...headers },
+  }));
+  const lifecycle = (name) => {
+    /** @type {{ pending?: Promise<void> }} */
+    const event = {};
+    listeners.get(name)({ waitUntil: (promise) => { event.pending = promise; } });
+    return event.pending;
+  };
+  const request = (path, mode = "navigate", method = "GET") => {
+    const input = new Request(keyFor(path), { method });
+    Object.defineProperty(input, "mode", { value: mode });
+    /** @type {{ pending?: Promise<Response> }} */
+    const event = {};
+    listeners.get("fetch")({ request: input, respondWith: (promise) => { event.pending = promise; } });
+    return event.pending;
+  };
+
+  set("/", '<head><link rel="stylesheet" href="/_astro/site.css"></head>Home');
+  set("/og-card.png", "share image", "image/png");
+  set("/_astro/site.css", "body {}", "text/css");
+  await lifecycle("install");
+  await lifecycle("activate");
+  assert.ok(claimed);
+  const version = [...stores.keys()].find((key) => /^jd-portfolio-v[1-9]\d*$/.test(key));
+  assert.ok(version);
+  assert.deepEqual([...stores.keys()], ["unrelated", version]);
+  const cachedPaths = () => [...stores.get(version).keys()].map((key) => new URL(key).pathname);
+  assert.deepEqual(cachedPaths().sort(), ["/", "/_astro/site.css", "/og-card.png"]);
+
+  set("/work/mira/", "MIRA v1");
+  assert.equal(await (await request("/work/mira/")).text(), "MIRA v1");
+  set("/work/mira/", "MIRA v2");
+  assert.equal(await (await request("/work/mira/")).text(), "MIRA v2");
+  assert.equal(await (await request("/_astro/site.css", "cors")).text(), "body {}");
+  assert.equal(hits.filter((path) => path.endsWith("/site.css")).length, 1);
+
+  set("/about/", "Public About");
+  await request("/about/");
+  assert.ok(cachedPaths().includes("/about/"));
+  set("/about/", "<head><meta content='nofollow, noindex' name='robots'></head>");
+  set("/contact/", "Robots header", "text/html", 200, { "X-Robots-Tag": "noindex" });
+  set("/work/missing/", "Not found", "text/html", 404);
+  await request("/about/");
+  await request("/contact/");
+  assert.equal((await request("/work/missing/")).status, 404);
+  assert.equal(request("/search.json", "cors"), undefined);
+  assert.equal(request("/api/private/"), undefined);
+  assert.equal(request("/work/?private=value"), undefined);
+  assert.equal(request("/work/", "navigate", "POST"), undefined);
+  assert.equal(request("https://other.test/og-card.png", "cors"), undefined);
+
+  offline = true;
+  assert.equal(await (await request("/work/mira/")).text(), "MIRA v2");
+  for (const path of ["/about/", "/contact/", "/work/missing/", "/blog/"]) {
+    const fallback = await request(path);
+    assert.equal(fallback.status, 503);
+    assert.equal(fallback.headers.get("X-Robots-Tag"), "noindex");
+    const html = await fallback.text();
+    assert.match(html, /<meta name="robots" content="noindex"/);
+    assert.match(html, /<h1>You’re offline<\/h1>/);
+    assert.match(html, /href="#main"/);
+    assert.match(html, /href="\/" hreflang="en"/);
+    assert.ok(!cachedPaths().includes(path));
+  }
+  assert.doesNotMatch(page("sitemap.xml"), /\/(?:offline\/|sw\.js|manifest\.webmanifest)/);
 });

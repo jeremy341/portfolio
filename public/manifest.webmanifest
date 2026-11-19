@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "Jeremy Darko",
+  "short_name": "Jeremy Darko",
+  "description": "Jeremy Darko’s portfolio of software and hardware projects, writing, and certificates.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#1a1b26",
+  "background_color": "#1a1b26",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
