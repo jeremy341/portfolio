@@ -11,8 +11,8 @@ const de = ui.de;
 const navEn = Object.values(en.nav);
 const navDe = Object.values(de.nav);
 const strings = {
-  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, error: en.notFoundError, nav: navEn },
-  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, error: de.notFoundError, nav: navDe },
+  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, quest: en.notFoundQuest, found: en.notFoundFound, error: en.notFoundError, nav: navEn },
+  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, quest: de.notFoundQuest, found: de.notFoundFound, error: de.notFoundError, nav: navDe },
 };
 ---
 
@@ -24,7 +24,8 @@ const strings = {
         <p class="notfound-path" id="nf-path" aria-hidden="true">~/jeremy-darko/404.md <span class="notfound-error" id="nf-error">no such file</span></p>
         <p class="notfound-code" aria-hidden="true">404</p>
         <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
-        <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+        <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/" id="nf-back">{en.notFoundBack}</a>.</p>
+        <p class="notfound-quest" id="nf-quest" aria-live="polite">{en.notFoundQuest} · 0/3</p>
       </div>
       <p class="notfound-hint"><span id="nf-hint">{en.notFoundHint}</span></p>
     </div>
@@ -42,10 +43,14 @@ const strings = {
         var line = document.getElementById("nf-text");
         line.textContent = t.text + " ";
         var link = document.createElement("a");
+        link.id = "nf-back";
         link.href = t.href;
         link.textContent = t.back;
         line.append(link, ".");
         document.getElementById("nf-hint").textContent = t.hint;
+        var quest = document.getElementById("nf-quest");
+        quest.textContent = t.quest + " · 0/3";
+        Object.assign(window, { nfGame: { found: 0, strings: t } });
         document.getElementById("nf-error").textContent = t.error;
         var lost = location.pathname.replace(/\/+$/, "") || "/index";
         document.getElementById("nf-path").firstChild.textContent = "~/jeremy-darko" + lost + ".md ";
@@ -91,7 +96,7 @@ const strings = {
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
           const parts = [
-            ...document.querySelectorAll<HTMLElement>(".site-header, #nf-path, .notfound-code, #nf-title, #nf-text, .notfound-hint"),
+            ...document.querySelectorAll<HTMLElement>(".site-header, #nf-path, .notfound-code, #nf-title, #nf-text, #nf-quest, .notfound-hint"),
           ];
           const clears = parts
             .map((part) => part.getBoundingClientRect())
@@ -113,17 +118,40 @@ const strings = {
           dim: dimText,
           most: 7,
           reduce: matchMedia("(prefers-reduced-motion: reduce)").matches,
-        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void };
+        }) as {
+          size: (w: number, h: number) => void;
+          start: () => void;
+          stop: () => void;
+          feed: (x: number, y: number) => void;
+          tint: (x: number, y: number) => number[] | null;
+        };
+
+        const game = (window as unknown as { nfGame?: { found: number; strings: { quest: string; found: string } } }).nfGame;
+        const quest = document.getElementById("nf-quest");
+        const foundOne = () => {
+          if (!game || !quest || game.found >= 3) return;
+          game.found++;
+          if (game.found === 3) {
+            quest.textContent = game.strings.found;
+            document.getElementById("nf-back")?.classList.add("is-found");
+          } else {
+            quest.textContent = `${game.strings.quest} · ${game.found}/3`;
+          }
+        };
 
         const resize = () => pond.size(pondSection.clientWidth, pondSection.clientHeight);
         resize();
         new ResizeObserver(resize).observe(pondSection);
         pond.start();
 
+        const reach = [[0, 0], [12, 0], [-12, 0], [0, 12], [0, -12], [22, 22], [-22, 22], [22, -22], [-22, -22]];
         pondCanvas.addEventListener("pointerdown", (event) => {
           if (event.button !== 0) return;
           const box = pondCanvas.getBoundingClientRect();
-          pond.feed(event.clientX - box.left, event.clientY - box.top);
+          const x = event.clientX - box.left;
+          const y = event.clientY - box.top;
+          if (reach.some(([dx, dy]) => pond.tint(x + dx, y + dy) !== null)) foundOne();
+          pond.feed(x, y);
         });
         addEventListener("pagehide", () => pond.stop(), { once: true });
       });

@@ -138,6 +138,8 @@ const en = {
   notFoundText: "The link may be old, or the page has moved.",
   notFoundBack: "Back to the work",
   notFoundHint: "Click the water to feed the koi",
+  notFoundQuest: "catch the koi to find your way back",
+  notFoundFound: "found them. the link above leads home",
   notFoundError: "no such file",
 
   // Search index (/search.json)
@@ -286,6 +288,8 @@ const de: Strings = {
   notFoundText: "Vielleicht ist der Link veraltet oder die Seite ist umgezogen.",
   notFoundBack: "Zurück zu den Projekten",
   notFoundHint: "Klicke ins Wasser, um die Koi zu füttern",
+  notFoundQuest: "fange die Koi, um den Weg zurück zu finden",
+  notFoundFound: "gefunden. der Link oben führt zurück",
   notFoundError: "keine solche Datei",
 
   idxHomeTitle: "Start",
