@@ -3,9 +3,17 @@ import Base from "../layouts/Base.astro";
 import { ui } from "../lib/i18n";
 import "../styles/notfound.css";
 
-// The server shows one 404 page for every address, so it speaks both languages.
+// One 404 page serves every missing address. English is the default; an address under /de/ is
+// answered in German. The server renders English, and a tiny inline script swaps in German
+// before the page settles, so the page works without JavaScript too.
 const en = ui.en;
 const de = ui.de;
+const navEn = Object.values(en.nav);
+const navDe = Object.values(de.nav);
+const strings = {
+  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, nav: navEn },
+  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, nav: navDe },
+};
 ---
 
 <Base title={en.notFoundTitle} description={en.notFoundDescription} noindex lang="en">
@@ -14,14 +22,47 @@ const de = ui.de;
     <div class="notfound-inner">
       <p class="notfound-code" aria-hidden="true">404</p>
       <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
-      <p class="page-lead">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
-      <p class="page-lead" lang="de">{de.notFoundTitle}. {de.notFoundText} <a href="/de/work/">{de.notFoundBack}</a>.</p>
-      <p class="notfound-hint">
-        <span>{en.notFoundHint}</span>
-        <span lang="de">{de.notFoundHint}</span>
-      </p>
+      <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+      <p class="notfound-hint"><span id="nf-hint">{en.notFoundHint}</span></p>
     </div>
   </section>
+
+  <script type="application/json" id="nf-strings" set:html={JSON.stringify(strings)}></script>
+  <script is:inline>
+    (function () {
+      try {
+        var german = location.pathname.indexOf("/de/") === 0;
+        var t = JSON.parse(document.getElementById("nf-strings").textContent)[german ? "de" : "en"];
+        document.documentElement.lang = german ? "de" : "en";
+        document.title = t.title + " | Jeremy Darko";
+        document.getElementById("nf-title").textContent = t.title;
+        var line = document.getElementById("nf-text");
+        line.textContent = t.text + " ";
+        var link = document.createElement("a");
+        link.href = t.href;
+        link.textContent = t.back;
+        line.append(link, ".");
+        document.getElementById("nf-hint").textContent = t.hint;
+        var desktopLinks = document.querySelectorAll(".site-nav > a");
+        var mobileLinks = document.querySelectorAll(".mobile-panel > a");
+        for (var i = 0; i < desktopLinks.length; i++) {
+          desktopLinks[i].textContent = t.nav[i] || desktopLinks[i].textContent;
+          if (mobileLinks[i]) {
+            var label = mobileLinks[i].querySelector("span");
+            if (label) label.textContent = t.nav[i] || label.textContent;
+          }
+        }
+        var code = german ? "de" : "en";
+        document.querySelectorAll(".lang").forEach(function (group) {
+          group.setAttribute("data-on", code);
+          group.querySelectorAll("a").forEach(function (a) {
+            if (a.getAttribute("lang") === code) a.setAttribute("aria-current", "page");
+            else a.removeAttribute("aria-current");
+          });
+        });
+      } catch (error) {}
+    })();
+  </script>
 
   <script>
     // A small koi pond for the lost page. Loaded only here; the rest of the site never pays for it.
@@ -43,8 +84,8 @@ const de = ui.de;
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
           const parts = [...pondSection.querySelectorAll<HTMLElement>(".notfound-code, #nf-title, .notfound-inner .page-lead, .notfound-hint")];
-          if (parts.length === 0) return null;
-          const rects = parts.map((part) => part.getBoundingClientRect());
+          const rects = parts.map((part) => part.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0);
+          if (rects.length === 0) return null;
           return [{
             left: Math.min(...rects.map((r) => r.left)) - box.left - 20,
             top: Math.min(...rects.map((r) => r.top)) - box.top - 12,
