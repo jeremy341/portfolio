@@ -81,7 +81,7 @@ Exporting exposed a second trade-off. The original PyTorch weights are about **5
 
 I still don't have a measured deployment result for the final detector on a Raspberry Pi. That's another experiment, not an achievement I can quietly add to a project page.
 
-And regarding the 9,000-plus Hugging Face "downloads": those are lifetime model-file requests, **not** 9,000 unique people. I wrote [a separate blog post](/blog/am-i-famous-now/) about why that distinction matters. Apparently even my download counter has a validation problem.
+And regarding the 9,000-plus Hugging Face "downloads": those are lifetime model-file requests, **not** 9,000 unique people. I wrote [a separate blog post](/blog/beyond-the-download-count/) about why that distinction matters. Apparently even my download counter has a validation problem.
 
 ### So where does that leave EXP-020?
 

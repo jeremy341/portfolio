@@ -1,37 +1,29 @@
 ---
-title: "Bin ich ein Vibe Coder?"
+title: "Das Vibe-Coding-Dilemma: Zwischen Produktivität, Verständnis und Lernen"
 description: "Bei Hack Club bewerte ich Projekte, die mit KI entstanden sind. Bei meinen eigenen nutze ich Claude und Codex. Und wo stehe ich damit?"
-slug: am-i-a-vibe-coder
+slug: the-vibe-coding-dilemma
 publishedAt: 2026-11-16
 readingMinutes: 7
 tags: [ai, programming, hack-club, vibe-coding]
 ---
 
-Ich bin ein großer Fan von KI. Ein Liebhaber, könnte man sagen. Meinetwegen auch ein Fanatiker.
+Ich bin ein überzeugter Befürworter von KI. Aber macht es mich zum Vibe Coder, wenn ich KI beim Programmieren einsetze? Und wenn ja, bin ich dann automatisch ein schlechter Programmierer?
 
-Aber bin ich deshalb ein Vibe Coder? Und wenn ja, bin ich dann automatisch ein schlechter Programmierer? Oder sogar ein schlechter Mensch?
-
-Okay, das Letzte war vielleicht etwas dramatisch.
-
-Trotzdem beschäftigt mich die Frage in letzter Zeit. Ich verbringe nämlich einen absurden Teil meiner Zeit damit, KI für meine eigenen Projekte zu nutzen. Gleichzeitig gehört es zu meiner Arbeit als Reviewer, fremden Code zu prüfen und nach Anzeichen für den Einsatz von KI zu suchen. Schon ein bisschen ironisch, oder?
+Diese Frage beschäftigt mich in letzter Zeit. Ich verbringe nämlich ziemlich viel Zeit damit, KI für meine eigenen Projekte zu nutzen. Gleichzeitig gehört es zu meiner Arbeit als Reviewer, fremden Code zu prüfen und nach Anzeichen für den Einsatz von KI zu suchen.
 
 Wo zieht man also die Grenze? Wann hört KI auf, ein Werkzeug zu sein, mit dem du etwas baust, und übernimmt das Bauen selbst? Und vor allem: **Auf welcher Seite stehe ich eigentlich?**
 
 ## Erst mal ein bisschen Kontext
 
-Für alle, die es noch nicht wissen: Ich bin bei [Hack Club](https://hackclub.com/), einer Community von Jugendlichen, die programmieren, löten, Hardware entwickeln und so ziemlich alles bauen, was ihnen einfällt.
+Für alle, die [Hack Club](https://hackclub.com/) noch nicht kennen: Das ist eine Community von Jugendlichen, die programmieren, löten, Hardware entwickeln und so ziemlich alles bauen, was ihnen einfällt.
 
 Hack Club veranstaltet Programme namens [YSWS](https://project.hackclub.com/overview/info/), kurz für *You Ship, We Ship*. Die Idee: Du baust und veröffentlichst etwas und kannst dafür Belohnungen bekommen. Ziemlich cooles Konzept, oder?
 
 Für eines dieser Programme bin ich auch Reviewer. Ich schaue mir also regelmäßig GitHub-Repositories anderer Leute an, gehe ihre Commits durch und versuche herauszufinden, was sie gebaut haben und wie viel Arbeit wirklich dahintersteckt. Und ja, manchmal suche ich dabei auch nach KI-generiertem Code.
 
-Das bringt mich in eine etwas unangenehme Situation. Ich sitze hier und prüfe Projekte auf KI-Nutzung, während Claude und Codex vermutlich für einen erheblichen Teil des Codes in einigen meiner eigenen Repositories verantwortlich sind.
-
-Interessant.
-
 ## Bin ich also einer von denen?
 
-Bevor ich die Frage beantworte, müssten wir uns wahrscheinlich erst mal darauf einigen, was [Vibe Coding](https://en.wikipedia.org/wiki/Vibe_coding) überhaupt bedeutet. Je nachdem, wen du fragst, kann damit alles gemeint sein: von KI als Programmierhilfe bis hin zur kompletten App, deren Code sich niemand richtig angesehen hat. Das sind für mich zwei ziemlich unterschiedliche Dinge.
+Bevor ich die Frage beantworte, müssten wir uns wahrscheinlich erst mal darauf einigen, wie [Vibe Coding](https://en.wikipedia.org/wiki/Vibe_coding) definiert ist. Je nachdem, wen du fragst, kann damit alles gemeint sein: von KI als Programmierhilfe bis hin zur kompletten App, deren Code sich niemand richtig angesehen hat. Das sind für mich zwei ziemlich unterschiedliche Dinge.
 
 Erst mal: **Ich kann programmieren.** Das sollte ich wohl erwähnen, bevor jemand denkt, ich würde den ganzen Tag Prompts schreiben und Claude bei der Arbeit zuschauen.
 
@@ -42,8 +34,6 @@ Wie ich KI einsetze, hängt ziemlich stark vom Projekt ab. Nehmen wir [MIRA](/wo
 Und dann wäre da [PoorUp](/work/poorup/), ein Multiplayer-Spiel im Browser und vermutlich eines meiner größten Softwareprojekte. Ich habe viel Zeit in die Spielmechanik, die Features und die Frage gesteckt, wie alles zusammenspielen soll. Gerade bei Teilen des Backends habe ich mich aber auch ziemlich stark auf Claude und Codex verlassen.
 
 Und nein, ich habe nicht jede Zeile gelesen, die dabei entstanden ist.
-
-So. Jetzt ist es raus.
 
 Ich könnte erklären, was die meisten Features machen, wie sie zusammenspielen und warum sie überhaupt existieren. Aber wenn du irgendeine Datei aus dem Backend öffnest und mich nach jeder einzelnen Funktion fragst? Gib mir kurz Zeit, den Code zu lesen.
 
@@ -71,7 +61,7 @@ Es macht allerdings einen Unterschied, ob ich verstehe, wie ein System funktioni
 
 ## Zurück zu den Projektreviews ...
 
-Ich hatte ja erwähnt, dass ich Reviewer bin. Jetzt wird es ein bisschen unangenehm. Bei Reviews stoße ich manchmal auf Repositories, bei denen ich das Gefühl habe, dass sehr viel KI im Spiel war. Vielleicht sind es die Kommentare, die Commits, die Codestruktur oder eine UI, die mir verdächtig bekannt vorkommt.
+Bei Reviews stoße ich manchmal auf Repositories, bei denen ich das Gefühl habe, dass sehr viel KI im Spiel war. Vielleicht sind es die Kommentare, die Commits, die Codestruktur oder eine UI, die mir verdächtig bekannt vorkommt.
 
 Und ja, **eine gute UI ist kein Beweis für KI-Nutzung.** Ausführliche Kommentare oder gut strukturierter Code genauso wenig. Das können Gründe sein, genauer hinzusehen. Mehr aber auch nicht.
 
@@ -89,15 +79,17 @@ Das Problem ist: **KI-generierter Code allein verrät dir nicht, wie viel mensch
 
 Wer PoorUp reviewt, könnte den KI-unterstützten Code sehen und daraus schließen, dass ich kaum programmieren kann. Die Person weiß vielleicht nichts von MIRA, wo ich ganz anders vorgegangen bin, oder davon, dass ich regelmäßig selbst Code schreibe und bei der Entwicklung technische Entscheidungen treffe.
 
-Woher auch? Sie kennt mich nicht. Sie sieht nur das, was ich eingereicht habe. Deshalb bin ich inzwischen etwas vorsichtiger damit, vermeintlich KI-typischen Code als Beweis zu behandeln.
+Woher auch? Sie kennt mich nicht. Sie sieht nur das, was ich eingereicht habe.
 
-Eigentlich schon lustig. Ich versuche herauszufinden, wie andere Leute KI einsetzen, obwohl jemand in meinen eigenen Repositories vermutlich dieselben Fragen stellen könnte.
+Das sollte man meiner Meinung nach auch bei Reviews anderer Projekte im Hinterkopf behalten. KI-generierten Code zu erkennen und den tatsächlichen Arbeitsaufwand einer Person zu beurteilen, sind zwei verschiedene Dinge. Mir ist wichtiger, wie sich ein Projekt entwickelt hat, welche Entscheidungen die Person getroffen hat und was sie selbst beigetragen hat, als wie viel Code nach KI aussieht.
 
-Bei Reviews ist mir noch etwas aufgefallen: Das KI-Modell, das jemand benutzt, kann beeinflussen, wie sein Projekt bewertet wird, selbst wenn das nichts über seinen Aufwand aussagt. Damit könnte ich aber einen ganz eigenen Artikel füllen.
+Natürlich ist das leichter gesagt als getan. Wie misst man den eigenen Beitrag einer Person, wenn KI in so ziemlich jeder Phase der Entwicklung eingesetzt werden kann? Und wie berücksichtigt man, dass das verwendete KI-Modell beeinflussen kann, wie ein Projekt wahrgenommen wird, ohne unbedingt etwas über den tatsächlichen Aufwand auszusagen?
+
+Darüber habe ich bei meinen Reviews schon viel nachgedacht, aber ich glaube, das verdient einen eigenen Blogartikel.
 
 ## Macht KI mich zu einem schlechteren Programmierer?
 
-Darüber denke ich tatsächlich viel nach. Ich liebe Informatik. Nicht nur Websites bauen oder irgendwelche Projekte zum Laufen bringen, sondern wirklich verstehen, wie Dinge funktionieren. GPUs, Machine Learning, Elektronik, Betriebssysteme. Es gibt so viel Interessantes zu lernen. Und ich würde behaupten, dass ich durch meine Projekte eine Menge gelernt habe. Auch mit KI.
+Darüber denke ich tatsächlich viel nach. Ich liebe technische Informatik. Nicht nur Websites bauen oder irgendwelche Projekte zum Laufen bringen, sondern wirklich verstehen, wie Dinge funktionieren. GPUs, Machine Learning, Elektronik, Betriebssysteme. Es gibt so viel Interessantes zu lernen. Und ich würde behaupten, dass ich durch meine Projekte eine Menge gelernt habe. Auch mit KI.
 
 Eine Sache macht KI allerdings unglaublich einfach: **die schwierigen Teile überspringen.**
 
@@ -109,7 +101,7 @@ Diese eine blöde Funktion, die trotz einer Stunde Anstarren partout nicht funkt
 
 Du weißt, worauf das hinausläuft.
 
-Plötzlich funktioniert etwas, das mich sonst Stunden gekostet hätte. Super, oder? Ja. Aber habe ich dabei auch gelernt, wie man das Problem löst? Da wird es etwas komplizierter.
+Plötzlich funktioniert etwas, das mich sonst Stunden gekostet hätte. Aber habe ich dabei auch gelernt, wie man das Problem löst? Da wird es etwas komplizierter.
 
 Manchmal schon. Ich lese die Erklärung, schaue mir die Implementierung an und verstehe hinterher etwas Neues. Andere Male will ich hauptsächlich, dass dieses Feature endlich funktioniert, damit ich mit dem nächsten weitermachen kann. Und das Zweite habe ich vermutlich öfter gemacht, als ich zugeben möchte.
 
@@ -121,7 +113,7 @@ Ich will immer noch ein besserer Programmierer werden. Nicht bloß jemand, der m
 
 ## Also, bin ich ein Vibe Coder?
 
-Irgendwo in der Grauzone, würde ich sagen. Wenn du mir bei MIRA zugeschaut hättest, wie ich jede Zeile Code prüfe und die Implementierung verstehen will, hättest du das vermutlich nicht Vibe Coding genannt. Aber bei Teilen meiner Arbeit an PoorUp? Ja, da verstehe ich, warum du das vielleicht tun würdest.
+Ich glaube, das hängt vom Projekt ab. Wenn du mir bei MIRA zugeschaut hättest, wie ich jede Zeile Code prüfe und die Implementierung verstehen will, hättest du das vermutlich nicht Vibe Coding genannt. Aber bei Teilen meiner Arbeit an PoorUp? Ja, da verstehe ich, warum du das vielleicht tun würdest.
 
 Ich benutze viel KI. Manchmal schreibe ich den Code selbst, manchmal arbeite ich mich sorgfältig durch KI-generierten Code, und manchmal ist mir wichtiger, dass ein Feature funktioniert, als jedes Detail seiner Implementierung zu verstehen. Es bringt wenig, so zu tun, als wäre das anders.
 
@@ -133,8 +125,4 @@ Bin ich deshalb ein schlechter Programmierer? Glaube ich nicht.
 
 Könnte mich zu viel KI zu einem schlechteren machen? Auf jeden Fall.
 
-Und das möchte ich lieber jetzt wissen als nach den nächsten zehn Projekten.
-
-Übrigens immer noch KI-Fan. Immer noch Liebhaber. Von mir aus auch Fanatiker. Nur eben einer, der beim Lernen, wie man KI programmieren lässt, nicht selbst das Programmieren verlernen will.
-
-Falls wir uns nicht mehr sehen: Guten Tag, guten Abend und gute Nacht! Tschüss!
+Und das möchte ich mir lieber jetzt bewusst machen als erst nach den nächsten zehn Projekten.

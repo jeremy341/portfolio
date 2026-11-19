@@ -30,7 +30,7 @@ const germanStatus = {
 };
 
 // Articles share their slug and publication date across languages.
-const posts = ["am-i-a-vibe-coder", "am-i-famous-now", "first-blog"];
+const posts = ["the-vibe-coding-dilemma", "beyond-the-download-count", "first-blog"];
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -338,8 +338,8 @@ test("articles have dates and structured data", () => {
     assert.match(html, /"@type":"BlogPosting"/);
     assert.match(html, /<article\b[^>]*>/);
   }
-  assert.match(page("blog/am-i-a-vibe-coder/index.html"), /7 min read/, "the long article uses its reading-time override");
-  assert.match(page("de/blog/am-i-a-vibe-coder/index.html"), /7 Min\. Lesezeit/, "the German edition uses the same override");
+  assert.match(page("blog/the-vibe-coding-dilemma/index.html"), /7 min read/, "the long article uses its reading-time override");
+  assert.match(page("de/blog/the-vibe-coding-dilemma/index.html"), /7 Min\. Lesezeit/, "the German edition uses the same override");
 });
 
 test("the About page carries one FAQPage with the llms.txt answers, and no second person", () => {
@@ -699,11 +699,13 @@ test("work stories place all existing figures inline, not in an end gallery", ()
   assert.match(mira.slice(exportChapter, closing), /<figure class="fig">/, "export discussion includes a model-size figure");
 });
 
-test("blog content remains unchanged by project case-study work", () => {
+test("blog articles retain their distinctive content after editorial updates", () => {
   const first = readFileSync(join(root, "content/posts/first-blog.md"), "utf8");
-  const second = readFileSync(join(root, "content/posts/am-i-famous-now.md"), "utf8");
+  const second = readFileSync(join(root, "content/posts/beyond-the-download-count.md"), "utf8");
   assert.match(first, /To all future employers: please hire me on the spot/);
-  assert.match(second, /Hi, if you are reading this, it seems like my clickbait worked/);
+  assert.match(second, /Beyond the Download Count/);
+  assert.match(second, /8\.3k downloads aren't the same as 8\.3k users/);
+  assert.match(second, /EXP-019/);
 });
 
 
@@ -955,4 +957,24 @@ test("the worker caches public pages network-first and static assets cache-first
     assert.ok(!cachedPaths().includes(path));
   }
   assert.doesNotMatch(page("sitemap.xml"), /\/(?:offline\/|sw\.js|manifest\.webmanifest)/);
+});
+
+
+test("the former vibe coding article URLs redirect to the renamed article", () => {
+  for (const prefix of ["", "de/"]) {
+    const legacy = page(`${prefix}blog/am-i-a-vibe-coder/index.html`);
+    assert.ok(legacy.includes('http-equiv="refresh"'), "legacy article should redirect");
+    assert.ok(legacy.includes(`url=/${prefix}blog/the-vibe-coding-dilemma/`), "redirect should preserve language");
+    assert.ok(!page("sitemap.xml").includes(`/${prefix}blog/am-i-a-vibe-coder/`), "legacy route should stay out of the sitemap");
+  }
+});
+
+
+test("the former MIRA download article URLs redirect to the renamed article", () => {
+  for (const prefix of ["", "de/"]) {
+    const legacy = page(`${prefix}blog/am-i-famous-now/index.html`);
+    assert.ok(legacy.includes('http-equiv="refresh"'), "legacy article should redirect");
+    assert.ok(legacy.includes(`url=/${prefix}blog/beyond-the-download-count/`), "redirect should preserve language");
+    assert.ok(!page("sitemap.xml").includes(`/${prefix}blog/am-i-famous-now/`), "legacy route should stay out of the sitemap");
+  }
 });

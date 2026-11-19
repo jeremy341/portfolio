@@ -34,4 +34,4 @@ Meine erste Aufgabe war eine grobe Kostenübersicht für den Vorschlag. Dabei ha
 
 Ich glaube, ich habe so ziemlich alles gesagt, was ich sagen wollte. Und dafür, dass ich am Anfang nicht wusste, worüber ich schreiben soll, ist es ganz gut geworden. Wie gesagt: Irgendwie wird das schon. Und wenn nicht, hat man wenigstens etwas gelernt.
 
-Ich hoffe, es hat euch gefallen. Falls wir uns nicht mehr sehen: Guten Tag, guten Abend und gute Nacht! Tschüss!
+Ich hoffe, es hat euch gefallen.

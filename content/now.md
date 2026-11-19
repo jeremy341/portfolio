@@ -4,8 +4,8 @@ I’m updating this portfolio. I’m also looking into whether PyTorch can train
 
 ## 16 November 2026
 
-I wrote [Am I a Vibe Coder?](/blog/am-i-a-vibe-coder/) about how I use AI when I code and what I want to learn by doing myself.
+I wrote [The Vibe Coding Dilemma: Balancing Productivity, Understanding and Learning](/blog/the-vibe-coding-dilemma/) about how I use AI when I code and what I want to learn by doing myself.
 
 ## 29 October 2026
 
-I wrote about [what the download count measures](/blog/am-i-famous-now/) for [MIRA](/work/mira/). The project explores whether a camera and a small model can recognise waste.
+I wrote about [what the download count measures](/blog/beyond-the-download-count/) for [MIRA](/work/mira/). The project explores whether a camera and a small model can recognise waste.

@@ -37,4 +37,4 @@ But let me explain what I needed to do. Basically I was tasked with creating a r
 
 Well I pretty much got to say what I wanted, and I'm pretty sure it turned out pretty good. So as I said, things always turn out good, and even if they don't, it's a valuable experience.
 
-Well, I hope you liked it, and in case I don't see ya, good afternoon, good evening, and good night! Bye!
+Well, I hope you liked it.

@@ -22,7 +22,14 @@ function writingDesk() {
 }
 
 // /start/ was the comparison home; it is now the home page, so old links move there.
-const redirects = { "/start/": "/", "/de/start/": "/de/" };
+const redirects = {
+  "/start/": "/",
+  "/de/start/": "/de/",
+  "/blog/am-i-a-vibe-coder/": "/blog/the-vibe-coding-dilemma/",
+  "/de/blog/am-i-a-vibe-coder/": "/de/blog/the-vibe-coding-dilemma/",
+  "/blog/am-i-famous-now/": "/blog/beyond-the-download-count/",
+  "/de/blog/am-i-famous-now/": "/de/blog/beyond-the-download-count/",
+};
 
 /** Writes sitemap.xml after the build, but only when a real origin is set. Each URL names its German and English twin. */
 function sitemap() {

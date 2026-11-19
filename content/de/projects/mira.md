@@ -81,7 +81,7 @@ Beim Export kam der nächste Kompromiss dazu. Die ursprünglichen PyTorch-Gewich
 
 Für den finalen Detektor habe ich bisher keine Messwerte aus einem Deployment auf dem Raspberry Pi. Das ist ein weiteres Experiment, kein Erfolg, den ich schon mal vorsorglich auf die Projektseite schreiben kann.
 
-Und die über 9.000 „Downloads“ auf Hugging Face? Das sind Abrufe von Modelldateien seit der Veröffentlichung, **nicht** 9.000 verschiedene Personen. Warum diese Unterscheidung wichtig ist, habe ich in einem [eigenen Blogartikel](/blog/am-i-famous-now/) erklärt. Offenbar hat sogar mein Downloadzähler ein Validierungsproblem.
+Und die über 9.000 „Downloads“ auf Hugging Face? Das sind Abrufe von Modelldateien seit der Veröffentlichung, **nicht** 9.000 verschiedene Personen. Warum diese Unterscheidung wichtig ist, habe ich in einem [eigenen Blogartikel](/blog/beyond-the-download-count/) erklärt. Offenbar hat sogar mein Downloadzähler ein Validierungsproblem.
 
 ### Und was wird jetzt aus EXP-020?
 
