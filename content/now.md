@@ -8,4 +8,4 @@ I wrote [The Vibe Coding Dilemma: Balancing Productivity, Understanding and Lear
 
 ## 29 October 2026
 
-I wrote about [what the download count measures](/blog/am-i-famous-now/) for [MIRA](/work/mira/). The project explores whether a camera and a small model can recognise waste.
+I wrote about [what the download count measures](/blog/beyond-the-download-count/) for [MIRA](/work/mira/). The project explores whether a camera and a small model can recognise waste.

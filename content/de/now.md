@@ -8,4 +8,4 @@ In [Das Vibe-Coding-Dilemma: Zwischen Produktivität, Verständnis und Lernen](/
 
 ## 29. Oktober 2026
 
-Ich habe aufgeschrieben, [was der Downloadzähler erfasst](/blog/am-i-famous-now/). In [MIRA](/work/mira/) untersuche ich, ob eine Kamera und ein kleines Modell Abfälle erkennen können.
+Ich habe aufgeschrieben, [was der Downloadzähler erfasst](/blog/beyond-the-download-count/). In [MIRA](/work/mira/) untersuche ich, ob eine Kamera und ein kleines Modell Abfälle erkennen können.
