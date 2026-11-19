@@ -1,8 +1,9 @@
 // Structured data for search engines and AI answer engines. Every value comes from the content files
 // or from i18n, so the profile links here are the ones on the Contact page. Without a public origin
 // the absolute addresses are left out, because JSON-LD and breadcrumbs need them.
-import { getContent } from "./content";
+import { getContent, type Project } from "./content";
 import { ui, url, type Lang } from "./i18n";
+import { plainText } from "./markdown";
 import { canonical, site } from "./site";
 
 /** The public profiles from the Contact page: the only ones the site presents as the person's. */
@@ -62,6 +63,37 @@ export function breadcrumbs(lang: Lang, trail: { name: string; path: string }[])
       position: i + 1,
       name: item.name,
       item: canonical(item.path),
+    })),
+  };
+}
+
+/** Questions a reader or an answer engine usually asks, in English. llms.txt and the About page's FAQ markup
+ *  both read this list, so they cannot drift. Every answer repeats facts from the site's own pages. */
+export function faqEntries(): { question: string; answer: string }[] {
+  const { projects } = getContent("en");
+  const downloads = projects.find((p) => p.slug === "mira")?.facts.find((f) => f.label === "Downloads")?.value;
+  const summaryOf = (slug: string) => projects.find((p: Project) => p.slug === slug)?.summary ?? "";
+  const qa: [string, string][] = [
+    ["Who is Jeremy Darko?", `${site.fullName} is a student from North Rhine-Westphalia, Germany, who builds computer engineering and machine learning projects. Projects, articles and certificates are on this site.`],
+    ["What is MIRA?", `MIRA (Machine Intelligence for Recycling Automation) is a computer vision project that tries to tell kinds of waste apart with a camera and a small model. It is an experiment, not a finished sorting robot.${downloads ? ` Its public number is ${plainText(downloads)}.` : ""}`],
+    ["Is MIRA finished?", "No. The sorting robot is not finished and nothing has run on a Raspberry Pi yet. The next model, EXP-020, is in training and has no logged results yet."],
+    ["What is Poorup?", summaryOf("poorup")],
+    ["What is FluidicStudio?", summaryOf("fluidicstudio")],
+    ["Does Jeremy work at the University of Duisburg-Essen?", "Not in a university role. He does project work with the Chair of Electronic Components and Circuits (EBS), and he spent four weeks at the chair from 3 to 28 August 2026 on FluidicStudio."],
+  ];
+  return qa.map(([question, answer]) => ({ question, answer }));
+}
+
+/** The questions as a FAQPage. The wording is English (the llms.txt wording), so the German pages carry none. */
+export function faqNode(lang: Lang) {
+  if (lang !== "en") return undefined;
+  return {
+    "@type": "FAQPage",
+    inLanguage: ui[lang].htmlLang,
+    mainEntity: faqEntries().map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
     })),
   };
 }

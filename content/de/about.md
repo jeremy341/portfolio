@@ -36,6 +36,8 @@ Und anders als der Rest dieser Seite vielleicht vermuten lässt, mache ich geleg
 
 Gelegentlich.
 
+Unter [Aktuell](/now/) steht, woran ich gerade arbeite. Im [Kolophon](/colophon/) beschreibe ich, wie diese Website aufgebaut ist.
+
 ## Was ich weiter erkunde
 
 - Computer Engineering und Systeme auf niedriger Ebene

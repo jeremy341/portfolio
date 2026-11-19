@@ -243,8 +243,10 @@ html:not([data-js]) .find-btn {
   transform: translateY(var(--y, 0));
 }
 
-.outline ol[data-ready]::before {
-  transition: transform 220ms var(--ease), height 220ms var(--ease);
+@media (prefers-reduced-motion: no-preference) {
+  .outline ol[data-ready]::before {
+    transition: transform 220ms var(--ease), height 220ms var(--ease);
+  }
 }
 
 .outline li {
@@ -268,6 +270,105 @@ html:not([data-js]) .find-btn {
 
 .outline a[aria-current="true"] {
   color: var(--accent);
+}
+
+/* Article outline: folded above the text on a small window, a sticky rail beside it on a wide one.
+   It reuses the project outline's list and marker (above). */
+.article-rail {
+  margin-top: 32px;
+}
+
+.article-rail .outline {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.article-rail .outline-title {
+  display: none;
+}
+
+.outline-fold summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.outline-fold summary::-webkit-details-marker {
+  display: none;
+}
+
+.outline-fold summary::before {
+  content: "[+] ";
+  white-space: pre;
+}
+
+.outline-fold[open] summary::before {
+  content: "[-] ";
+}
+
+.outline-fold summary:hover {
+  color: var(--fg);
+}
+
+.outline-fold ol {
+  margin-bottom: 8px;
+}
+
+.outline-fold a {
+  padding-block: 10px;
+}
+
+.blog-article .prose :is(h2, h3) {
+  scroll-margin-top: 16px;
+}
+
+/* Programmatic focus lands on the heading the outline link chose; the heading is not a tab stop. */
+:is(.block, .work-chapter, .prose h2, .prose h3)[tabindex="-1"]:focus {
+  outline: none;
+}
+
+@media (min-width: 1400px) {
+  .blog-article.has-outline {
+    display: grid;
+    grid-template-columns: minmax(11rem, 1fr) minmax(0, 88ch) minmax(0, 1fr);
+    column-gap: 40px;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .blog-article.has-outline > :not(.article-rail) {
+    grid-column: 2;
+  }
+
+  .article-rail {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    justify-self: end;
+    width: 100%;
+    max-width: 16rem;
+    max-height: calc(100vh - 96px);
+    margin-top: 64px;
+    overflow-y: auto;
+  }
+
+  .article-rail .outline-title {
+    display: block;
+  }
+
+  .outline-fold summary {
+    display: none;
+  }
+
+  .outline-fold a {
+    padding-block: 4px;
+  }
 }
 
 .project-body {

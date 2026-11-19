@@ -1,7 +1,7 @@
 import type { ImageMetadata } from "astro";
 import { load as loadYaml } from "js-yaml";
 import { sections as siteSections, ui, url, type Lang } from "./i18n";
-import { plainText, renderInline, renderMarkdown, resolveContentLink } from "./markdown";
+import { plainText, renderArticle, renderInline, renderMarkdown, resolveContentLink, type Heading } from "./markdown";
 
 // Everything the site shows comes from the Markdown files in /content: English at the top
 // level, German in /content/de with the same file names.
@@ -271,6 +271,8 @@ export interface Post {
   html: string;
   text: string;
   markdown: string;
+  /** The section headings (h2, h3) with the ids set on the rendered article, for its outline. */
+  headings: Heading[];
   minutes: number;
 }
 
@@ -294,6 +296,7 @@ function parsePost(lang: Lang, path: string): Post | undefined {
   if (meta.draft) return undefined;
   const text = plainText(match[2]);
   const words = text.split(" ").length;
+  const { html, headings } = renderArticle(match[2], lang);
   return {
     slug: meta.slug,
     title: meta.title,
@@ -301,9 +304,10 @@ function parsePost(lang: Lang, path: string): Post | undefined {
     publishedAt: new Date(meta.publishedAt),
     updatedAt: meta.updatedAt ? new Date(meta.updatedAt) : undefined,
     tags: meta.tags ?? [],
-    html: renderMarkdown(match[2], lang),
+    html,
     text,
     markdown: match[2],
+    headings,
     minutes: meta.readingMinutes ?? Math.max(1, Math.round(words / 220)),
   };
 }

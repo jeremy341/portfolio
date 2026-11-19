@@ -113,6 +113,60 @@ export function renderMarkdown(source: string, lang: Lang = "en"): string {
   return md.render(source, { lang });
 }
 
+/* Article outline. Headings get ids from the parsed token stream (never from a regex over the
+ * source, which would also match "#" lines inside code fences), and the outline is read from
+ * the same tokens, so the links and the ids cannot drift apart. Opt-in: the rest of the site
+ * keeps its heading markup. */
+export interface Heading {
+  id: string;
+  title: string;
+  level: 2 | 3;
+}
+
+/** A URL-safe id from a heading's text: lower case, accents folded (ä becomes a, ß becomes ss). */
+export function slugify(text: string): string {
+  return text
+    .replace(/ß/g, "ss")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Ids the page already owns; a heading that would take one gets a suffix instead.
+const reservedIds = new Set(["main", "link-previews"]);
+
+md.core.ruler.push("heading_ids", (state) => {
+  const env = state.env as { headingIds?: boolean; headings?: Heading[] };
+  if (!env.headingIds) return;
+  const used = new Set(reservedIds);
+  env.headings = [];
+  state.tokens.forEach((token, i) => {
+    if (token.type !== "heading_open" || (token.tag !== "h2" && token.tag !== "h3")) return;
+    const inline = state.tokens[i + 1];
+    // Text and code only: a link inside a heading contributes its label, not its markup.
+    const title = (inline?.children ?? [])
+      .filter((child) => child.type === "text" || child.type === "code_inline")
+      .map((child) => child.content)
+      .join("")
+      .trim();
+    const base = slugify(title) || "section";
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    token.attrSet("id", id);
+    env.headings!.push({ id, title, level: token.tag === "h2" ? 2 : 3 });
+  });
+});
+
+/** Renders an article: heading ids are set, and the headings come back for the outline. */
+export function renderArticle(source: string, lang: Lang = "en"): { html: string; headings: Heading[] } {
+  const env: { lang: Lang; headingIds: boolean; headings?: Heading[] } = { lang, headingIds: true };
+  const html = md.render(source, env);
+  return { html, headings: env.headings ?? [] };
+}
+
 export function renderInline(source: string, lang: Lang = "en"): string {
   return md.renderInline(source, { lang });
 }

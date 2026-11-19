@@ -1,0 +1,10 @@
+---
+import en from "../../../../content/now.md?raw";
+import de from "../../../../content/de/now.md?raw";
+import NotesPage from "../../../layouts/NotesPage.astro";
+import { langParams } from "../../../lib/i18n";
+
+export const getStaticPaths = langParams;
+---
+
+<NotesPage note="now" markdown={{ en, de }} />

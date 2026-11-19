@@ -36,6 +36,8 @@ And despite what the rest of this page might suggest, I occasionally do things t
 
 Occasionally.
 
+I keep short updates on [what I’m working on now](/now/). The [colophon](/colophon/) covers how this site is built.
+
 ## What I keep exploring
 
 - Computer engineering and low-level systems

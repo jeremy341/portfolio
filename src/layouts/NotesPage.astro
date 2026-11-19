@@ -1,0 +1,61 @@
+---
+import Base from "./Base.astro";
+import { langOf, ui, url } from "../lib/i18n";
+import { renderMarkdown } from "../lib/markdown";
+import { breadcrumbs } from "../lib/seo";
+import { canonical } from "../lib/site";
+
+interface Props {
+  note: keyof typeof ui.en.notes;
+  markdown: { en: string; de: string };
+}
+
+const { note, markdown } = Astro.props;
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+const { title, description } = t.notes[note];
+const path = url(lang, `/${note}/`);
+const schema = [
+  { "@type": "WebPage", name: title, description, url: canonical(path), inLanguage: t.htmlLang },
+  breadcrumbs(lang, [{ name: title, path }]),
+];
+---
+
+<Base {title} {description} {schema} {lang}>
+  <h1 class="page-title">{title}</h1>
+  <div class="index note-content">
+    <div class="prose">
+      <Fragment set:html={renderMarkdown(markdown[lang], lang)} />
+      <p class="note-return"><a href={url(lang, "/")}>{t.backHome}</a></p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .note-content {
+    margin-top: clamp(32px, 5vw, 56px);
+  }
+
+  .note-content :global(h2) {
+    text-wrap: balance;
+  }
+
+  .note-content :global(h2:not(:first-child)) {
+    margin-top: 1.6em;
+  }
+
+  .note-content :global(h2 + p) {
+    margin-top: 0.7em;
+  }
+
+  .note-content :global(.prose a) {
+    background: none;
+    text-decoration: underline;
+    text-decoration-color: var(--muted);
+    text-underline-offset: 0.22em;
+  }
+
+  .note-return {
+    margin-top: 2rem;
+  }
+</style>
