@@ -1,33 +1,32 @@
 /* The lost page gets a koi pond. Only the 404 loads the pond engine, so this
    stylesheet is the whole visual contract for it and never affects other pages. */
 
-/* Other pages reserve room above the fixed status line; here the pond itself is the page. */
+/* The pond is the viewport, not a card inside the layout. The main element only exists so the
+   skip link still has a target, and the header stays above the water. */
 body:has(.notfound-pond) main {
+  height: 0;
   padding-bottom: 0;
+}
+
+body:has(.notfound-pond) .site-header {
+  position: relative;
+  z-index: 2;
 }
 
 .notfound-pond {
   --pond: #16161e;
 
-  position: relative;
-  isolation: isolate;
-  /* Fill the window between the top bar and the status line, so the pond is the page and no dead
-     strip is left below it. */
-  min-height: clamp(460px, calc(100svh - 174px), 760px);
-  margin-block: clamp(20px, 4vw, 40px);
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100dvh;
   overflow: hidden;
-  border: 1px solid var(--line);
   background: var(--pond);
 }
 
 :root[data-theme="light"] .notfound-pond {
   --pond: #d6d9e4;
-}
-
-@media (max-width: 760px) {
-  .notfound-pond {
-    min-height: clamp(460px, calc(100svh - 110px), 720px);
-  }
 }
 
 .notfound-pond .koi-pond {
@@ -40,15 +39,14 @@ body:has(.notfound-pond) main {
   touch-action: manipulation;
 }
 
-/* The copy sits in the middle of the water as one tight lockup; the feeding hint is a footer line
-   at the bottom edge, so it never pads out the message. */
+/* One tight lockup in the middle of the water; the feeding hint sits at the bottom edge. */
 .notfound-inner {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  min-height: inherit;
-  padding: clamp(20px, 5vw, 40px);
+  min-height: 100%;
+  padding: clamp(88px, 13vh, 128px) clamp(20px, 5vw, 40px) clamp(64px, 10vh, 96px);
   pointer-events: none;
 }
 

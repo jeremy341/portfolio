@@ -86,7 +86,9 @@ const strings = {
         // after it, so they swim around the words instead of vanishing behind one big panel.
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
-          const parts = [...pondSection.querySelectorAll<HTMLElement>(".notfound-code, #nf-title, #nf-text, .notfound-hint")];
+          const parts = [
+            ...document.querySelectorAll<HTMLElement>(".site-header, .notfound-code, #nf-title, #nf-text, .notfound-hint"),
+          ];
           const clears = parts
             .map((part) => part.getBoundingClientRect())
             .filter((r) => r.width > 0 && r.height > 0)
