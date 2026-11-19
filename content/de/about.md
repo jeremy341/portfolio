@@ -36,7 +36,7 @@ Und anders als der Rest dieser Seite vielleicht vermuten lässt, mache ich geleg
 
 Gelegentlich.
 
-Unter [Aktuell](/now/) steht, woran ich gerade arbeite. Im [Kolophon](/colophon/) beschreibe ich, wie diese Website aufgebaut ist.
+Unter [Aktuell](/now/) steht, woran ich gerade arbeite.
 
 ## Was ich weiter erkunde
 

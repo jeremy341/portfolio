@@ -1,6 +1,6 @@
 ## 19 November 2026
 
-I’m updating this portfolio and documenting how it’s built in the [colophon](/colophon/). I’m also looking into whether PyTorch can train on my AMD GPU through Vulkan. [TorchVK](/work/torchvk/) is still at the feasibility stage.
+I’m updating this portfolio. I’m also looking into whether PyTorch can train on my AMD GPU through Vulkan. [TorchVK](/work/torchvk/) is still at the feasibility stage.
 
 ## 16 November 2026
 

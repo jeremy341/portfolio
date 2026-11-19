@@ -1,7 +1,7 @@
 const CACHE_PREFIX = "jd-portfolio-v";
 const CACHE_NAME = `${CACHE_PREFIX}1`;
 const ORIGIN = self.location.origin;
-const PAGE_PATH = /^\/(?:de\/)?(?:(?:about|blog|certificates|colophon|contact|cv|now|work)\/|(?:blog|work)\/[a-z0-9-]+\/)?$/;
+const PAGE_PATH = /^\/(?:de\/)?(?:(?:about|blog|certificates|contact|cv|now|work)\/|(?:blog|work)\/[a-z0-9-]+\/)?$/;
 const BUILD_ASSET = /^\/_astro\/[\w.-]+\.(?:css|js|woff2?|png|jpe?g|webp|avif|svg|gif)$/i;
 const PUBLIC_IMAGE = /^\/(?:og-card(?:-de)?\.png|apple-touch-icon\.png|favicon(?:-\d+)?\.(?:png|ico|svg)|(?:og|previews)\/(?:[\w-]+\/)*[\w.-]+\.(?:png|jpe?g|webp|avif|svg|gif))$/i;
 const NO_INDEX = /\b(?:noindex|none)\b/i;
@@ -23,13 +23,14 @@ function attribute(tag, name) {
 
 async function rememberPage(cache, request, response) {
   if (cacheable(response) && /^text\/html\b/i.test(response.headers.get("Content-Type") ?? "")) {
-    const head = (await response.clone().text()).split(/<\/head\s*>/i, 1)[0];
+    const html = await response.clone().text();
+    const head = html.split(/<\/head\s*>/i, 1)[0];
     const hidden = [...head.matchAll(/<meta\b[^>]*>/gi)].some(([tag]) =>
       /^(?:robots|googlebot|bingbot)$/i.test(attribute(tag, "name")) && NO_INDEX.test(attribute(tag, "content")),
     );
     if (!hidden) {
       await cache.put(request, response.clone());
-      return head;
+      return html;
     }
   }
   if (response.status === 200 || response.status === 404 || response.status === 410) await cache.delete(request);
@@ -43,22 +44,44 @@ async function rememberAsset(cache, request, response) {
   }
 }
 
-async function warmPage(cache, url) {
-  const response = await fetch(url, { cache: "reload", credentials: "omit", redirect: "error" });
-  const head = await rememberPage(cache, url, response);
-  if (head === null) return false;
-
+/** Caches the build assets a page needs, including dynamic import chunks referenced from its JS. */
+async function warmAssets(cache, html) {
   const assets = new Set();
-  for (const [tag] of head.matchAll(/<(?:link|script)\b[^>]*>/gi)) {
+  for (const [tag] of html.matchAll(/<(?:link|script)\b[^>]*>/gi)) {
     const path = attribute(tag, "src") || attribute(tag, "href");
     if (BUILD_ASSET.test(path)) assets.add(`${ORIGIN}${path}`);
   }
   await Promise.allSettled([...assets].map(async (asset) => {
-    if (!await cache.match(asset)) {
-      const fresh = await fetch(asset, { credentials: "omit", redirect: "error" });
-      await rememberAsset(cache, asset, fresh);
-    }
+    if (await cache.match(asset)) return;
+    const fresh = await fetch(asset, { credentials: "omit", redirect: "error" });
+    await rememberAsset(cache, asset, fresh.clone());
+    if (!asset.endsWith(".js")) return;
+    const source = await fresh.text();
+    const chunks = [...source.matchAll(/["'`]\.\/([\w.-]+\.js)["'`]/g)].map((match) => `${ORIGIN}/_astro/${match[1]}`);
+    await Promise.allSettled(chunks.map(async (chunk) => {
+      if (await cache.match(chunk)) return;
+      const response = await fetch(chunk, { credentials: "omit", redirect: "error" });
+      await rememberAsset(cache, chunk, response);
+    }));
   }));
+}
+
+async function warmPage(cache, url) {
+  const response = await fetch(url, { cache: "reload", credentials: "omit", redirect: "error" });
+  const html = await rememberPage(cache, url, response);
+  if (html === null) return false;
+  await warmAssets(cache, html);
+  return true;
+}
+
+/** The 404 page is the offline fallback. It is noindex, so it is cached without the normal page checks. */
+async function warmFallback(cache) {
+  const url = `${ORIGIN}/404.html`;
+  const response = await fetch(url, { cache: "reload", credentials: "omit", redirect: "error" });
+  if (!cacheable(response)) return false;
+  const html = await response.clone().text();
+  await cache.put(url, response);
+  await warmAssets(cache, html);
   return true;
 }
 
@@ -66,10 +89,10 @@ self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     const shareImage = `${ORIGIN}/og-card.png`;
-    const [home] = await Promise.all([
-      warmPage(cache, `${ORIGIN}/`),
-      fetch(shareImage, { credentials: "omit", redirect: "error" }).then((response) => rememberAsset(cache, shareImage, response)),
-    ]);
+    const home = await warmPage(cache, `${ORIGIN}/`);
+    await warmFallback(cache);
+    const share = await fetch(shareImage, { credentials: "omit", redirect: "error" });
+    await rememberAsset(cache, shareImage, share);
     if (!home || !await cache.match(shareImage)) throw new Error("Offline shell is unavailable");
   })());
 });
@@ -125,7 +148,18 @@ async function staticAsset(request) {
   return response;
 }
 
-function offlinePage() {
+async function offlinePage() {
+  const fallback = await cached(`${ORIGIN}/404.html`);
+  if (fallback) {
+    return new Response(fallback.body, {
+      status: 503,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex",
+      },
+    });
+  }
   return new Response(`<!doctype html>
 <html lang="en">
 <head>

@@ -24,9 +24,6 @@ interface Props {
 const lang: Lang = langOf(Astro.params.lang);
 const t = ui[lang];
 const { post, newer, older } = Astro.props;
-// Long posts get an "On this page" outline of their h2 sections; the ids come from the same parse that renders them.
-const outline = post.headings.filter((heading) => heading.level === 2);
-const hasOutline = outline.length >= 3;
 const schema = [
   {
     "@type": "BlogPosting",
@@ -59,7 +56,7 @@ const schema = [
   schema={schema}
   lang={lang}
 >
-  <article class:list={["blog-article", { "has-outline": hasOutline }]}>
+  <article class="blog-article">
     <header>
       <h1 class="page-title">{post.title}</h1>
       <p class="page-lead">{post.description}</p>
@@ -69,22 +66,6 @@ const schema = [
         <span>, {t.minRead(post.minutes)}</span>
       </p>
     </header>
-
-    {hasOutline && (
-      <div class="article-rail">
-        <nav class="outline" aria-label={t.onThisPage}>
-          <p class="outline-title">{t.onThisPage}</p>
-          <details class="outline-fold" open>
-            <summary>{t.onThisPage}</summary>
-            <ol>
-              {outline.map((entry) => (
-                <li><a href={`#${entry.id}`} data-spy={entry.id}>{entry.title}</a></li>
-              ))}
-            </ol>
-          </details>
-        </nav>
-      </div>
-    )}
 
     <div class="prose article-body" set:html={post.html} />
 
@@ -97,7 +78,3 @@ const schema = [
     </footer>
   </article>
 </Base>
-
-<script>
-  import "../../../scripts/article";
-</script>

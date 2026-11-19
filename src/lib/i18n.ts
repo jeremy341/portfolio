@@ -127,7 +127,6 @@ const en = {
   aboutDescription: (name: string) => `About ${name}: ${summary.en}`,
   notes: {
     now: { title: "Now", description: "Dated notes on what Jeremy Darko is working on and writing about." },
-    colophon: { title: "Colophon", description: "How Jeremy Darko’s portfolio is designed, built, hosted and maintained." },
   },
   backHome: "Back to home",
 
@@ -282,7 +281,6 @@ const de: Strings = {
   aboutDescription: (name) => `Über ${name}: ${summary.de}`,
   notes: {
     now: { title: "Aktuell", description: "Notizen dazu, woran Jeremy Darko gerade arbeitet und worüber er schreibt." },
-    colophon: { title: "Kolophon", description: "Gestaltung, Technik, Hosting und Pflege von Jeremy Darkos Portfolio." },
   },
   backHome: "Zur Startseite",
 

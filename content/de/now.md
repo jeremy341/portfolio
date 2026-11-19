@@ -1,6 +1,6 @@
 ## 19. November 2026
 
-Ich überarbeite dieses Portfolio und halte im [Kolophon](/colophon/) fest, wie es aufgebaut ist. Außerdem untersuche ich, ob ich PyTorch-Modelle über Vulkan auf meiner AMD-GPU trainieren kann. Bei [TorchVK](/work/torchvk/) geht es bisher um die Machbarkeit.
+Ich überarbeite dieses Portfolio. Außerdem untersuche ich, ob ich PyTorch-Modelle über Vulkan auf meiner AMD-GPU trainieren kann. Bei [TorchVK](/work/torchvk/) geht es bisher um die Machbarkeit.
 
 ## 16. November 2026
 

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderArticle, renderMarkdown, slugify } from "../src/lib/markdown.ts";
+import { renderMarkdown } from "../src/lib/markdown.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = join(root, "dist");
@@ -46,7 +46,6 @@ test("the site is a home page, project pages and articles", () => {
     "work/index.html",
     "about/index.html",
     "now/index.html",
-    "colophon/index.html",
     "contact/index.html",
     "certificates/index.html",
     "cv/index.html",
@@ -366,33 +365,6 @@ ${question.acceptedAnswer.text}
   assert.ok(!jsonLd(page("de/about/index.html"))[0]["@graph"].some((node) => node["@type"] === "FAQPage"), "the German page has no English-only FAQ");
 });
 
-test("heading ids and the outline come from the parsed Markdown, not from text patterns", () => {
-  const { html, headings } = renderArticle(["## Über den Plan: ß & más", "", "```", "## not a heading", "```", "", "## [Loadout](https://x.test) planning", "", "## Über den Plan: ß & más", "", "### Detail", "", "##", ""].join("\n"));
-  assert.deepEqual(headings.map((h) => h.id), ["uber-den-plan-ss-mas", "loadout-planning", "uber-den-plan-ss-mas-2", "detail", "section"]);
-  assert.equal(headings[1].title, "Loadout planning", "a link in a heading contributes its label only");
-  assert.match(html, /<h2 id="loadout-planning">/);
-  assert.doesNotMatch(html, /id="not-a-heading"/, "a code fence is not a heading");
-  assert.equal(slugify("What's next?"), "what-s-next");
-  assert.doesNotMatch(renderMarkdown("## Plain"), /id=/, "renderMarkdown keeps its markup");
-});
-
-test("each article outline links to real heading ids, in both languages", () => {
-  for (const base of ["", "de/"]) {
-    for (const slug of posts) {
-      const html = page(`${base}blog/${slug}/index.html`);
-      const label = `${base}blog/${slug}`;
-      const article = html.match(/<article\b[\s\S]*<\/article>/)[0];
-      const h2s = [...article.matchAll(/<h2 id="([^"]+)"/g)].map((m) => m[1]);
-      const links = [...article.matchAll(/<a href="#([^"]+)" data-spy="\1"/g)].map((m) => m[1]);
-      const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
-      assert.equal(new Set(ids).size, ids.length, `${label} repeats an id`);
-      assert.ok(h2s.length >= 3, `${label} has too few sections for an outline`);
-      assert.deepEqual(links, h2s, `${label}: the outline does not list the h2 sections in order`);
-      assert.match(article, /<nav class="outline" aria-label="(On this page|Auf dieser Seite)"/, `${label} outline is labelled`);
-    }
-  }
-});
-
 test("Markdown never renders raw HTML", () => {
   const html = renderMarkdown('<script>alert(1)</script>\n\n<b>bold</b> and [link](posts/x.md)');
   assert.doesNotMatch(html, /<script>|<b>/);
@@ -473,10 +445,10 @@ test("each English page declares x-default for the language choice", () => {
   }
 });
 
-test("Now and Colophon are localized, linked from About and indexed in the sitemap", () => {
+test("Now is localized, linked from About and indexed in the sitemap", () => {
   const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
   const sitemap = page("sitemap.xml");
-  for (const [slug, titles] of [["now", { en: "Now", de: "Aktuell" }], ["colophon", { en: "Colophon", de: "Kolophon" }]]) {
+  for (const [slug, titles] of [["now", { en: "Now", de: "Aktuell" }]]) {
     const languages = { en: `/${slug}/`, de: `/de/${slug}/` };
     const descriptions = {};
     for (const [lang, path] of Object.entries(languages)) {
@@ -548,7 +520,6 @@ test("llms.txt and llms-full.txt say who the person is, list every page, and kee
   for (const slug of posts) assert.ok(index.includes(`/blog/${slug}/`), `llms.txt lacks ${slug}`);
   const pages = index.match(/^## Pages\n([\s\S]*?)(?=\n## )/m)?.[1] ?? "";
   assert.match(pages, /^- \[Now\]\([^)]*\/now\/\): /m);
-  assert.match(pages, /^- \[Colophon\]\([^)]*\/colophon\/\): /m);
   for (const href of ["https://github.com/jeremy341", "https://huggingface.co/Jeremy341", "https://de.linkedin.com/in/jeremy-darko-a0a850413"]) {
     assert.ok(index.includes(href), `llms.txt lacks ${href}`);
   }
@@ -930,8 +901,11 @@ test("the worker caches public pages network-first and static assets cache-first
   };
 
   set("/", '<head><link rel="stylesheet" href="/_astro/site.css"></head>Home');
+  set("/404.html", '<head><meta name="robots" content="noindex"><link rel="stylesheet" href="/_astro/site.css"><script type="module" src="/_astro/four.js"></script></head><a href="#main" class="skip-link">Skip to content</a><main id="main"><h1>Page not found</h1><canvas class="koi-pond"></canvas></main>');
   set("/og-card.png", "share image", "image/png");
   set("/_astro/site.css", "body {}", "text/css");
+  set("/_astro/four.js", 'import("./chunk.js")', "text/javascript");
+  set("/_astro/chunk.js", "koi engine", "text/javascript");
   await lifecycle("install");
   await lifecycle("activate");
   assert.ok(claimed);
@@ -939,7 +913,7 @@ test("the worker caches public pages network-first and static assets cache-first
   assert.ok(version);
   assert.deepEqual([...stores.keys()], ["unrelated", version]);
   const cachedPaths = () => [...stores.get(version).keys()].map((key) => new URL(key).pathname);
-  assert.deepEqual(cachedPaths().sort(), ["/", "/_astro/site.css", "/og-card.png"]);
+  assert.deepEqual(cachedPaths().sort(), ["/", "/404.html", "/_astro/chunk.js", "/_astro/four.js", "/_astro/site.css", "/og-card.png"]);
 
   set("/work/mira/", "MIRA v1");
   assert.equal(await (await request("/work/mira/")).text(), "MIRA v1");
@@ -971,9 +945,10 @@ test("the worker caches public pages network-first and static assets cache-first
     assert.equal(fallback.headers.get("X-Robots-Tag"), "noindex");
     const html = await fallback.text();
     assert.match(html, /<meta name="robots" content="noindex"/);
-    assert.match(html, /<h1>You’re offline<\/h1>/);
+    assert.match(html, /<h1>Page not found<\/h1>/, "the offline fallback is the 404 page");
+    assert.match(html, /class="koi-pond"/);
     assert.match(html, /href="#main"/);
-    assert.match(html, /href="\/" hreflang="en"/);
+    assert.doesNotMatch(html, /You’re offline/);
     assert.ok(!cachedPaths().includes(path));
   }
   assert.doesNotMatch(page("sitemap.xml"), /\/(?:offline\/|sw\.js|manifest\.webmanifest)/);
