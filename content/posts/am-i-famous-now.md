@@ -39,5 +39,3 @@ And even if some of those requests are bots, a few real people using it is bette
 Well, though [MIRA](/work/mira/) is already performing so well, it isn't perfect, and I hadn't gotten to working on it and perfecting it. Recently a bit of time freed up in my schedule, so the next steps are training a new MIRA model which is better than the last. The reason is that it seems like the latest model, EXP-019, is [benchmaxxed](https://en.wikipedia.org/wiki/Overfitting), meaning it was tuned so hard for one test that it looks great there but might not hold up in real use.
 
 Well this is all I wanted to say, and I hope you enjoyed reading this. I hope you all have good luck with your own projects, and if you have time, check out the project I made.
-
-In case I don't see ya, good afternoon, good evening, and good night! Bye!

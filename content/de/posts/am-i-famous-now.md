@@ -37,5 +37,3 @@ Nicht wirklich. Trotzdem ist es ein schönes Gefühl, zu sehen, dass etwas, das 
 [MIRA](/work/mira/) liefert zwar gute Ergebnisse, ist aber noch lange nicht perfekt. Ich war eine Weile nicht dazu gekommen, daran weiterzuarbeiten. Jetzt habe ich wieder etwas Zeit und möchte ein besseres Modell trainieren. EXP-019 ist nämlich vermutlich [benchmaxxed](https://en.wikipedia.org/wiki/Overfitting): so stark auf einen Test optimiert, dass es dort super aussieht, im echten Einsatz aber womöglich nicht so gut klarkommt.
 
 Das war's eigentlich schon. Ich hoffe, ihr hattet Spaß beim Lesen. Viel Erfolg bei euren eigenen Projekten, und falls ihr Zeit habt, schaut gerne bei meinem vorbei.
-
-Falls wir uns nicht mehr sehen: Guten Tag, guten Abend und gute Nacht! Tschüss!
