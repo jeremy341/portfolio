@@ -20,9 +20,11 @@ const strings = {
   <section class="notfound-pond" aria-labelledby="nf-title">
     <canvas class="koi-pond" aria-hidden="true"></canvas>
     <div class="notfound-inner">
-      <p class="notfound-code" aria-hidden="true">404</p>
-      <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
-      <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+      <div class="notfound-copy">
+        <p class="notfound-code" aria-hidden="true">404</p>
+        <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
+        <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+      </div>
       <p class="notfound-hint"><span id="nf-hint">{en.notFoundHint}</span></p>
     </div>
   </section>
@@ -74,26 +76,29 @@ const strings = {
         const createPond = (window as unknown as { AsciiKoi?: { createPond: Function } }).AsciiKoi?.createPond;
         if (!createPond) return;
 
-        const light = document.documentElement.dataset.theme === "light";
+        // Read the theme on every call so the top-bar switch recolours the water too.
         const palette = () =>
-          light
+          document.documentElement.dataset.theme === "light"
             ? { water: "#d6d9e4", ink: "#1a1b26", accent: "#2552b8", koiLight: "#f7f2e8", koiDark: "#2b2723", dark: false }
             : { water: "#16161e", ink: "#c0caf5", accent: "#7aa2f7", koiLight: "#ece6da", koiDark: "#3a3632", dark: true };
 
-        // Keep the message clear: koi fade as they pass behind the text and ease back in after it.
+        // Keep the message clear: koi fade only where a line of copy sits and ease back in right
+        // after it, so they swim around the words instead of vanishing behind one big panel.
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
-          const parts = [...pondSection.querySelectorAll<HTMLElement>(".notfound-code, #nf-title, .notfound-inner .page-lead, .notfound-hint")];
-          const rects = parts.map((part) => part.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0);
-          if (rects.length === 0) return null;
-          return [{
-            left: Math.min(...rects.map((r) => r.left)) - box.left - 20,
-            top: Math.min(...rects.map((r) => r.top)) - box.top - 12,
-            right: Math.max(...rects.map((r) => r.right)) - box.left + 20,
-            bottom: Math.max(...rects.map((r) => r.bottom)) - box.top + 12,
-            min: 0.08,
-            fade: 70,
-          }];
+          const parts = [...pondSection.querySelectorAll<HTMLElement>(".notfound-code, #nf-title, #nf-text, .notfound-hint")];
+          const clears = parts
+            .map((part) => part.getBoundingClientRect())
+            .filter((r) => r.width > 0 && r.height > 0)
+            .map((r) => ({
+              left: r.left - box.left - 10,
+              top: r.top - box.top - 6,
+              right: r.right - box.left + 10,
+              bottom: r.bottom - box.top + 6,
+              min: 0.06,
+              fade: 44,
+            }));
+          return clears.length ? clears : null;
         };
 
         const pond = createPond({
