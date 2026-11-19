@@ -1,15 +1,15 @@
 ---
 title: "Das Vibe-Coding-Dilemma: Zwischen Produktivität, Verständnis und Lernen"
 description: "Bei Hack Club bewerte ich Projekte, die mit KI entstanden sind. Bei meinen eigenen nutze ich Claude und Codex. Und wo stehe ich damit?"
-slug: am-i-a-vibe-coder
+slug: the-vibe-coding-dilemma
 publishedAt: 2026-11-16
 readingMinutes: 7
 tags: [ai, programming, hack-club, vibe-coding]
 ---
 
-Ich bin ein großer Befürworter von KI. Aber macht es mich zum Vibe Coder, wenn ich KI beim Programmieren einsetze? Und wenn ja, bin ich dann automatisch ein schlechter Programmierer?
+Ich bin ein überzeugter Befürworter von KI. Aber macht es mich zum Vibe Coder, wenn ich KI beim Programmieren einsetze? Und wenn ja, bin ich dann automatisch ein schlechter Programmierer?
 
-Diese Frage beschäftigt mich in letzter Zeit. Ich verbringe nämlich einen absurden Teil meiner Zeit damit, KI für meine eigenen Projekte zu nutzen. Gleichzeitig gehört es zu meiner Arbeit als Reviewer, fremden Code zu prüfen und nach Anzeichen für den Einsatz von KI zu suchen.
+Diese Frage beschäftigt mich in letzter Zeit. Ich verbringe nämlich ziemlich viel Zeit damit, KI für meine eigenen Projekte zu nutzen. Gleichzeitig gehört es zu meiner Arbeit als Reviewer, fremden Code zu prüfen und nach Anzeichen für den Einsatz von KI zu suchen.
 
 Wo zieht man also die Grenze? Wann hört KI auf, ein Werkzeug zu sein, mit dem du etwas baust, und übernimmt das Bauen selbst? Und vor allem: **Auf welcher Seite stehe ich eigentlich?**
 
@@ -81,7 +81,7 @@ Wer PoorUp reviewt, könnte den KI-unterstützten Code sehen und daraus schließ
 
 Woher auch? Sie kennt mich nicht. Sie sieht nur das, was ich eingereicht habe.
 
-Das sollte man meiner Meinung nach auch bei Reviews anderer Projekte im Hinterkopf behalten. KI-generierten Code zu erkennen und den tatsächlichen Arbeitsaufwand einer Person zu beurteilen, sind zwei verschiedene Dinge. Ich würde lieber darauf achten, wie sich ein Projekt entwickelt hat, welche Entscheidungen die Person getroffen hat und was sie selbst beigetragen hat, als nur darauf, wie viel Code nach KI aussieht.
+Das sollte man meiner Meinung nach auch bei Reviews anderer Projekte im Hinterkopf behalten. KI-generierten Code zu erkennen und den tatsächlichen Arbeitsaufwand einer Person zu beurteilen, sind zwei verschiedene Dinge. Mir ist wichtiger, wie sich ein Projekt entwickelt hat, welche Entscheidungen die Person getroffen hat und was sie selbst beigetragen hat, als wie viel Code nach KI aussieht.
 
 Natürlich ist das leichter gesagt als getan. Wie misst man den eigenen Beitrag einer Person, wenn KI in so ziemlich jeder Phase der Entwicklung eingesetzt werden kann? Und wie berücksichtigt man, dass das verwendete KI-Modell beeinflussen kann, wie ein Projekt wahrgenommen wird, ohne unbedingt etwas über den tatsächlichen Aufwand auszusagen?
 
@@ -89,7 +89,7 @@ Darüber habe ich bei meinen Reviews schon viel nachgedacht, aber ich glaube, da
 
 ## Macht KI mich zu einem schlechteren Programmierer?
 
-Darüber denke ich tatsächlich viel nach. Ich liebe Technische Informatik. Nicht nur Websites bauen oder irgendwelche Projekte zum Laufen bringen, sondern wirklich verstehen, wie Dinge funktionieren. GPUs, Machine Learning, Elektronik, Betriebssysteme. Es gibt so viel Interessantes zu lernen. Und ich würde behaupten, dass ich durch meine Projekte eine Menge gelernt habe. Auch mit KI.
+Darüber denke ich tatsächlich viel nach. Ich liebe technische Informatik. Nicht nur Websites bauen oder irgendwelche Projekte zum Laufen bringen, sondern wirklich verstehen, wie Dinge funktionieren. GPUs, Machine Learning, Elektronik, Betriebssysteme. Es gibt so viel Interessantes zu lernen. Und ich würde behaupten, dass ich durch meine Projekte eine Menge gelernt habe. Auch mit KI.
 
 Eine Sache macht KI allerdings unglaublich einfach: **die schwierigen Teile überspringen.**
 
@@ -125,4 +125,4 @@ Bin ich deshalb ein schlechter Programmierer? Glaube ich nicht.
 
 Könnte mich zu viel KI zu einem schlechteren machen? Auf jeden Fall.
 
-Und das möchte ich lieber jetzt wissen als nach den nächsten zehn Projekten.
+Und das möchte ich mir lieber jetzt bewusst machen als erst nach den nächsten zehn Projekten.
