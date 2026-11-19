@@ -276,8 +276,12 @@ test("Work lists all six projects and Writing lists every article", () => {
 test("only the theme icon ships, and pictures appear only on project pages and Certificates", () => {
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, "utf8");
-    const withoutThemeIcon = html.replace(/<svg class="theme-icon"[^>]*>[\s\S]*?<\/svg>/g, "");
-    assert.doesNotMatch(withoutThemeIcon, /<svg|<canvas|<picture/, `${file} contains unexpected graphics`);
+    // The lost page has one intentional graphic: the interactive koi pond canvas.
+    const withoutLocalGraphics = html
+      .replace(/<svg class="theme-icon"[^>]*>[\s\S]*?<\/svg>/g, "")
+      .replace(/<canvas class="koi-pond"[^>]*><\/canvas>/g, "");
+    assert.doesNotMatch(withoutLocalGraphics, /<svg|<canvas|<picture/, `${file} contains unexpected graphics`);
+    if (file.endsWith("404.html")) assert.match(html, /<canvas class="koi-pond"/, "the 404 has its koi pond");
     const rel = file.slice(dist.length + 1).split("\\").join("/");
     if (/<img /.test(html)) {
       assert.match(rel, /^(de\/)?(work\/[\w-]+|certificates)\/index\.html$/, `${rel} should not carry pictures`);

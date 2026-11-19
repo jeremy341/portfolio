@@ -137,6 +137,7 @@ const en = {
   notFoundDescription: "This page does not exist.",
   notFoundText: "The link may be old, or the page has moved.",
   notFoundBack: "Back to the work",
+  notFoundHint: "Click the water to feed the koi",
 
   // Search index (/search.json)
   idxHomeTitle: "Home",
@@ -283,6 +284,7 @@ const de: Strings = {
   notFoundDescription: "Diese Seite gibt es nicht.",
   notFoundText: "Vielleicht ist der Link veraltet oder die Seite ist umgezogen.",
   notFoundBack: "Zurück zu den Projekten",
+  notFoundHint: "Klicke ins Wasser, um die Koi zu füttern",
 
   idxHomeTitle: "Start",
   idxHome: "Die Übersicht über die fünf Bereiche der Website.",

@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { ui } from "../lib/i18n";
+import "../styles/notfound.css";
 
 // The server shows one 404 page for every address, so it speaks both languages.
 const en = ui.en;
@@ -8,7 +9,71 @@ const de = ui.de;
 ---
 
 <Base title={en.notFoundTitle} description={en.notFoundDescription} noindex lang="en">
-  <h1 class="page-title">{en.notFoundTitle}</h1>
-  <p class="page-lead">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
-  <p class="page-lead" lang="de">{de.notFoundTitle}. {de.notFoundText} <a href="/de/work/">{de.notFoundBack}</a>.</p>
+  <section class="notfound-pond" aria-labelledby="nf-title">
+    <canvas class="koi-pond" aria-hidden="true"></canvas>
+    <div class="notfound-inner">
+      <p class="notfound-code" aria-hidden="true">404</p>
+      <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
+      <p class="page-lead">{en.notFoundText} <a href="/work/">{en.notFoundBack}</a>.</p>
+      <p class="page-lead" lang="de">{de.notFoundTitle}. {de.notFoundText} <a href="/de/work/">{de.notFoundBack}</a>.</p>
+      <p class="notfound-hint">
+        <span>{en.notFoundHint}</span>
+        <span lang="de">{de.notFoundHint}</span>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    // A small koi pond for the lost page. Loaded only here; the rest of the site never pays for it.
+    const pondSection = document.querySelector<HTMLElement>(".notfound-pond");
+    const pondCanvas = document.querySelector<HTMLCanvasElement>(".koi-pond");
+
+    if (pondSection && pondCanvas) {
+      void import("../scripts/vendor/ascii-koi.js").then(() => {
+        const createPond = (window as unknown as { AsciiKoi?: { createPond: Function } }).AsciiKoi?.createPond;
+        if (!createPond) return;
+
+        const light = document.documentElement.dataset.theme === "light";
+        const palette = () =>
+          light
+            ? { water: "#d6d9e4", ink: "#1a1b26", accent: "#2552b8", koiLight: "#f7f2e8", koiDark: "#2b2723", dark: false }
+            : { water: "#16161e", ink: "#c0caf5", accent: "#7aa2f7", koiLight: "#ece6da", koiDark: "#3a3632", dark: true };
+
+        // Keep the message clear: koi fade as they pass behind the text and ease back in after it.
+        const dimText = () => {
+          const box = pondCanvas.getBoundingClientRect();
+          const parts = [...pondSection.querySelectorAll<HTMLElement>(".notfound-code, #nf-title, .notfound-inner .page-lead, .notfound-hint")];
+          if (parts.length === 0) return null;
+          const rects = parts.map((part) => part.getBoundingClientRect());
+          return [{
+            left: Math.min(...rects.map((r) => r.left)) - box.left - 20,
+            top: Math.min(...rects.map((r) => r.top)) - box.top - 12,
+            right: Math.max(...rects.map((r) => r.right)) - box.left + 20,
+            bottom: Math.max(...rects.map((r) => r.bottom)) - box.top + 12,
+            min: 0.08,
+            fade: 70,
+          }];
+        };
+
+        const pond = createPond({
+          canvas: pondCanvas,
+          palette,
+          dim: dimText,
+          most: 7,
+          reduce: matchMedia("(prefers-reduced-motion: reduce)").matches,
+        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void };
+
+        const resize = () => pond.size(pondSection.clientWidth, pondSection.clientHeight);
+        resize();
+        new ResizeObserver(resize).observe(pondSection);
+        pond.start();
+
+        pondCanvas.addEventListener("pointerdown", (event) => {
+          const box = pondCanvas.getBoundingClientRect();
+          pond.feed(event.clientX - box.left, event.clientY - box.top);
+        });
+        addEventListener("pagehide", () => pond.stop(), { once: true });
+      });
+    }
+  </script>
 </Base>
