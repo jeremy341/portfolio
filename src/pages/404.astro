@@ -25,9 +25,9 @@ const strings = {
         <p class="notfound-code" aria-hidden="true">404</p>
         <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
         <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/" id="nf-back">{en.notFoundBack}</a>.</p>
-        <p class="notfound-quest" id="nf-quest" aria-live="polite">{en.notFoundQuest} · 0/3</p>
+        <p class="notfound-quest" id="nf-quest" aria-live="polite" hidden>{en.notFoundQuest} · 0/3</p>
       </div>
-      <p class="notfound-hint"><span id="nf-hint">{en.notFoundHint}</span></p>
+      <p class="notfound-hint" id="nf-hint-wrap" hidden><span id="nf-hint">{en.notFoundHint}</span></p>
     </div>
   </section>
 
@@ -112,12 +112,13 @@ const strings = {
           return clears.length ? clears : null;
         };
 
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
         const pond = createPond({
           canvas: pondCanvas,
           palette,
           dim: dimText,
           most: 7,
-          reduce: matchMedia("(prefers-reduced-motion: reduce)").matches,
+          reduce,
         }) as {
           size: (w: number, h: number) => void;
           start: () => void;
@@ -144,15 +145,34 @@ const strings = {
         new ResizeObserver(resize).observe(pondSection);
         pond.start();
 
-        const reach = [[0, 0], [12, 0], [-12, 0], [0, 12], [0, -12], [22, 22], [-22, 22], [22, -22], [-22, -22]];
-        pondCanvas.addEventListener("pointerdown", (event) => {
-          if (event.button !== 0) return;
-          const box = pondCanvas.getBoundingClientRect();
-          const x = event.clientX - box.left;
-          const y = event.clientY - box.top;
-          if (reach.some(([dx, dy]) => pond.tint(x + dx, y + dy) !== null)) foundOne();
-          pond.feed(x, y);
-        });
+        // With reduced motion the engine draws one still frame and ignores feeding, so there is
+        // no game to describe. Reveal the instructions only when the pond is actually interactive.
+        const hintWrap = document.getElementById("nf-hint-wrap");
+        if (reduce) {
+          quest?.setAttribute("hidden", "");
+          hintWrap?.setAttribute("hidden", "");
+        } else {
+          quest?.removeAttribute("hidden");
+          hintWrap?.removeAttribute("hidden");
+          const caught: { x: number; y: number }[] = [];
+          const reach = [[0, 0], [10, 0], [-10, 0], [0, 10], [0, -10]];
+          pondCanvas.addEventListener("pointerdown", (event) => {
+            if (event.button !== 0) return;
+            const box = pondCanvas.getBoundingClientRect();
+            const x = event.clientX - box.left;
+            const y = event.clientY - box.top;
+            const onKoi = reach.some(([dx, dy]) => {
+              const tint = pond.tint(x + dx, y + dy);
+              return tint !== null && (tint[3] ?? 0) > 0.25;
+            });
+            // One catch per fish: a second click near an earlier catch cannot score again.
+            if (onKoi && caught.every((c) => Math.hypot(c.x - x, c.y - y) > 80)) {
+              caught.push({ x, y });
+              foundOne();
+            }
+            pond.feed(x, y);
+          });
+        }
         addEventListener("pagehide", () => pond.stop(), { once: true });
       });
     }

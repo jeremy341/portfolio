@@ -192,6 +192,16 @@ test("figures use the in-page lightbox instead of advertising a new tab", () => 
   assert.ok(bundled, "the lightbox script is not in the built JavaScript");
 });
 
+test("the 404 instructions stay hidden until the pond is running", () => {
+  const html = page("404.html");
+  assert.match(html, /id="nf-quest"[^>]*\bhidden\b/, "the quest is hidden in the server HTML");
+  assert.match(html, /id="nf-hint-wrap"[^>]*\bhidden\b/, "the feeding hint is hidden in the server HTML");
+  const i18n = readFileSync(join(root, "src/lib/i18n.ts"), "utf8");
+  for (const key of ["notFoundHint", "notFoundQuest", "notFoundFound", "notFoundError"]) {
+    assert.equal((i18n.match(new RegExp(`${key}:`, "g")) ?? []).length, 2, `${key} must exist in both languages`);
+  }
+});
+
 test("each project with measurements has an In numbers section, and no page makes up what is missing", () => {
   for (const slug of Object.keys(projects)) {
     assert.ok(page(`work/${slug}/index.html`).includes('id="numbers"'), `${slug} lacks In numbers`);

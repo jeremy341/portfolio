@@ -13,6 +13,11 @@ body:has(.notfound-pond) .site-header {
   z-index: 2;
 }
 
+/* The pond is opaque and covers the whole viewport; the first Tab must still be visible. */
+body:has(.notfound-pond) .skip-link {
+  z-index: 3;
+}
+
 .notfound-pond {
   --pond: #16161e;
 
