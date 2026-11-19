@@ -113,33 +113,18 @@ const strings = {
           dim: dimText,
           most: 7,
           reduce: matchMedia("(prefers-reduced-motion: reduce)").matches,
-        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void; paw: (x: number, y: number) => void };
+        }) as { size: (w: number, h: number) => void; start: () => void; stop: () => void; feed: (x: number, y: number) => void };
 
         const resize = () => pond.size(pondSection.clientWidth, pondSection.clientHeight);
         resize();
         new ResizeObserver(resize).observe(pondSection);
         pond.start();
 
-        const point = (event: MouseEvent | PointerEvent) => {
-          const box = pondCanvas.getBoundingClientRect();
-          return { x: event.clientX - box.left, y: event.clientY - box.top };
-        };
-
         pondCanvas.addEventListener("pointerdown", (event) => {
-          const at = point(event);
-          if (event.button === 2) {
-            pond.paw(at.x, at.y);
-            return;
-          }
           if (event.button !== 0) return;
-          // A quick tap feeds; holding calls the paw and scatters the shoal.
-          const timer = setTimeout(() => pond.paw(at.x, at.y), 450);
-          const release = () => clearTimeout(timer);
-          pondCanvas.addEventListener("pointerup", release, { once: true });
-          pondCanvas.addEventListener("pointercancel", release, { once: true });
-          pond.feed(at.x, at.y);
+          const box = pondCanvas.getBoundingClientRect();
+          pond.feed(event.clientX - box.left, event.clientY - box.top);
         });
-        pondCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
         addEventListener("pagehide", () => pond.stop(), { once: true });
       });
     }

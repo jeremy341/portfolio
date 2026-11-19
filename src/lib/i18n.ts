@@ -137,7 +137,7 @@ const en = {
   notFoundDescription: "This page does not exist.",
   notFoundText: "The link may be old, or the page has moved.",
   notFoundBack: "Back to the work",
-  notFoundHint: "Click to feed · right-click or hold to scatter the koi",
+  notFoundHint: "Click the water to feed the koi",
   notFoundError: "no such file",
 
   // Search index (/search.json)
@@ -285,7 +285,7 @@ const de: Strings = {
   notFoundDescription: "Diese Seite gibt es nicht.",
   notFoundText: "Vielleicht ist der Link veraltet oder die Seite ist umgezogen.",
   notFoundBack: "Zurück zu den Projekten",
-  notFoundHint: "Klicken zum Füttern · Rechtsklick oder Halten verscheucht die Koi",
+  notFoundHint: "Klicke ins Wasser, um die Koi zu füttern",
   notFoundError: "keine solche Datei",
 
   idxHomeTitle: "Start",
