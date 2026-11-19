@@ -4,7 +4,7 @@ I’m updating this portfolio. I’m also looking into whether PyTorch can train
 
 ## 16 November 2026
 
-I wrote [Am I a Vibe Coder?](/blog/am-i-a-vibe-coder/) about how I use AI when I code and what I want to learn by doing myself.
+I wrote [The Vibe Coding Dilemma: Balancing Productivity, Understanding and Learning](/blog/am-i-a-vibe-coder/) about how I use AI when I code and what I want to learn by doing myself.
 
 ## 29 October 2026
 

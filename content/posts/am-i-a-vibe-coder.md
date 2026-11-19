@@ -1,5 +1,5 @@
 ---
-title: "Am I a Vibe Coder?"
+title: "The Vibe Coding Dilemma: Balancing Productivity, Understanding and Learning"
 description: "I review AI-assisted projects for Hack Club while using Claude and Codex in my own work. So where does that leave me?"
 slug: am-i-a-vibe-coder
 publishedAt: 2026-11-16
@@ -7,37 +7,33 @@ readingMinutes: 7
 tags: [ai, programming, hack-club, vibe-coding]
 ---
 
-I'm an AI believer. An AI connoisseur, Hell you could even call me a fanatic if you wish.
+I'm a big advocate for AI. But does using it to help me program make me a vibe coder? And if it does, does that automatically make me a bad programmer?
 
-But does that make me a vibe coder? And if it does, does that automatically make me a bad programmer? A bad person, even? Okay, that last one might be a bit dramatic.
-
-Still, it's a question I've been thinking about lately. Because I spend a ridiculous amount of time using AI to work on my projects, yet at the same time, part of my job as a reviewer involves reviewing other people's code and looking for signs of AI usage. A bit ironic, isn't it?
+It's a question I've been thinking about lately, because I spend a ridiculous amount of time using AI to work on my projects. At the same time, part of my job as a reviewer involves looking through other people's code for signs of AI usage.
 
 So where exactly do we draw the line? When does AI stop being a tool that helps you build something and start becoming the thing that's actually building it? And more importantly, **which side of that line am I on?**
 
 ## First, a little context
 
-For those who don't know, I'm involved with [Hack Club](https://hackclub.com/), a community of teenagers interested in programming, electronics, hardware and pretty much anything you can build.
+For those who don't know what [Hack Club](https://hackclub.com/) is, it's a community of teenagers interested in programming, electronics, hardware and pretty much anything you can build.
 
 Hack Club runs programs called [YSWS](https://project.hackclub.com/overview/info/), short for *You Ship, We Ship*. The general idea is that you build and ship something, and in return, you can receive rewards. Pretty cool concept, right?
 
 Well, I also happen to be a reviewer for projects submitted to one of these programs. That means I spend a decent amount of time looking through other people's GitHub repositories, checking what they've built, going through commits and trying to understand how much work actually went into a project. And yes, that sometimes includes looking for AI-generated code.
 
-Which brings us to a slightly uncomfortable situation. I'm sitting here reviewing projects for AI usage while Claude and Codex are probably responsible for writing a significant amount of code in some of my own repositories. Now that's interesting.
-
 ## So, am I one of those people?
 
-Before answering that, we probably need to agree on what [vibe coding](https://en.wikipedia.org/wiki/Vibe_coding) actually means. Depending on who you ask, the term seems to describe anything from using AI to help with programming to letting an AI write an entire application while barely looking at the code. And those are two very different things.
+Before answering that, we probably need to agree on what the definition of [vibe coding](https://en.wikipedia.org/wiki/Vibe_coding) is. Depending on who you ask, the term seems to describe anything from using AI to help with programming to letting an AI write an entire application while barely looking at the code. And those are two very different things.
 
 First of all, **I can program.** I feel like I should mention that before somebody gets the impression that I spend my entire day writing prompts and watching Claude do everything for me.
 
 I actually enjoy writing code. I do most of my UI work myself, and I usually work inside an [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment), where I can see my files, edit the code and follow what's happening. I'm not just throwing prompts into a terminal and accepting whatever application comes out. Though I suppose that would make my life a lot easier sometimes.
 
-Anyway, the funny thing is that my approach to AI depends heavily on the project. Take [MIRA](/work/mira/), for example. MIRA is a machine learning project I worked on, and during its development, I inspected every line of code. I wanted to understand how everything worked, what the code was doing and why certain decisions were made.
+My approach to AI depends heavily on the project. Take [MIRA](/work/mira/), for example. MIRA is a machine learning project I worked on, and during its development, I inspected every line of code. I wanted to understand how everything worked, what the code was doing and why certain decisions were made.
 
 Now compare that to [PoorUp](/work/poorup/). PoorUp is a multiplayer browser game and probably one of my biggest software projects. I spent a considerable amount of time designing the gameplay, deciding which features I wanted and figuring out how everything should interact. But I also relied quite heavily on Claude and Codex, particularly for parts of the backend.
 
-And no, I didn't read every line of code they generated. There. I said it.
+And no, I didn't read every line of code they generated.
 
 I could explain what most features do, how they interact and why they're there. But open a random backend file and ask me to explain every single function? Well, give me a bit of time to read through it first.
 
@@ -63,7 +59,7 @@ Still, there's an important distinction between understanding how a system is su
 
 ## Now about reviewing other people's projects...
 
-Remember how I mentioned that I'm a reviewer? Well, here's where things get a little awkward. When reviewing projects, I sometimes come across repositories that seem heavily AI-generated. Maybe it's the comments, the commit history, the code structure or a UI that looks suspiciously familiar.
+When reviewing projects, I sometimes come across repositories that seem heavily AI-generated. Maybe it's the comments, the commit history, the code structure or a UI that looks suspiciously familiar.
 
 And yes, **I know a good-looking UI doesn't automatically mean something was made using AI.** Neither does having detailed comments or nicely structured code. Those things might make me look a little closer, but they aren't proof of anything.
 
@@ -79,15 +75,17 @@ Of course, the rules of the particular YSWS still determine what is allowed. My 
 
 The problem is that **AI-generated code doesn't automatically tell you how much human effort went into a project.** And that's much harder to judge than you might think. Because if someone were reviewing PoorUp, they might notice the AI-assisted code and assume I barely knew how to program. They wouldn't necessarily know that I also spent time working on MIRA, where I took a completely different approach, or that I regularly write code myself and make technical decisions throughout development.
 
-Then again, how could they? They don't know me. They only have the evidence I submitted. Which is why I've become a little more careful about treating AI-looking code as proof of anything.
+Then again, how could they? They don't know me. They only have the evidence I submitted.
 
-It's funny, really. I spend time trying to figure out how other people use AI, while knowing that someone could probably look through parts of my own repositories and ask exactly the same questions.
+I think that's something worth keeping in mind when reviewing other people's projects. Identifying AI-generated code and determining how much work someone actually put into a project are two different things. I'd rather look at how a project evolved, what decisions the developer made and what they actually contributed than simply look at how much of the code seems AI-generated.
 
-But there's another problem I've started noticing while reviewing projects. The AI model someone uses might affect how their work gets judged, even when it doesn't necessarily reflect how much effort they put in. And that's a whole different rabbit hole. Probably one for another blog post.
+Of course, that's easier said than done. How do you measure someone's contribution when AI can be involved in pretty much every stage of development? And how do you account for the fact that the AI model someone uses might influence how their project is perceived, even when it doesn't necessarily reflect how much effort they put in?
+
+I've been thinking about this quite a bit while reviewing projects, but I think it deserves a blog post of its own.
 
 ## Is AI making me a worse programmer?
 
-Now this is something I've genuinely been thinking about. I love computer science. Not just building websites or getting projects to work, but actually understanding how things function. GPUs, machine learning, electronics, operating systems. There's just so much interesting stuff to learn. And I'd say I've learned a considerable amount through my projects, including while using AI.
+Now this is something I've genuinely been thinking about. I love computer engineering. Not just building websites or getting projects to work, but actually understanding how things function. GPUs, machine learning, electronics, operating systems. There's just so much interesting stuff to learn. And I'd say I've learned a considerable amount through my projects, including while using AI.
 
 But there's one thing AI makes ridiculously easy. **Skipping the difficult parts.**
 
@@ -99,7 +97,7 @@ Don't understand why that one stupid function refuses to work, despite the fact 
 
 You get where this is going, right?
 
-And suddenly, something that could've taken me hours is working. Amazing, right? Well, yes. But did I actually learn how to solve the problem? That's where things get a little complicated.
+And suddenly, something that could've taken me hours is working. But did I actually learn how to solve the problem? That's where things get a little complicated.
 
 Sometimes I do. I read the explanation, inspect the implementation and come away understanding something new. Other times, I'm more interested in getting the feature working so I can move on to the next thing. And to be honest, I think I've probably done the second one more often than I'd like to admit.
 
@@ -111,7 +109,7 @@ I still want to become a better programmer. Not just someone who can build incre
 
 ## So, am I a vibe coder?
 
-Well, I think I'm somewhere on that *gray line*. If you watched me working on MIRA, inspecting every line of code and trying to understand the implementation, you probably wouldn't call that vibe coding. But if you looked at some of my work on PoorUp? Yeah, I can see why you might.
+I think it depends on the project. If you watched me working on MIRA, inspecting every line of code and trying to understand the implementation, you probably wouldn't call that vibe coding. But if you looked at some of my work on PoorUp? Yeah, I can see why you might.
 
 I use AI extensively. Sometimes I write the code myself, sometimes I work through AI-generated code carefully, and sometimes I'm more focused on whether a feature works than on understanding every detail of its implementation. I don't think there's much point pretending otherwise.
 
@@ -124,7 +122,3 @@ Does that make me a bad programmer? I don't think so.
 But could relying on AI too much make me a worse one? Definitely.
 
 And that's something I'd rather be aware of now than realize after building another ten projects.
-
-Still an AI believer, by the way. Still a connoisseur. Fanatic, if you insist. Just one who doesn't want to forget how to program while getting better at telling AI to do it.
-
-In case I don't see ya, good afternoon, good evening, and good night! Bye!

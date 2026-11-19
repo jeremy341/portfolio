@@ -4,7 +4,7 @@ Ich überarbeite dieses Portfolio. Außerdem untersuche ich, ob ich PyTorch-Mode
 
 ## 16. November 2026
 
-In [Bin ich ein Vibe Coder?](/blog/am-i-a-vibe-coder/) habe ich darüber geschrieben, wie ich KI beim Programmieren einsetze und was ich durch Ausprobieren selbst lernen will.
+In [Das Vibe-Coding-Dilemma: Zwischen Produktivität, Verständnis und Lernen](/blog/am-i-a-vibe-coder/) habe ich darüber geschrieben, wie ich KI beim Programmieren einsetze und was ich durch Ausprobieren selbst lernen will.
 
 ## 29. Oktober 2026
 
