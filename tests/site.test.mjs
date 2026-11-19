@@ -856,7 +856,7 @@ test("the worker caches public pages network-first and static assets cache-first
   let claimed = false;
   const keyFor = (request) => new URL(request.url ?? request, origin).href;
   runInNewContext(page("sw.js"), {
-    URL, Request, Response,
+    URL, Request, Response, Headers,
     self: {
       location: { origin },
       addEventListener: (name, listener) => listeners.set(name, listener),
@@ -903,7 +903,7 @@ test("the worker caches public pages network-first and static assets cache-first
   set("/", '<head><link rel="stylesheet" href="/_astro/site.css"></head>Home');
   set("/404.html", '<head><meta name="robots" content="noindex"><link rel="stylesheet" href="/_astro/site.css"><script type="module" src="/_astro/four.js"></script></head><a href="#main" class="skip-link">Skip to content</a><main id="main"><h1>Page not found</h1><canvas class="koi-pond"></canvas></main>');
   set("/og-card.png", "share image", "image/png");
-  set("/_astro/site.css", "body {}", "text/css");
+  set("/_astro/site.css", "body {}", "text/css", 200, { Vary: "Origin", "Content-Encoding": "gzip" });
   set("/_astro/four.js", 'import("./chunk.js")', "text/javascript");
   set("/_astro/chunk.js", "koi engine", "text/javascript");
   await lifecycle("install");
@@ -914,6 +914,9 @@ test("the worker caches public pages network-first and static assets cache-first
   assert.deepEqual([...stores.keys()], ["unrelated", version]);
   const cachedPaths = () => [...stores.get(version).keys()].map((key) => new URL(key).pathname);
   assert.deepEqual(cachedPaths().sort(), ["/", "/404.html", "/_astro/chunk.js", "/_astro/four.js", "/_astro/site.css", "/og-card.png"]);
+  const storedCss = stores.get(version).get(`${origin}/_astro/site.css`);
+  assert.equal(storedCss.headers.get("vary"), null, "Vary must be stripped so module scripts match in cache");
+  assert.equal(storedCss.headers.get("content-encoding"), null, "a decoded body must not keep its old encoding");
 
   set("/work/mira/", "MIRA v1");
   assert.equal(await (await request("/work/mira/")).text(), "MIRA v1");

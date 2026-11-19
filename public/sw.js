@@ -16,6 +16,17 @@ function cacheable(response) {
     !/\b(?:private|no-store)\b/i.test(response.headers.get("Cache-Control") ?? "");
 }
 
+/** A fetch() body is already decoded; keeping the old encoding header breaks module scripts. */
+async function plain(response) {
+  const headers = new Headers(response.headers);
+  for (const name of ["content-encoding", "content-length", "transfer-encoding", "connection", "keep-alive", "vary"]) headers.delete(name);
+  return new Response(await response.clone().arrayBuffer(), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function attribute(tag, name) {
   const match = tag.match(new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"));
   return match?.[1] ?? match?.[2] ?? match?.[3] ?? "";
@@ -29,7 +40,7 @@ async function rememberPage(cache, request, response) {
       /^(?:robots|googlebot|bingbot)$/i.test(attribute(tag, "name")) && NO_INDEX.test(attribute(tag, "content")),
     );
     if (!hidden) {
-      await cache.put(request, response.clone());
+      await cache.put(request, await plain(response));
       return html;
     }
   }
@@ -40,7 +51,7 @@ async function rememberPage(cache, request, response) {
 async function rememberAsset(cache, request, response) {
   const type = response.headers.get("Content-Type") ?? "";
   if (cacheable(response) && /^(?:image\/|font\/|text\/(?:css|javascript)\b|application\/(?:javascript|font-woff)\b)/i.test(type)) {
-    await cache.put(request, response.clone());
+    await cache.put(request, await plain(response));
   }
 }
 
@@ -80,7 +91,7 @@ async function warmFallback(cache) {
   const response = await fetch(url, { cache: "reload", credentials: "omit", redirect: "error" });
   if (!cacheable(response)) return false;
   const html = await response.clone().text();
-  await cache.put(url, response);
+  await cache.put(url, await plain(response));
   await warmAssets(cache, html);
   return true;
 }
