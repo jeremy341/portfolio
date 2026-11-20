@@ -24,7 +24,7 @@ const schema = [
   <p class="page-lead">{site.fullName}. {cv.tagline}</p>
 
   <p class="cv-actions">
-    <a href="/lebenslauf-jeremy-darko.pdf" download>{t.cvPdf}</a>
+    <a href={lang === "de" ? "/lebenslauf-jeremy-darko.pdf" : "/cv-jeremy-darko.pdf"} download>{t.cvPdf}</a>
     {email && <a href={email.href}>{email.host}</a>}
     {github && <a href={github.href} rel="noreferrer">{github.href.replace(/^https?:[/][/]/, "")}</a>}
   </p>
