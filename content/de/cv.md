@@ -4,72 +4,96 @@ Gymnasiast · Technik & Informatik · Mülheim an der Ruhr
 
 ## Profil
 
-Technikbegeisterter Gymnasiast (Gymnasium Broich, EF) mit praktischer Erfahrung in Embedded-Systemen, Elektronik und Softwareentwicklung. Durch praktische Tätigkeiten bei Siemens Energy, der Hochschule Ruhr West und der Universität Duisburg-Essen sowie eigene Hardware- und Softwareprojekte habe ich Kenntnisse in C++, Python, KiCAD und CAD erworben.
+Gymnasiast (Gymnasium Broich, Qualifikationsphase, Abitur 2028) mit Praxiserfahrung in Embedded-Systemen, Machine Learning und Softwareentwicklung: Praktikum an der Universität Duisburg-Essen, Einblick bei Siemens Energy und fünf eigene Projekte. Ich suche ein Praktikum in Machine Learning oder Embedded-Systemen.
 
 ## Praktische Erfahrung
 
-### Siemens Energy TPD
+### Praktikum, Universität Duisburg-Essen
 
-Jan 2026 - Feb 2026 · Mülheim an der Ruhr
+August 2026 (vier Wochen) · Lehrstuhl Electronic Components and Circuits (EBS)
 
-- Erstellung und Analyse technischer Zeichnungen für Energiekomponenten im industriellen Umfeld
-- Einblick in 3D-Konstruktions- und CAD-Prozesse (Produktentwicklung und Konstruktionsprozesse)
-- Mitarbeit in Teamprojekten mit Ingenieuren; Verständnis technischer Abläufe in einem Großkonzern
+- Hard- und Software zu einem Gesamtsystem integriert; die Benutzeroberfläche eigenständig umgesetzt
+- Versuche durchgeführt; bei Inbetriebnahme, Validierung und Optimierung des Systems unterstützt
+- Verfahren zur automatischen Erkennung von Mikrotröpfchen entwickelt, zur Weiterentwicklung des Systems
 
 ### MINT-Ferienprogramm, Hochschule Ruhr West
 
 Mär 2026 - Apr 2026 · Mülheim an der Ruhr
 
-- Technische Projekte mit Fokus auf Elektronik und Programmierung (Arduino / Python)
-- Erste praktische Erfahrungen mit Mikrocontrollern und Schaltkreisen
-- Kreatives Problemlösen und Teamarbeit im interdisziplinären MINT-Kontext
+- Elektronik- und Programmierprojekte mit Arduino und Python entwickelt
+- Erste Erfahrungen mit Mikrocontrollern und Schaltkreisen gesammelt
 
-### Universität Duisburg-Essen
+### Siemens Energy TPD
 
-Aug 2026 - Sep 2026
+Jan 2026 - Feb 2026 · Mülheim an der Ruhr
 
-- Entwicklung und Aufbau einer Mikrofluidik-Plattform für universitäre Forschungs- und Entwicklungsanwendungen
-- Praktische Mitarbeit an technischen Aufbauten, Versuchsabläufen und der Weiterentwicklung der Plattform
-- Arbeit im wissenschaftlichen Umfeld mit Fokus auf sorgfältige Dokumentation und systematisches Problemlösen
+- Technische Zeichnungen für Energiekomponenten erstellt und analysiert
+- 3D-Konstruktion und CAD-Prozesse kennengelernt und im Team mit Ingenieuren gearbeitet
 
 ## Schulische Ausbildung
 
 ### Gymnasium Broich
 
-2025 - heute · Mülheim an der Ruhr · Einführungsphase (EF) · Voraussichtliches Abitur: 2028
+2025 - heute · Mülheim an der Ruhr · Qualifikationsphase (Q1) · Voraussichtliches Abitur: 2028 · Schwerpunkt Naturwissenschaften & Informatik
 
-- Schwerpunkt: Naturwissenschaften & Informatik
-- Schulischer Werdegang: bilingual (Bili) am Gymnasium Broich
+- Bilingualer Bildungsgang (Bili)
 
 ### Realschule Broich
 
-2020 - 2025 · Mülheim an der Ruhr
+2020 - 2025 · Mülheim an der Ruhr · Mittlerer Bildungsabschluss mit Versetzung in die gymnasiale Oberstufe
 
 - Bilingualer Bildungsgang (Bili-Klasse, Englisch)
-- Mittlerer Bildungsabschluss mit Versetzung in die gymnasiale Oberstufe
 
 ## Kenntnisse & Fähigkeiten
 
-- **Technisch:** Python, KiCAD, CAD (Fusion 360 / FreeCAD), MS Office, C++
-- **Hardware:** Mikrocontroller, TFT-Displays, SPI- und I²C-Schnittstellen
-- **Sprachen:** Deutsch (Muttersprache) · Englisch (Muttersprache) · Twi/Akan (Muttersprache)
-- **Persönlich:** Teamfähig, selbstständig, lernbereit und strukturiert; gutes technisches Verständnis
+- **Software:** Python, C++, TypeScript, JavaScript (Node.js), PyQt6
+- **ML & Vision:** PyTorch, YOLO, ONNX, TFLite (INT8-Quantisierung)
+- **Hardware & GPU:** Mikrocontroller (ESP32), TFT-Displays, SPI- und I2C-Protokolle, Vulkan-Compute
+- **CAD & Elektronik:** KiCAD, Fusion 360, SolidWorks
+- **Sprachen:** Deutsch, Englisch, Twi/Akan (jeweils Muttersprache)
 
-## Eigene Projekte
-
-### ESP32 Alarm Clock (Funkuhr)
-
-2026 · abgeschlossen · [github.com/jeremy341/esp32-alarm-clock](https://github.com/jeremy341/esp32-alarm-clock)
-
-- Modularer ESP32-Wecker mit TFT-Display (ILI9341), Zeitsynchronisierung per WLAN/NTP und Summer
-- Selbst entwickelte Firmware in C++ (PlatformIO) mit lokaler Datenspeicherung über LittleFS
-- KI-gestützte Implementierung einer Web-App zur Konfiguration über USB (WebSerial) sowie der Kommunikationsschnittstelle
-- Drei Display-Layouts (Minimal, Digital, Retro Pixel), Schaltungsplanung in KiCAD und CAD-Gehäuseplanung
+## Ausgewählte Projekte
 
 ### MIRA, Machine Intelligence for Recycling Automation
 
-2026 · in Entwicklung · [github.com/jeremy341/MIRA-AI](https://github.com/jeremy341/MIRA-AI)
+2026 · Experiment · [Live](https://mira-vision.vercel.app/) · [Fallstudie](/de/work/mira/) · [Code](https://github.com/jeremy341/MIRA-AI)
 
-- Entwicklung einer Computer-Vision-Forschungspipeline zur Erkennung und Vorbereitung recycelbarer Materialien für automatisierte Sortierung
-- Arbeit mit YOLO-Objekterkennung, Datensatzaufbereitung, Modellbewertung, Export und Live-Webcam-Inferenz
-- Entwicklung eines Dashboards; Raspberry-Pi- und Roboterintegration als nächste Ausbaustufen
+- Erkennt Glas, Metall, Papier, Plastik und Müll auf Bildern (YOLO11n); 90,6 % mAP50 (Trefferquote) auf getrennten Validierungsdaten
+- Eigenen Datensatz mit 6.898 Bildern aufgebaut; Modell auf 3,02 MB verkleinert
+- Über 9.100 Modell-Downloads auf Hugging Face (Dateianfragen)
+- Als Python-Paket mira-ai auf PyPI veröffentlicht
+
+### FluidicStudio
+
+UDE-Praktikum · [Fallstudie](/de/work/fluidicstudio/) · [Code](https://github.com/jeremy341/microdroplets-ui)
+
+- Python/PyQt6-App, die Pumpen, Sensoren, Mikroskopvideo und Tropfenanalyse in einer Oberfläche vereint
+- Steuert ein Mikrofluidik-Pumpensystem (Bartels mp-Multiboard2) über die serielle Schnittstelle
+- Fehler beim Abschalten behoben und mit einem Test abgesichert
+
+### Poorup
+
+[Live](https://poorup.tech) · [Fallstudie](/de/work/poorup/) · [Code](https://github.com/jeremy341/Poorup)
+
+- Browser-Multiplayer-Spiel mit Auktionen und Handel (Node.js, Express, Socket.IO)
+- Spielregeln laufen auf dem Server, damit alle Spieler denselben Stand sehen
+- 197 Stunden Entwicklung, ausgeliefert im Rahmen der Stardance Challenge
+
+### Egg, Deployment-Dashboard für Hack Club Nest
+
+In Entwicklung · [Code](https://github.com/jeremy341/egg)
+
+- Verbindet GitHub-Repos mit Nest-Containern: Push, Build, Live-Schaltung, mit Logs und Rollbacks
+- Branch- und Pull-Request-Vorschauen, Uptime-Checks und Analytics; REST-API, SDK und CLI
+
+### ESP32 Alarm Clock (Funkuhr)
+
+2026 · [Code](https://github.com/jeremy341/esp32-alarm-clock)
+
+- Wecker mit TFT-Display, WLAN-NTP-Zeitsynchronisierung und Buzzer
+- Firmware in C++ (PlatformIO); Konfiguration per Web-App über USB
+
+## Zertifikate
+
+- [Hack Club Stardance Challenge](/de/certificates/), 2026: Zertifikat für Poorup (197 Stunden)
+- [Praktikumszeugnis, Universität Duisburg-Essen](/de/certificates/), 2026: Ergebnisse als „stets sehr gut“ bewertet

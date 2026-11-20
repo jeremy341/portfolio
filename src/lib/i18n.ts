@@ -135,7 +135,7 @@ const en = {
 
   cvTitle: "CV",
   cvDescription: (name: string) => `CV of ${name}: experience, school, skills and personal projects.`,
-  cvPdf: "Download PDF (German)",
+  cvPdf: "Download PDF (English)",
 
   notFoundTitle: "Page not found",
   notFoundDescription: "This page does not exist.",
