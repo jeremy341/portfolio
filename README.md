@@ -32,7 +32,7 @@ While you're developing, the site runs at http://localhost:5173. The dev server 
 
 ## Domain and feeds
 
-The site is set to jeremydarko.me in `astro.config.mjs`. Set `PUBLIC_SITE_URL` to build for another address. The build also writes the sitemap, the RSS feeds and `llms.txt` / `llms-full.txt`.
+The site is set to jeremydarko.me in `astro.config.mjs`. Set `PUBLIC_SITE_URL` to build for another address. The build also writes the sitemap, the RSS feeds and `llms.txt` / `llms-full.txt`. Page-specific Open Graph cards are regenerated from the built HTML on every build. The generated images in `dist/og/` take precedence over committed preview copies in `public/og/`; differences are reported as warnings rather than deployment failures.
 
 If you want search console verification, set `PUBLIC_GOOGLE_SITE_VERIFICATION` or `PUBLIC_BING_SITE_VERIFICATION` to the token the console gives you.
 
