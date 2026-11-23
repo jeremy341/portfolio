@@ -36,6 +36,7 @@ const schema = [
   <p class="page-lead">{t.workLead(projects.length)}</p>
 
   <div class="filters" data-filters hidden>
+    <p class="filter-scroll-hint">{t.filterScroll}</p>
     <div class="chips" role="group" aria-label={t.filterBy}>
       <button type="button" class="chip" data-cat="all" aria-pressed="true">{t.all} <span>{projects.length}</span></button>
       {counts.map((category) => (

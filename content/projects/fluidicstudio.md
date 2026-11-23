@@ -11,6 +11,8 @@ A Python desktop application I built during my UDE microfluidics internship to b
 
 ## Story
 
+**My contribution:** I built the PyQt6 desktop app and its serial command layer, integrating pump control, flow sensors, microscope video and droplet analysis. [Source: microdroplets-ui](https://github.com/jeremy341/microdroplets-ui)
+
 I went into my internship at the University of Duisburg-Essen knowing very little about microfluidics. The equipment could control tiny amounts of liquid, measure flow and record droplets moving through channels. My job was to bring those different pieces into one usable desktop application.
 
 That sounded like a software project. And technically, it was. But after working with the hardware, I realized that drawing a button labeled "Start pump" was the easy part.

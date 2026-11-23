@@ -1,12 +1,12 @@
 # Design
 
 ## Idea
-A plain typographic index set like an editor buffer (Neovim, Tokyo Night). Home is the name, one paragraph and a numbered 01 to 05 index of Work, Writing, Certificates, About and Contact. Nothing is drawn: no icons, illustrations, cards or shadows. The only pictures are real ones, on project pages and on Certificates: screenshots of the software, charts redrawn from the projects' own logs in the site's colours (`tools/charts.py`), and the certificates themselves. Each sits in a one-pixel frame with a numbered caption (`fig 01`) and opens full size on click.
+A plain typographic index set like an editor buffer (Neovim, Tokyo Night). Home opens with the name, a concise focus and internship note, and links to two case studies and the CV. The numbered 01 to 05 index of Work, Blog, Certificates, About and Contact follows. The home introduction uses no icons, illustrations, cards or shadows. Project screenshots, charts redrawn from the projects' own logs (`tools/charts.py`), and certificate images sit in one-pixel frames and can be opened full size. The site and its three articles are available in English and German.
 
 ## Tokens
-- Ground / ink: `#1a1b26` / `#c0caf5`. Dark only, no toggle. Panel `#16161e`, row hover `#292e42`.
-- Muted text `#8a93bd`. Hairline `#2f334d`, dashed. Accent `#7aa2f7` for hover, focus, selection and the cursor block.
-- Type: Geist Mono (variable) everywhere, 15px / 1.7. Name and page titles `clamp(2rem, 1rem + 3.4vw, 3.4rem)` / 700 with a `# ` mark and a steady block cursor on the last letter (nothing blinks). The home name is a full-screen two-line `# Jeremy` / `Darko` set in 0.6em cells. Section titles `## `. Entry titles 1.1rem / 600, numbered `01  `.
+- Ground / ink: dark `#1a1b26` / `#c0caf5`; light `#e6e7ed` / `#1a1b26`. The site follows the system preference until the reader changes it with a theme switch.
+- Muted text: dark `#8a93bd`, light `#4c5577`. Hairlines: dark `#2f334d`, light `#b4b9cf`. Accent: dark `#7aa2f7`, light `#2552b8`, used for links, focus and the cursor block.
+- Type: Geist Mono (variable). The home name sits on one line in 0.6em cells with an editor cursor, sized to the available width. Page headings carry a `# ` mark, and entries are numbered `01  `.
 - Shape: no radii, no shadows. A bottom status line (mode, file path, scroll %).
 
 ## Layout

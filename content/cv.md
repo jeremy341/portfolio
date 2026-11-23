@@ -58,7 +58,7 @@ Jan 2026 - Feb 2026 · Mülheim an der Ruhr
 
 2026 · Experiment · [Live](https://mira-vision.vercel.app/) · [Case study](/work/mira/) · [Code](https://github.com/jeremy341/MIRA-AI)
 
-- Detects glass, metal, paper, plastic and trash in images (YOLO11n); 90.6% mAP50 (detection accuracy) on held-out validation data
+- Detects glass, metal, paper, plastic and trash in images (YOLO11n); 90.6% mAP50 on the 415-image clean validation split
 - Built my own dataset of 6,898 images; model compressed to 3.02 MB
 - More than 9,100 model downloads on Hugging Face (file requests)
 - Published as the Python package mira-ai on PyPI

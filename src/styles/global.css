@@ -857,6 +857,19 @@ article > .prose {
   text-overflow: ellipsis;
 }
 
+/* What the two toggles on the right do. Shown only where the bar has room for it. */
+.vs-hint {
+  padding-left: 2ch;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 899px) {
+  .vs-hint {
+    display: none;
+  }
+}
+
 .vs-enc,
 .vs-pct {
   padding-right: 2ch;
@@ -994,12 +1007,19 @@ html[data-row] .vim-status {
   text-align: center;
 }
 
-/* The first screen is the name alone; the rows start just below the fold. */
 .dash-hero {
   display: grid;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(16px, 3svh, 28px);
   width: 100%;
   min-height: calc(100svh - 111px);
+}
+
+.dash-intro {
+  max-width: min(68ch, 100cqi);
+  color: var(--muted);
+  text-wrap: balance;
 }
 
 .dash-name {
@@ -1537,10 +1557,26 @@ html[data-intro] .dash-hero .w {
     margin-top: 48px;
   }
 
-  /* The landing hero occupies the complete first viewport below the 64px header.
-     Section links begin only after the first screen, just like on desktop. */
   .dash-hero {
     min-height: calc(100svh - 64px);
+  }
+
+  .dash-intro {
+    max-width: min(42ch, 100cqi);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .dash-focus {
+    color: var(--fg);
+  }
+
+  .dash-focus-line {
+    display: block;
+  }
+
+  .dash-focus-separator {
+    display: none;
   }
 
   .dash-rows {

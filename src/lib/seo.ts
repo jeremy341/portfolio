@@ -67,8 +67,7 @@ export function breadcrumbs(lang: Lang, trail: { name: string; path: string }[])
   };
 }
 
-/** Questions a reader or an answer engine usually asks, in English. llms.txt and the About page's FAQ markup
- *  both read this list, so they cannot drift. Every answer repeats facts from the site's own pages. */
+/** English questions and answers for llms.txt, based on the site's own pages. */
 export function faqEntries(): { question: string; answer: string }[] {
   const { projects } = getContent("en");
   const downloads = projects.find((p) => p.slug === "mira")?.facts.find((f) => f.label === "Downloads")?.value;
@@ -82,18 +81,4 @@ export function faqEntries(): { question: string; answer: string }[] {
     ["Does Jeremy work at the University of Duisburg-Essen?", "Not in a university role. He does project work with the Chair of Electronic Components and Circuits (EBS), and he spent four weeks at the chair from 3 to 28 August 2026 on FluidicStudio."],
   ];
   return qa.map(([question, answer]) => ({ question, answer }));
-}
-
-/** The questions as a FAQPage. The wording is English (the llms.txt wording), so the German pages carry none. */
-export function faqNode(lang: Lang) {
-  if (lang !== "en") return undefined;
-  return {
-    "@type": "FAQPage",
-    inLanguage: ui[lang].htmlLang,
-    mainEntity: faqEntries().map(({ question, answer }) => ({
-      "@type": "Question",
-      name: question,
-      acceptedAnswer: { "@type": "Answer", text: answer },
-    })),
-  };
 }

@@ -96,6 +96,10 @@ html:not([data-js]) .find-btn {
   gap: 8px;
 }
 
+.filter-scroll-hint {
+  display: none;
+}
+
 .chip {
   padding: 2px 12px;
   border: 1px solid var(--line);
@@ -152,6 +156,17 @@ html:not([data-js]) .find-btn {
 .ruled .entry-sub {
   display: block;
   font-size: 0.8rem;
+}
+
+@media (min-width: 760px) {
+  .ruled .entry-aside {
+    grid-area: 1 / 2 / 3;
+    line-height: 1.4;
+  }
+
+  .ruled .entry-text {
+    grid-column: 1;
+  }
 }
 
 .entry-tags {
@@ -1012,14 +1027,21 @@ html:not([data-js]) .find-btn {
   }
 }
 
-/* The category chips become one row you swipe, instead of four stacked ones. */
 @media (max-width: 559px) {
+  .filter-scroll-hint {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
   .chips {
     flex-wrap: nowrap;
-    margin-inline: calc(var(--pad) * -1);
-    padding-inline: var(--pad);
+    padding: 5px 5px 8px;
+    scroll-padding-inline: 5px;
     overflow-x: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) var(--panel);
   }
 
   .chip {
@@ -1089,7 +1111,7 @@ html[data-retype] .page-title {
   color: var(--fg);
 }
 
-/* CV: a German page, set like the rest. Dates sit under the entry, and it prints on white. */
+/* CV: dates sit under the entry, and it prints on white. */
 .cv-actions {
   display: flex;
   flex-wrap: wrap;

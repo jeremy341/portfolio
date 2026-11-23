@@ -175,7 +175,11 @@ const schema = [
                 {project.facts.map((fact) => (
                   <div>
                     <dt>{fact.label}</dt>
-                    <dd set:html={renderInline(fact.value, lang)} />
+                    <dd
+                      set:html={renderInline(fact.value, lang)}
+                      data-live-downloads={project.slug === "mira" && fact.label === "Downloads" ? "Jeremy341/MIRA-AI" : undefined}
+                      data-lang={lang}
+                    />
                   </div>
                 ))}
               </dl>
@@ -200,7 +204,11 @@ const schema = [
             {project.facts.map((fact) => (
               <div>
                 <dt>{fact.label}</dt>
-                <dd set:html={renderInline(fact.value, lang)} />
+                <dd
+                  set:html={renderInline(fact.value, lang)}
+                  data-live-downloads={project.slug === "mira" && fact.label === "Downloads" ? "Jeremy341/MIRA-AI" : undefined}
+                  data-lang={lang}
+                />
               </div>
             ))}
           </dl>
@@ -259,4 +267,5 @@ const schema = [
 
 <script>
   import "../../../scripts/project";
+  import "../../../scripts/downloads";
 </script>

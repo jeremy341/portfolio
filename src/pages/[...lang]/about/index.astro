@@ -2,7 +2,7 @@
 import Base from "../../../layouts/Base.astro";
 import { getContent, renderMarkdown } from "../../../lib/content";
 import { langOf, langParams, ui, url } from "../../../lib/i18n";
-import { breadcrumbs, faqNode, personNode } from "../../../lib/seo";
+import { breadcrumbs, personNode } from "../../../lib/seo";
 import { canonical, site } from "../../../lib/site";
 
 export const getStaticPaths = langParams;
@@ -13,7 +13,6 @@ const { about } = getContent(lang);
 const schema = [
   { "@type": "ProfilePage", name: t.aboutTitle, url: canonical(url(lang, "/about/")), inLanguage: t.htmlLang, mainEntity: personNode(lang) },
   breadcrumbs(lang, [{ name: t.aboutTitle, path: url(lang, "/about/") }]),
-  faqNode(lang),
 ];
 ---
 

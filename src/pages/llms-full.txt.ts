@@ -46,7 +46,7 @@ export const GET: APIRoute = () => {
     prose(cv.body),
     `## Certificates`,
     prose(certificatesIntro),
-    ...certificates.map((cert) => `- ${cert.title}: ${cert.issuer}, ${cert.date}. ${prose(cert.text)}`),
+    ...certificates.map((cert) => `- ${cert.title}: ${plainText(cert.issuer)}, ${cert.date}. ${prose(cert.text)}`),
     ...projects.map(project),
     ...posts.map(article),
   ];
