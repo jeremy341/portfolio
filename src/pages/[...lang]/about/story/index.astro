@@ -1,0 +1,21 @@
+---
+import Base from "../../../../layouts/Base.astro";
+import { aboutStory, renderMarkdown } from "../../../../lib/content";
+import { langOf, langParams, ui } from "../../../../lib/i18n";
+import { site } from "../../../../lib/site";
+
+// A draft: not linked from anywhere, not in the sitemap, and kept out of search engines.
+export const getStaticPaths = langParams;
+
+const lang = langOf(Astro.params.lang);
+const t = ui[lang];
+---
+
+<Base title={`${t.aboutTitle} (draft)`} description={t.aboutDescription(site.name)} lang={lang} noindex>
+  <h1 class="page-title">{t.aboutTitle}</h1>
+  <section class="index" aria-label={t.aboutTitle}>
+    <div class="prose wide">
+      <Fragment set:html={renderMarkdown(aboutStory(lang), lang)} />
+    </div>
+  </section>
+</Base>

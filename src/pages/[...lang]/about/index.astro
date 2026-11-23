@@ -24,5 +24,6 @@ const schema = [
     <div class="prose wide">
       <Fragment set:html={renderMarkdown(about.biography, lang)} />
     </div>
+    <p class="about-story-link"><a href={url(lang, "/about/story/")}>{t.aboutStoryLink}</a></p>
   </section>
 </Base>

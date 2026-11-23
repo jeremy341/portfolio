@@ -39,7 +39,7 @@ function sitemap() {
       "astro:build:done": ({ dir, pages }) => {
         if (!site) return;
         const paths = new Set(
-          pages.map((page) => `/${page.pathname}`.replace(/\/+$/, "/")).filter((path) => path !== "/404/" && !(path in redirects)),
+          pages.map((page) => `/${page.pathname}`.replace(/\/+$/, "/")).filter((path) => path !== "/404/" && !(path in redirects) && !path.includes("/about/story/")),
         );
         const english = (path) => path.replace(/^\/de(?=\/)/, "") || "/";
         const twins = (path) => [

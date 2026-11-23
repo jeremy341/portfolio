@@ -4,7 +4,7 @@ High school student · Technology & Computer Science · Mülheim an der Ruhr
 
 ## Profile
 
-High school student (Gymnasium Broich, qualification phase, Abitur 2028) with hands-on experience in embedded systems, machine learning and software development: an internship at the University of Duisburg-Essen, insight at Siemens Energy and five projects of my own. I am looking for an internship in machine learning or embedded systems.
+High school student (Gymnasium Broich, qualification phase, Abitur 2028) with hands-on experience in embedded systems, machine learning and software development: an internship at the University of Duisburg-Essen, insight at Siemens Energy and my own projects. I am looking for an internship in machine learning or embedded systems.
 
 ## Work Experience
 

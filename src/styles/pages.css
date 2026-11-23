@@ -709,7 +709,7 @@ html:not([data-js]) .find-btn {
   border-top: 1px dashed var(--line);
 }
 
-/* The two neighbours sit as centred buttons of one fixed width, not as edge-aligned text. */
+/* The two neighbour links share the full width of the content above them. */
 .pager-a {
   display: grid;
   justify-items: center;
@@ -758,7 +758,6 @@ html:not([data-js]) .find-btn {
   }
 
   .pager-a {
-    flex: none;
     width: 100%;
   }
 
@@ -1749,4 +1748,9 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
   .project-flow li {
     font-size: 0.89rem;
   }
+}
+
+/* The quiet link from the short About page to the longer story. */
+.about-story-link {
+  margin-top: 2.5em;
 }

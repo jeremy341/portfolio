@@ -67,12 +67,15 @@ test("the site is a home page, project pages and articles", () => {
 test("About and Contact are their own pages with the approved email and profiles only", () => {
   const about = page("about/index.html");
   assert.match(about, /<h1[^>]*>About<\/h1>/);
-  assert.ok(about.includes("The pieces are just more expensive now."));
   assert.ok(about.includes("University of Duisburg-Essen"));
-  assert.ok(about.includes("spring 2027"));
+  assert.ok(about.includes("Easter holidays of 2027"));
   assert.ok(about.includes('href="/work/torchvk/"'));
-  assert.ok(about.includes('href="/contact/"'));
-  assert.match(about, /<p>Occasionally\.<\/p>/);
+  assert.ok(about.includes('href="/now/"'));
+  const story = page("about/story/index.html");
+  assert.ok(story.includes("The pieces are just more expensive now."));
+  assert.ok(story.includes("spring 2027"));
+  assert.ok(story.includes('href="/contact/"'));
+  assert.match(story, /<p>Occasionally\.<\/p>/);
   assert.ok(!about.includes("Fun facts"));
   const contact = page("contact/index.html");
   assert.match(contact, /<h1[^>]*>Contact<\/h1>/);
@@ -243,8 +246,10 @@ test("the German pages carry German text and link only to German pages", () => {
   const about = page("de/about/index.html");
   assert.ok(about.includes("Universität Duisburg-Essen") && about.includes("Osterferien 2027"));
   assert.ok(about.includes('href="/de/work/torchvk/"'));
-  assert.ok(about.includes('href="/de/contact/"'));
-  assert.match(about, /<p>Gelegentlich\.<\/p>/);
+  assert.ok(about.includes('href="/de/now/"'));
+  const storyDe = page("de/about/story/index.html");
+  assert.ok(storyDe.includes('href="/de/contact/"'));
+  assert.match(storyDe, /<p>Gelegentlich\.<\/p>/);
   assert.equal(jsonLd(page("de/blog/index.html"))[0]["@graph"].find((node) => node["@type"] === "Blog").blogPost.length, posts.length);
   for (const file of htmlFiles(join(dist, "de"))) {
     // The switch itself points at the English twin, so it is left out.
@@ -513,7 +518,8 @@ test("every page is reachable from the home page by links", () => {
     }
   }
   for (const file of pages.keys()) {
-    if (file.endsWith("404.html") || isRedirect(pages.get(file))) continue;
+    // The draft story page is deliberately unlinked.
+    if (file.endsWith("404.html") || /about[\\/]story[\\/]/.test(file) || isRedirect(pages.get(file))) continue;
     assert.ok(reached.has(file), `${file.slice(dist.length)} cannot be reached from the home page`);
   }
 });
@@ -685,8 +691,8 @@ test("both homepages show only the name and the focus line in the first-screen h
     assert.ok(document.querySelector('.skip-link[href="#main"]'));
     assert.match(intro.textContent, /Computer engineering.*(?:machine learning).*GPU[ -]computing.*Hardware/i);
     assert.deepEqual([...intro.querySelectorAll(".dash-focus-line")].map((line) => line.textContent), prefix
-      ? ["Computer Engineering, Machine Learning", "GPU-Computing und Hardware"]
-      : ["Computer engineering, machine learning", "GPU computing and hardware"]);
+      ? ["Schüler: Computer Engineering, Machine Learning", "GPU-Computing und Hardware"]
+      : ["Student: computer engineering, machine learning", "GPU computing and hardware"]);
     assert.doesNotMatch(intro.textContent, /internship|praktikum/i);
     assert.equal(intro.querySelectorAll("a").length, 0);
     assert.equal(document.querySelectorAll(".dash-rows a").length, 5);

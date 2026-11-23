@@ -11,8 +11,6 @@ Ich habe einer Kamera beigebracht, Müll zu erkennen – erst mit einem Klassifi
 
 ## Story
 
-**Mein Beitrag:** Ich habe den Datensatz mit Abfallbildern zusammengestellt, den Objektdetektor trainiert und das Modell als LiteRT/TFLite exportiert. [Quellcode: MIRA-AI](https://github.com/jeremy341/MIRA-AI)
-
 Ich weiß noch, wie ich bei der Validierung von MIRA die **90,6 % mAP50** gesehen habe. Nach all den Trainingsläufen, Änderungen am Datensatz und Ideen, die nicht funktioniert hatten, stand da endlich eine Zahl, bei der sich die ganze Arbeit gelohnt zu haben schien.
 
 Dachte ich zumindest.

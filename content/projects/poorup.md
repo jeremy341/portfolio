@@ -11,8 +11,6 @@ A multiplayer property game in your browser. You can buy, trade, borrow, build a
 
 ## Story
 
-**My contribution:** I built the browser game and its Node.js room logic, including server-side action validation and shared state updates over Socket.IO. [Source: Poorup](https://github.com/jeremy341/Poorup)
-
 I originally wanted to build a game I could play with my friends. The result was Poorup, a browser-based property game where you can buy, trade, mortgage and eventually bankrupt each other. Somehow, auctions, bots, a fictional stock market and several other systems also found their way in.
 
 From the player's perspective, the rules are quite straightforward: join a room, roll the dice, and try not to run out of money.

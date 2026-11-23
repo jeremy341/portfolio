@@ -336,6 +336,12 @@ function loadAbout(lang: Lang) {
   };
 }
 
+/** The longer story, kept as a draft page (not linked, not in the sitemap). */
+export function aboutStory(lang: Lang): string {
+  const text = file(lang, "about-story.md");
+  return text.replace(/^# .+\r?\n/, "").trim();
+}
+
 function loadContact(lang: Lang) {
   const n = names[lang].contact;
   const source = file(lang, "contact.md");

@@ -4,7 +4,7 @@ Gymnasiast · Technik & Informatik · Mülheim an der Ruhr
 
 ## Profil
 
-Gymnasiast (Gymnasium Broich, Qualifikationsphase, Abitur 2028) mit Praxiserfahrung in Embedded-Systemen, Machine Learning und Softwareentwicklung: Praktikum an der Universität Duisburg-Essen, Einblick bei Siemens Energy und fünf eigene Projekte. Ich suche ein Praktikum in Machine Learning oder Embedded-Systemen.
+Gymnasiast (Gymnasium Broich, Qualifikationsphase, Abitur 2028) mit Praxiserfahrung in Embedded-Systemen, Machine Learning und Softwareentwicklung: Praktikum an der Universität Duisburg-Essen, Einblick bei Siemens Energy und eigene Projekte. Ich suche ein Praktikum in Machine Learning oder Embedded-Systemen.
 
 ## Praktische Erfahrung
 
