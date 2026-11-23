@@ -767,6 +767,7 @@ html:not([data-js]) .find-btn {
   .project > .page-lead {
     grid-column: 4 / -1;
     grid-row: 2;
+    max-width: 96ch;
   }
 
   .project-body {
@@ -1339,7 +1340,7 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
 }
 
 .work-story-intro {
-  max-width: 78ch;
+  max-width: 96ch;
   font-size: 1.13rem;
   line-height: 1.8;
   margin-bottom: clamp(44px, 5vw, 72px);
@@ -1355,7 +1356,7 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
 }
 
 .work-chapter h2 {
-  max-width: 28ch;
+  max-width: 38ch;
   margin: 0 0 20px;
   font-size: clamp(1.45rem, 1.2rem + 1vw, 2.05rem);
   line-height: 1.3;
@@ -1376,7 +1377,7 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
 }
 
 .story-copy {
-  max-width: 76ch;
+  max-width: 96ch;
   font-size: 1.067rem;
   line-height: 1.85;
   overflow-wrap: break-word;
@@ -1625,7 +1626,7 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
 
 /* A flat technical process sketch: one spine, step numbers, no stacked cards. */
 .project-flow {
-  max-width: min(100%, 78ch);
+  max-width: min(100%, 96ch);
   margin-block: clamp(25px, 4vw, 42px);
   padding: 18px clamp(16px, 3vw, 26px) 23px;
   border: 1px solid var(--line);
