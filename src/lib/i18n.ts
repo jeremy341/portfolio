@@ -39,7 +39,7 @@ const en = {
   ogLocale: "en_GB",
   description: "Official portfolio of Jeremy Darko (Jeremy Yeboah Darko), a student in Germany building projects in computer engineering, machine learning, GPU computing and hardware.",
   homeTitle: "Computer engineering, machine learning, GPU computing and hardware",
-  homeFocus: ["Computer engineering, machine learning", "GPU computing and hardware"],
+  homeFocus: ["Student: computer engineering, machine learning", "GPU computing and hardware"],
   jobTitle: "Student builder",
   personDescription: (name: string) => `${name} is ${summary.en}`,
   region: "North Rhine-Westphalia",
@@ -126,6 +126,7 @@ const en = {
   hideCertificate: "Hide the certificate",
 
   aboutTitle: "About",
+  aboutStoryLink: "Read the longer story →",
   aboutDescription: (name: string) => `About ${name}: ${summary.en}`,
   notes: {
     now: { title: "Now", description: "Dated notes on what Jeremy Darko is working on and writing about." },
@@ -198,7 +199,7 @@ const de: Strings = {
   ogLocale: "de_DE",
   description: "Portfolio von Jeremy Darko (Jeremy Yeboah Darko), Schüler aus NRW. Projekte rund um Computer Engineering, Machine Learning, GPU-Computing und Hardware.",
   homeTitle: "Computer Engineering, Machine Learning, GPU-Computing und Hardware",
-  homeFocus: ["Computer Engineering, Machine Learning", "GPU-Computing und Hardware"],
+  homeFocus: ["Schüler: Computer Engineering, Machine Learning", "GPU-Computing und Hardware"],
   jobTitle: "Schüler und Entwickler",
   personDescription: (name: string) => `${name} ist ${summary.de}`,
   region: "Nordrhein-Westfalen",
@@ -284,6 +285,7 @@ const de: Strings = {
   hideCertificate: "Zertifikat ausblenden",
 
   aboutTitle: "Über mich",
+  aboutStoryLink: "Die ganze Geschichte lesen →",
   aboutDescription: (name) => `Über ${name}: ${summary.de}`,
   notes: {
     now: { title: "Aktuell", description: "Notizen dazu, woran Jeremy Darko gerade arbeitet und worüber er schreibt." },

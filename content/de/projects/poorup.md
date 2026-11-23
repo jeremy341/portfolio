@@ -11,8 +11,6 @@ Ein Multiplayer-Brettspiel im Browser: kaufen, handeln, bauen und Freunde in den
 
 ## Story
 
-**Mein Beitrag:** Ich habe das Browserspiel und die Raumlogik in Node.js gebaut. Der Server prüft Spielaktionen und verteilt den gemeinsamen Spielstand über Socket.IO. [Quellcode: Poorup](https://github.com/jeremy341/Poorup)
-
 Eigentlich wollte ich ein Spiel bauen, das ich mit meinen Freunden spielen kann. Daraus wurde Poorup, ein Immobilien-Brettspiel im Browser, in dem man Grundstücke kaufen, handeln, beleihen und sich gegenseitig in den Bankrott treiben kann. Irgendwie fanden auch Auktionen, Bots, eine fiktive Börse und ein paar weitere Systeme ihren Weg ins Spiel.
 
 Aus Spielersicht sind die Regeln recht einfach: einem Raum beitreten, würfeln und möglichst nicht pleitegehen.
