@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { JSDOM } from "jsdom";
 import { renderMarkdown } from "../src/lib/markdown.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -123,6 +124,13 @@ test("the German home links to the five German sections", () => {
 test("Certificates lists each certificate with its issuer, and shows the internship letter only with its private line covered", () => {
   const en = page("certificates/index.html");
   assert.match(en, /<h1[^>]*>Certificates<\/h1>/);
+  for (const prefix of ["", "de/"]) {
+    const html = page(prefix + "certificates/index.html");
+    assert.match(html, /<dd><a href="https:\/\/hackclub\.com\/"[^>]*>Hack Club<\/a><\/dd>/);
+    assert.doesNotMatch(html, /\[Hack Club\]\(https:\/\/hackclub\.com\/\)/);
+    const collection = jsonLd(html)[0]["@graph"].find((node) => node["@type"] === "CollectionPage");
+    assert.equal(collection.mainEntity.itemListElement[0].item.publisher.name, "Hack Club");
+  }
   for (const title of ["Hack Club Stardance Challenge", "Internship at the University of Duisburg-Essen", "Nancy Grace Roman Space Telescope"]) {
     assert.ok(en.includes(title), `Certificates lacks "${title}"`);
   }
@@ -342,27 +350,24 @@ test("articles have dates and structured data", () => {
   assert.match(page("de/blog/the-vibe-coding-dilemma/index.html"), /7 Min\. Lesezeit/, "the German edition uses the same override");
 });
 
-test("the About page carries one FAQPage with the llms.txt answers, and no second person", () => {
-  const graph = jsonLd(page("about/index.html"))[0]["@graph"];
-  const faq = graph.filter((node) => node["@type"] === "FAQPage");
-  assert.equal(faq.length, 1, "one FAQPage on the English About page");
-  assert.equal(graph.filter((node) => node["@type"] === "Person").length, 0, "no second Person node beside the profile");
-  assert.equal(JSON.stringify(graph).match(/"jobTitle"/g).length, 1, "the person is described once, inside the ProfilePage");
-  const questions = faq[0].mainEntity;
-  assert.ok(questions.length >= 5);
-  const llms = page("llms.txt");
-  for (const question of questions) {
-    assert.equal(question["@type"], "Question");
-    assert.equal(question.acceptedAnswer["@type"], "Answer");
-    assert.ok(llms.includes(`### ${question.name}
-${question.acceptedAnswer.text}
-`), `${question.name} differs from llms.txt`);
-    assert.doesNotMatch(question.acceptedAnswer.text, /[*_`\[\]]|\]\(/, `${question.name} carries Markdown`);
-    assert.ok(question.acceptedAnswer.text.length > 20, `${question.name} has no real answer`);
+test("About has a single profile and no hidden FAQ, while llms.txt keeps its answers", () => {
+  for (const prefix of ["", "de/"]) {
+    const graph = jsonLd(page(prefix + "about/index.html"))[0]["@graph"];
+    assert.ok(!graph.some((node) => node["@type"] === "FAQPage"));
+    assert.equal(graph.filter((node) => node["@type"] === "Person").length, 0);
+    assert.equal(graph.find((node) => node["@type"] === "ProfilePage").mainEntity["@type"], "Person");
+    assert.equal(JSON.stringify(graph).match(/"jobTitle"/g).length, 1);
   }
-  assert.doesNotMatch(JSON.stringify(faq), /7189960|Aktienstr|Zeugnis-Schnitt|12\.08\.2009|DE40 ?3605/, "no private detail in the FAQ");
+  const llms = page("llms.txt");
+  const questions = llms.split("## Questions and answers\n")[1].split("\n## Profiles")[0];
+  const answers = [...questions.matchAll(/^### (.+)\n(.+)$/gm)];
+  assert.ok(answers.length >= 5);
+  for (const [, question, answer] of answers) {
+    assert.doesNotMatch(answer, /[*_`\[\]]|\]\(/, `${question} carries Markdown`);
+    assert.ok(answer.length > 20, `${question} has no real answer`);
+  }
+  assert.doesNotMatch(questions, /7189960|Aktienstr|Zeugnis-Schnitt|12\.08\.2009|DE40 ?3605/);
   assert.match(llms, /9\.1K\+ lifetime model downloads on Hugging Face \(file requests, not unique people\)\./, "the MIRA answer reads cleanly");
-  assert.ok(!jsonLd(page("de/about/index.html"))[0]["@graph"].some((node) => node["@type"] === "FAQPage"), "the German page has no English-only FAQ");
 });
 
 test("Markdown never renders raw HTML", () => {
@@ -668,10 +673,67 @@ test("mobile header offers an accessible search and menu on both languages", () 
 });
 
 
-test("mobile homepage keeps the navigation below a full first-screen hero", () => {
+test("both homepages show only the name and the focus line in the first-screen hero", () => {
   const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
-  assert.match(css, /\/\* The landing hero occupies the complete first viewport[\s\S]*?\.dash-hero\s*\{\s*min-height:\s*calc\(100svh - 64px\)/);
-  assert.doesNotMatch(css, /min-height:\s*clamp\(270px,\s*44svh,\s*480px\)/);
+  assert.match(css, /\.dash-hero\s*\{\s*min-height:\s*calc\(100svh - 64px\)/);
+  for (const prefix of ["", "/de"]) {
+    const { window } = new JSDOM(page(prefix ? "de/index.html" : "index.html"));
+    const { document } = window;
+    const intro = document.querySelector(".dash-hero .dash-intro");
+    assert.equal(document.querySelectorAll("h1").length, 1);
+    assert.ok(document.querySelector(".dash-hero h1 .cur"));
+    assert.ok(document.querySelector('.skip-link[href="#main"]'));
+    assert.match(intro.textContent, /Computer engineering.*(?:machine learning).*GPU[ -]computing.*Hardware/i);
+    assert.deepEqual([...intro.querySelectorAll(".dash-focus-line")].map((line) => line.textContent), prefix
+      ? ["Computer Engineering, Machine Learning", "GPU-Computing und Hardware"]
+      : ["Computer engineering, machine learning", "GPU computing and hardware"]);
+    assert.doesNotMatch(intro.textContent, /internship|praktikum/i);
+    assert.equal(intro.querySelectorAll("a").length, 0);
+    assert.equal(document.querySelectorAll(".dash-rows a").length, 5);
+    window.close();
+  }
+});
+
+test("the static 404 localizes both header navigations and home link for German paths", () => {
+  for (const prefix of ["", "/de"]) {
+    const { window } = new JSDOM(page("404.html"), { url: `https://portfolio.test${prefix}/work/missing/`, runScripts: "outside-only" });
+    const { document } = window;
+    const script = [...document.scripts].find((item) => item.textContent.includes('getElementById("nf-strings")'));
+    window.eval(script.textContent);
+    assert.equal(document.documentElement.lang, prefix ? "de" : "en");
+    for (const selector of [".site-nav > a", ".mobile-panel > a"]) {
+      assert.deepEqual([...document.querySelectorAll(selector)].map((link) => link.getAttribute("href")),
+        ["/work/", "/blog/", "/certificates/", "/about/", "/contact/"].map((path) => prefix + path));
+    }
+    assert.equal(document.querySelector(".brand").getAttribute("href"), prefix + "/");
+    assert.equal(document.querySelector("#nf-back").getAttribute("href"), prefix + "/work/");
+    assert.ok(document.querySelector("#nf-offline").hidden);
+    window.close();
+  }
+});
+
+test("Poorup’s light Shiki tokens clear 4.5:1 against the page background", () => {
+  function luminance(hex) {
+    const channels = hex.match(/\w{2}/g).map((channel) => parseInt(channel, 16) / 255)
+      .map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  }
+  const css = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  const bg = luminance(css.match(/:root\[data-theme="light"\]\s*\{[^}]*--bg:\s*#([\da-f]{6})/i)[1]);
+  for (const prefix of ["", "de/"]) {
+    const html = page(prefix + "work/poorup/index.html");
+    const colors = new Set([...html.matchAll(/--shiki-light:#([\da-f]{6})/gi)].map((match) => match[1].toLowerCase()));
+    assert.ok(colors.has("a8234a"), "the red token is present");
+    for (const color of colors) {
+      const fg = luminance(color);
+      assert.ok((Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05) >= 4.5, `light token #${color}`);
+    }
+  }
+});
+
+test("both CVs identify MIRA’s metric and split in the printable copy", () => {
+  assert.match(page("cv/index.html"), /90\.6% mAP50 on the 415-image clean validation split/);
+  assert.match(page("de/cv/index.html"), /90,6 % mAP50 auf dem sauberen Validierungssplit mit 415 Bildern/);
 });
 
 
@@ -903,7 +965,7 @@ test("the worker caches public pages network-first and static assets cache-first
   };
 
   set("/", '<head><link rel="stylesheet" href="/_astro/site.css"></head>Home');
-  set("/404.html", '<head><meta name="robots" content="noindex"><link rel="stylesheet" href="/_astro/site.css"><script type="module" src="/_astro/four.js"></script></head><a href="#main" class="skip-link">Skip to content</a><main id="main"><h1>Page not found</h1><canvas class="koi-pond"></canvas></main>');
+  set("/404.html", '<head><meta name="robots" content="noindex"><link rel="stylesheet" href="/_astro/site.css"><script type="module" src="/_astro/four.js"></script></head><a href="#main" class="skip-link">Skip to content</a><main id="main"><h1>Page not found</h1><p id="nf-offline" hidden>Page not saved</p><canvas class="koi-pond"></canvas></main>');
   set("/og-card.png", "share image", "image/png");
   set("/_astro/site.css", "body {}", "text/css", 200, { Vary: "Origin", "Content-Encoding": "gzip" });
   set("/_astro/four.js", 'import("./chunk.js")', "text/javascript");
@@ -951,6 +1013,7 @@ test("the worker caches public pages network-first and static assets cache-first
     const html = await fallback.text();
     assert.match(html, /<meta name="robots" content="noindex"/);
     assert.match(html, /<h1>Page not found<\/h1>/, "the offline fallback is the 404 page");
+    assert.match(html, /<p id="nf-offline">Page not saved<\/p>/);
     assert.match(html, /class="koi-pond"/);
     assert.match(html, /href="#main"/);
     assert.doesNotMatch(html, /You’re offline/);
