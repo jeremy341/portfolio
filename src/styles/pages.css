@@ -354,40 +354,49 @@ html:not([data-js]) .find-btn {
   font-size: inherit;
 }
 
-/* Where to find the project: GitHub, website, models, in one row under the summary. */
+/* Where to find the project: GitHub, website, models under the summary. */
 
 .linkbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 28px;
+  gap: 10px 24px;
   margin-bottom: 40px;
   font-size: 0.95rem;
 }
 
 .linkbar a {
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0 1.2ch;
-  padding: 6px 0;
+  align-items: center;
+  gap: 0.35ch;
+  padding: 4px 0;
   border-bottom: 1px dashed var(--line);
-  transition: border-color 150ms var(--ease);
+  color: var(--fg);
+  font-weight: 500;
+  transition: color 150ms var(--ease), border-color 150ms var(--ease);
 }
 
 .lb-k {
   transition: color 150ms var(--ease);
 }
 
-.lb-v {
+.lb-arrow {
   color: var(--muted);
-  overflow-wrap: anywhere;
+  font-size: 0.9em;
+  transition: color 150ms var(--ease), transform 150ms var(--ease);
 }
 
 .linkbar a:is(:hover, :focus-visible) {
   border-bottom-color: var(--accent);
+  color: var(--accent);
 }
 
 .linkbar a:is(:hover, :focus-visible) .lb-k {
   color: var(--accent);
+}
+
+.linkbar a:is(:hover, :focus-visible) .lb-arrow {
+  color: var(--accent);
+  transform: translate(1px, -1px);
 }
 
 /* Pictures: a thin frame, a numbered caption under it, a click opens the full-size file. */

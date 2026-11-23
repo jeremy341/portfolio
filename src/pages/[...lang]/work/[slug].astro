@@ -122,7 +122,7 @@ const schema = [
             <li>
               <a href={link.href} rel={link.href.startsWith("http") ? "noreferrer" : undefined}>
                 <span class="lb-k">{t.linkShort[link.kind]}</span>
-                <span class="lb-v">{where(link.href)}</span>
+                <span class="lb-arrow" aria-hidden="true">&nearr;</span>
               </a>
             </li>
           ))}
