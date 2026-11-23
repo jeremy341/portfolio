@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { ui } from "../lib/i18n";
+import { navFor } from "../lib/site";
 import "../styles/notfound.css";
 
 // One 404 page serves every missing address. English is the default; an address under /de/ is
@@ -8,11 +9,9 @@ import "../styles/notfound.css";
 // before the page settles, so the page works without JavaScript too.
 const en = ui.en;
 const de = ui.de;
-const navEn = Object.values(en.nav);
-const navDe = Object.values(de.nav);
 const strings = {
-  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, href: "/work/", hint: en.notFoundHint, quest: en.notFoundQuest, found: en.notFoundFound, error: en.notFoundError, nav: navEn },
-  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, href: "/de/work/", hint: de.notFoundHint, quest: de.notFoundQuest, found: de.notFoundFound, error: de.notFoundError, nav: navDe },
+  en: { title: en.notFoundTitle, text: en.notFoundText, back: en.notFoundBack, home: "/", href: "/work/", hint: en.notFoundHint, quest: en.notFoundQuest, found: en.notFoundFound, error: en.notFoundError, offline: en.notFoundOffline, nav: navFor("en"), mainNav: en.mainNav, language: en.language, skip: en.skip, menu: en.menu, search: en.search },
+  de: { title: de.notFoundTitle, text: de.notFoundText, back: de.notFoundBack, home: "/de/", href: "/de/work/", hint: de.notFoundHint, quest: de.notFoundQuest, found: de.notFoundFound, error: de.notFoundError, offline: de.notFoundOffline, nav: navFor("de"), mainNav: de.mainNav, language: de.language, skip: de.skip, menu: de.menu, search: de.search },
 };
 ---
 
@@ -24,6 +23,7 @@ const strings = {
         <p class="notfound-path" id="nf-path" aria-hidden="true">~/jeremy-darko/404.md <span class="notfound-error" id="nf-error">no such file</span></p>
         <p class="notfound-code" aria-hidden="true">404</p>
         <h1 class="page-title" id="nf-title">{en.notFoundTitle}</h1>
+        <p class="page-lead" id="nf-offline" hidden>{en.notFoundOffline}</p>
         <p class="page-lead" id="nf-text">{en.notFoundText} <a href="/work/" id="nf-back">{en.notFoundBack}</a>.</p>
         <p class="notfound-quest" id="nf-quest" aria-live="polite" hidden>{en.notFoundQuest} · 0/3</p>
       </div>
@@ -35,7 +35,7 @@ const strings = {
   <script is:inline>
     (function () {
       try {
-        var german = location.pathname.indexOf("/de/") === 0;
+        var german = /^\/de(?:\/|$)/.test(location.pathname);
         var t = JSON.parse(document.getElementById("nf-strings").textContent)[german ? "de" : "en"];
         document.documentElement.lang = german ? "de" : "en";
         document.title = t.title + " | Jeremy Darko";
@@ -52,20 +52,31 @@ const strings = {
         quest.textContent = t.quest + " · 0/3";
         Object.assign(window, { nfGame: { found: 0, strings: t } });
         document.getElementById("nf-error").textContent = t.error;
+        document.getElementById("nf-offline").textContent = t.offline;
         var lost = location.pathname.replace(/\/+$/, "") || "/index";
         document.getElementById("nf-path").firstChild.textContent = "~/jeremy-darko" + lost + ".md ";
         var desktopLinks = document.querySelectorAll(".site-nav > a");
         var mobileLinks = document.querySelectorAll(".mobile-panel > a");
-        for (var i = 0; i < desktopLinks.length; i++) {
-          desktopLinks[i].textContent = t.nav[i] || desktopLinks[i].textContent;
-          if (mobileLinks[i]) {
-            var label = mobileLinks[i].querySelector("span");
-            if (label) label.textContent = t.nav[i] || label.textContent;
-          }
-        }
+        t.nav.forEach(function (item, index) {
+          desktopLinks[index].textContent = item.label;
+          desktopLinks[index].href = item.href;
+          mobileLinks[index].querySelector("span").textContent = item.label;
+          mobileLinks[index].href = item.href;
+        });
+        document.querySelector(".site-header .brand").href = t.home;
+        document.querySelector(".skip-link").textContent = t.skip;
+        document.querySelector(".mobile-toggle").setAttribute("aria-label", t.menu);
+        document.querySelectorAll(".site-nav, .mobile-panel").forEach(function (nav) {
+          nav.setAttribute("aria-label", t.mainNav);
+        });
+        var mobileSearch = document.querySelector(".mobile-find");
+        mobileSearch.setAttribute("aria-label", t.search);
+        mobileSearch.title = t.search;
+        document.querySelector(".find-btn").firstChild.textContent = t.search + " ";
         var code = german ? "de" : "en";
         document.querySelectorAll(".lang").forEach(function (group) {
           group.setAttribute("data-on", code);
+          group.setAttribute("aria-label", t.language);
           group.querySelectorAll("a").forEach(function (a) {
             if (a.getAttribute("lang") === code) a.setAttribute("aria-current", "page");
             else a.removeAttribute("aria-current");
@@ -96,7 +107,7 @@ const strings = {
         const dimText = () => {
           const box = pondCanvas.getBoundingClientRect();
           const parts = [
-            ...document.querySelectorAll<HTMLElement>(".site-header, #nf-path, .notfound-code, #nf-title, #nf-text, #nf-quest, .notfound-hint"),
+            ...document.querySelectorAll<HTMLElement>(".site-header, #nf-path, .notfound-code, #nf-title, #nf-offline, #nf-text, #nf-quest, .notfound-hint"),
           ];
           const clears = parts
             .map((part) => part.getBoundingClientRect())

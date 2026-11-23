@@ -53,5 +53,10 @@ function apply(cat: string, noise: boolean) {
 }
 
 bar.hidden = false;
-for (const chip of chips) chip.addEventListener("click", () => apply(chip.dataset.cat!, true));
+for (const chip of chips) {
+  chip.addEventListener("click", () => apply(chip.dataset.cat!, true));
+  chip.addEventListener("focus", () => {
+    if (chip.matches(":focus-visible")) chip.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+}
 apply(location.hash.slice(1), false);

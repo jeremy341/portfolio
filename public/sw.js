@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "jd-portfolio-v";
-const CACHE_NAME = `${CACHE_PREFIX}1`;
+const CACHE_NAME = `${CACHE_PREFIX}2`;
 const ORIGIN = self.location.origin;
 const PAGE_PATH = /^\/(?:de\/)?(?:(?:about|blog|certificates|contact|cv|now|work)\/|(?:blog|work)\/[a-z0-9-]+\/)?$/;
 const BUILD_ASSET = /^\/_astro\/[\w.-]+\.(?:css|js|woff2?|png|jpe?g|webp|avif|svg|gif)$/i;
@@ -145,7 +145,7 @@ async function navigate(request) {
   try {
     response = await fetch(request);
   } catch {
-    return await cached(request) ?? offlinePage();
+    return await cached(request) ?? offlinePage(new URL(request.url).pathname);
   }
   await caches.open(CACHE_NAME).then((cache) => rememberPage(cache, request, response)).catch(() => {});
   return response;
@@ -159,10 +159,12 @@ async function staticAsset(request) {
   return response;
 }
 
-async function offlinePage() {
+async function offlinePage(pathname) {
+  const german = /^\/de(?:\/|$)/.test(pathname);
   const fallback = await cached(`${ORIGIN}/404.html`);
   if (fallback) {
-    return new Response(fallback.body, {
+    const html = (await fallback.text()).replace('id="nf-offline" hidden', 'id="nf-offline"');
+    return new Response(html, {
       status: 503,
       headers: {
         "Content-Type": "text/html; charset=utf-8",
@@ -172,7 +174,7 @@ async function offlinePage() {
     });
   }
   return new Response(`<!doctype html>
-<html lang="en">
+<html lang="${german ? "de" : "en"}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -195,11 +197,11 @@ async function offlinePage() {
   </style>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
+  <a class="skip" href="#main">${german ? "Zum Inhalt springen" : "Skip to content"}</a>
   <main id="main" tabindex="-1">
-    <h1>You’re offline</h1>
-    <p>This page isn’t saved on this device. Try again when you’re back online, or return to the home page.</p>
-    <a href="/" hreflang="en">Back to home</a>
+    <h1>${german ? "Du bist offline" : "You’re offline"}</h1>
+    <p>${german ? "Diese Seite ist nicht auf deinem Gerät gespeichert. Versuch es erneut, wenn du wieder online bist." : "This page isn’t saved on this device. Try again when you’re back online."}</p>
+    <a href="${german ? "/de/" : "/"}">${german ? "Zur Startseite" : "Back to home"}</a>
   </main>
 </body>
 </html>`, {

@@ -9,7 +9,6 @@ import { navFor, site } from "../../lib/site";
 
 export const getStaticPaths = langParams;
 
-// The home page: the name alone on the first screen, the four sections below it.
 // The name plays a replace pass, one cell per character (src/scripts/hero.ts).
 const lang = langOf(Astro.params.lang);
 const t = ui[lang];
@@ -40,6 +39,9 @@ const base = lang === "de" ? "/de" : "";
           >{ch}</span>
         ))}<span class="c end"> </span></span>
       </h1>
+      <div class="dash-intro">
+        <p class="dash-focus"><span class="dash-focus-line">{t.homeFocus[0]}</span><span class="dash-focus-separator">, </span><span class="dash-focus-line">{t.homeFocus[1]}</span></p>
+      </div>
     </div>
 
     <nav class="dash-rows" aria-label={t.sections}>

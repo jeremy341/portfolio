@@ -1,8 +1,9 @@
 ---
 import Base from "../../../layouts/Base.astro";
 import Figure from "../../../components/Figure.astro";
-import { getContent, renderMarkdown } from "../../../lib/content";
+import { getContent, renderInline, renderMarkdown } from "../../../lib/content";
 import { langOf, langParams, ui, url } from "../../../lib/i18n";
+import { plainText } from "../../../lib/markdown";
 import { breadcrumbs } from "../../../lib/seo";
 import { canonical, site } from "../../../lib/site";
 
@@ -23,7 +24,7 @@ const schema = [
       itemListElement: certificates.map((cert, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        item: { "@type": "CreativeWork", name: cert.title, publisher: { "@type": "Organization", name: cert.issuer } },
+        item: { "@type": "CreativeWork", name: cert.title, publisher: { "@type": "Organization", name: plainText(cert.issuer) } },
       })),
     },
   },
@@ -40,7 +41,7 @@ const schema = [
       <article class="block cert" id={cert.id} aria-labelledby={`${cert.id}-title`}>
         <h2 id={`${cert.id}-title`}>{cert.title}</h2>
         <dl class="facts">
-          <div><dt>{f.issuer}</dt><dd>{cert.issuer}</dd></div>
+          <div><dt>{f.issuer}</dt><dd set:html={renderInline(cert.issuer, lang)} /></div>
           <div><dt>{f.kind}</dt><dd>{cert.kind}</dd></div>
           <div><dt>{f.date}</dt><dd>{cert.date}</dd></div>
           {cert.reference && <div><dt>{f.reference}</dt><dd>{cert.reference}</dd></div>}
