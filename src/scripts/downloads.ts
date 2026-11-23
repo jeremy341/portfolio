@@ -14,7 +14,7 @@ if (el) {
       const count = data.downloadsAllTime;
       if (typeof count !== "number" || !Number.isFinite(count) || count < 0) return;
       const number = count.toLocaleString(lang === "de" ? "de-DE" : "en-US");
-      el.textContent = lang === "de" ? `${number} Downloads insgesamt` : `${number} lifetime downloads`;
+      el.textContent = lang === "de" ? `Heruntergeladen ${number} Mal auf Hugging Face` : `Downloaded ${number} times on Hugging Face`;
       el.dataset.live = "";
     })
     .catch(() => {

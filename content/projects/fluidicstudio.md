@@ -21,7 +21,7 @@ The difficult part was understanding what happened *after* I clicked it.
 
 Over four weeks I built what became my **FluidicStudio** app, published in a repository called Microdroplets UI. It's an independent university project, not the vendor's product, which also happens to be named *Bartels FluidicStudio*. An unfortunate naming coincidence, but a useful distinction.
 
-### First I had to learn the board's language
+### Learning the board
 
 The setup used a [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/), an mp-Highdriver4, liquid-flow sensors and a Dino-Lite microscope. Instead of offering a polished Python API for the whole setup, the board communicates through a USB serial port. You send short strings to its firmware and interpret what comes back.
 
@@ -44,7 +44,7 @@ Simple commands, right? But a command is only half the conversation. I still had
 
 And once several parts of the app were sending commands, even knowing what `P1ON` means wasn't enough.
 
-### One board, several things trying to control it
+### One board, many controllers
 
 The application eventually needed manual pump controls, waveforms, sensor plots, camera preview and a two-panel workspace. Those features can't behave like isolated scripts if they share the same hardware.
 
@@ -58,7 +58,7 @@ I initially found the short command strings almost amusing. But coordinating the
 
 And then a code audit found a case where it mattered a lot.
 
-### When "off" was followed by "on"
+### "Off" that turned "on"
 
 Imagine the app is starting a pump. That's not necessarily one write to the board. A start sequence can set a frequency, select a waveform, set an amplitude and only then enable the pump.
 
@@ -84,7 +84,7 @@ The fix added a **teardown gate** to the serial manager. Once shutdown starts, i
 
 That doesn't prove every physical pump always stops safely. If the connection fails or an off command isn't acknowledged, the real hardware state can still be unknown. The software needs to report that uncertainty instead of pretending the act of closing a window is proof of a successful shutdown.
 
-### Getting useful measurements was another problem
+### Useful measurements
 
 With control and shutdown better defined, the next challenge was making the different measurements agree.
 
@@ -105,7 +105,7 @@ CSV and annotated video export
 
 The diagram is a pipeline, not a guarantee of accuracy. A crossing can be counted even when blurry frames or a broken track make its length or velocity estimate unreliable. That's why it matters to distinguish detecting an event from validating a measurement.
 
-### Four weeks can build a lot, but not a finished instrument
+### Four weeks, not an instrument
 
 The internship ran from 3 to 28 August 2026. I came out of it with a substantial PyQt6 application, a documented serial-command layer and several connected workflows. But there are still limits I wouldn't want a reader to miss.
 

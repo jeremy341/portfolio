@@ -21,7 +21,7 @@ Why was I borrowing compute when I already owned a GPU? And if the problem wasn'
 
 That's where TorchVK began. Not with a groundbreaking performance result, but with a question I had been avoiding.
 
-### The GPU works. The software stack is the problem.
+### The GPU works
 
 Most PyTorch tutorials treat `torch.cuda` as the obvious way to run training on a GPU. That makes sense for supported NVIDIA hardware: CUDA has mature libraries and extensive PyTorch integration. AMD has ROCm, but GPU, operating-system and version support matter. My RX 5600 XT on Windows isn't a convenient supported target.
 
@@ -35,7 +35,7 @@ A training backend needs to store tensors, execute a wide range of operations, p
 
 Which changes the question. It's not "can Vulkan add numbers?" It is "can a usable training path be built on top of Vulkan, and how much of it will actually run on the GPU?"
 
-### Then I discovered I wasn't the first
+### Not the first
 
 I started reading about existing attempts, including [torchvulkan](https://github.com/zainsharief/torchvulkan). Other people had already explored Vulkan and PyTorch integration.
 
@@ -47,7 +47,7 @@ That's a narrower and, frankly, more useful research question than trying to ann
 
 If an existing backend turns out to be better, contributing to it may be more sensible than maintaining an inferior duplicate. I want to understand the problem, not win a naming competition.
 
-### What would PyTorch actually talk to?
+### What PyTorch talks to
 
 One integration route I want to explore is **PrivateUse1**, PyTorch's mechanism for registering custom device backends. It could provide the connection between PyTorch operators and a C++ runtime responsible for allocating GPU buffers, dispatching operations and synchronizing their results.
 
@@ -67,7 +67,7 @@ The sensible first milestone is much smaller. Allocate buffers, send some values
 
 Vector addition isn't exactly the most exciting achievement in machine learning. That's kind of the point. If I can't prove that a tiny operation is correct, timing an entire neural network would only give me a faster way to measure a mistake.
 
-### Six experiments, each answering the next question
+### Six experiments
 
 Once one operation works, I can finally start asking performance questions. But even those need an order.
 
@@ -81,7 +81,7 @@ There's another distinction I want to keep clear throughout. A fast GPU kernel i
 
 So each experiment should answer a question that makes the *next* experiment worth attempting. Otherwise I'm just collecting numbers.
 
-### The result I'm not going to pretend I have
+### The result I don't have
 
 As of the research documented in the public repository, **TorchVK is still at the feasibility stage**. There is no working training backend, no implemented GPU compute shader and no measured benchmark result I can claim here.
 

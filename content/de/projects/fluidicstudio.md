@@ -21,7 +21,7 @@ Schwierig war die Frage, was *nach* dem Klick passiert.
 
 In vier Wochen entstand meine App **FluidicStudio**, veröffentlicht im Repository Microdroplets UI. Sie ist ein eigenständiges Projekt aus der Arbeit an der Universität und nicht das Produkt des Herstellers, das zufälligerweise ebenfalls *Bartels FluidicStudio* heißt. Unglückliche Namenswahl, aber immerhin wissen wir jetzt, worüber ich spreche.
 
-### Erst mal musste ich die Sprache des Boards lernen
+### Die Sprache des Boards
 
 Der Aufbau bestand aus einem [Bartels mp-Multiboard2](https://bartels-mikrotechnik.de/product/mp-multiboard2-en/), einem mp-Highdriver4, Durchflusssensoren und einem Dino-Lite-Mikroskop. Statt einer fertigen Python-API für den gesamten Aufbau kommuniziert das Board über eine serielle USB-Schnittstelle. Man schickt kurze Zeichenfolgen an die Firmware und versucht, mit den Antworten etwas anzufangen.
 
@@ -44,7 +44,7 @@ Einfache Befehle, oder? Nur ist ein Befehl erst die Hälfte des Gesprächs. Ich 
 
 Und sobald mehrere Teile der App Befehle schickten, reichte es nicht mehr, zu wissen, was `P1ON` bedeutet.
 
-### Ein Board, mehrere Stellen, die es steuern wollen
+### Ein Board, viele Steuerungen
 
 Die App sollte manuelle Pumpensteuerung, Wellenformen, Sensordiagramme, Kameravorschau und einen Workspace mit zwei Ansichten bieten. Wenn alles dieselbe Hardware benutzt, können sich diese Funktionen nicht wie voneinander unabhängige Skripte verhalten.
 
@@ -58,7 +58,7 @@ Die kurzen Befehle fand ich am Anfang fast ein bisschen lustig. Wie sie koordini
 
 Und dann fiel bei einem Code-Audit ein Fall auf, bei dem es darauf ganz besonders ankam.
 
-### Wenn nach „aus“ plötzlich wieder „an“ kommt
+### „Aus“ wird „an“
 
 Stell dir vor, die App startet eine Pumpe. Das ist nicht unbedingt ein einzelner Schreibvorgang. Die Startsequenz kann erst eine Frequenz, dann eine Wellenform und die Amplitude setzen und schließlich die Pumpe aktivieren.
 
@@ -84,7 +84,7 @@ Die Korrektur ergänzte den Serial Manager um eine **Sperre während des Shutdow
 
 Das beweist nicht, dass sich jede reale Pumpe immer sicher abschaltet. Fällt die Verbindung aus oder fehlt die Bestätigung für den Off-Befehl, kann der Zustand der Hardware weiterhin unbekannt sein. Die Software muss diese Unsicherheit anzeigen, statt das Schließen eines Fensters als Nachweis einer erfolgreichen Abschaltung zu behandeln.
 
-### Und dann waren da noch die Messwerte
+### Brauchbare Messwerte
 
 Nachdem Steuerung und Abschaltung klarer definiert waren, mussten die Messwerte an verschiedenen Stellen der App übereinstimmen.
 
@@ -105,7 +105,7 @@ CSV und annotiertes Video exportieren
 
 Das Diagramm zeigt den Ablauf, keine Garantie für Messgenauigkeit. Eine Überquerung kann gezählt werden, obwohl unscharfe Frames oder ein unterbrochener Track die Schätzung von Länge oder Geschwindigkeit unzuverlässig machen. Ein Ereignis zu erkennen ist eben etwas anderes, als eine Messung zu validieren.
 
-### Vier Wochen reichen für vieles. Nicht für ein fertiges Messgerät.
+### Vier Wochen, kein Messgerät
 
 Das Praktikum lief vom 3. bis zum 28. August 2026. Herausgekommen sind eine umfangreiche PyQt6-App, eine dokumentierte Kommunikationsschicht und mehrere integrierte Arbeitsabläufe. Es gibt aber Grenzen, die ich nicht unter den Tisch fallen lassen möchte.
 

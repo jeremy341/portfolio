@@ -21,7 +21,7 @@ Warum leihe ich mir Rechenleistung, wenn ich selbst eine GPU besitze? Und wenn m
 
 So fing TorchVK an. Nicht mit einem bahnbrechenden Benchmark, sondern mit einer Frage, die ich lange ignoriert hatte.
 
-### Die GPU funktioniert. Der Software-Stack ist das Problem.
+### Die GPU funktioniert
 
 In den meisten PyTorch-Tutorials ist `torch.cuda` der selbstverständliche Weg, ein Modell auf der GPU zu trainieren. Bei unterstützten NVIDIA-Karten ergibt das Sinn: CUDA hat ausgereifte Bibliotheken und ist tief in PyTorch integriert. AMD bietet ROCm an, aber welche Grafikkarten, Betriebssysteme und Versionen unterstützt werden, spielt eine entscheidende Rolle. Meine RX 5600 XT unter Windows ist dafür kein unkompliziertes Ziel.
 
@@ -35,7 +35,7 @@ Ein Trainings-Backend muss Tensoren speichern, viele verschiedene Operationen au
 
 Die Frage lautet also nicht „Kann Vulkan Zahlen addieren?“, sondern „Lässt sich darauf ein brauchbarer Trainingspfad aufbauen, und wie viel davon läuft tatsächlich auf der GPU?“
 
-### Dann stellte ich fest, dass ich nicht der Erste war
+### Nicht der Erste
 
 Ich habe angefangen, mich mit vorhandenen Ansätzen wie [torchvulkan](https://github.com/zainsharief/torchvulkan) zu beschäftigen. Andere hatten sich bereits mit der Integration von Vulkan in PyTorch auseinandergesetzt.
 
@@ -47,7 +47,7 @@ Das ist eine engere und ehrlich gesagt wesentlich nützlichere Forschungsfrage, 
 
 Wenn ein vorhandenes Backend besser funktioniert, ist es vielleicht sinnvoller, daran mitzuarbeiten, als eine schlechtere Kopie zu pflegen. Ich will das Problem verstehen, keinen Namenswettbewerb gewinnen.
 
-### Womit würde PyTorch eigentlich kommunizieren?
+### Womit spricht PyTorch?
 
 Eine mögliche Schnittstelle ist **PrivateUse1**. Damit lassen sich eigene Geräte-Backends in PyTorch registrieren. Die Operatoren könnten so mit einer C++-Runtime verbunden werden, die GPU-Puffer anlegt, Operationen abschickt und die Ergebnisse synchronisiert.
 
@@ -67,7 +67,7 @@ Der erste sinnvolle Meilenstein ist viel kleiner: Puffer anlegen, Werte an die G
 
 Vektoraddition ist vermutlich nicht gerade die aufregendste Errungenschaft im Machine Learning. Genau deshalb eignet sie sich so gut. Wenn ich nicht einmal eine kleine Operation korrekt ausführen kann, würde ein Benchmark für ein ganzes neuronales Netz mir nur zeigen, wie schnell ich einen Fehler berechne.
 
-### Sechs Experimente, eine Frage nach der anderen
+### Sechs Experimente
 
 Sobald eine Operation zuverlässig funktioniert, kann ich mich an die Performance wagen. Aber auch da gibt es eine sinnvolle Reihenfolge.
 
@@ -81,7 +81,7 @@ Ein schneller GPU-Kernel ist außerdem nicht dasselbe wie ein schneller Training
 
 Jedes Experiment soll daher eine Frage beantworten, die das *nächste* Experiment sinnvoll macht. Ansonsten sammle ich bloß Zahlen.
 
-### Das Ergebnis, das ich noch nicht habe
+### Das fehlende Ergebnis
 
 Nach dem im öffentlichen Repository dokumentierten Stand befindet sich **TorchVK noch in der Machbarkeitsphase**. Es gibt kein funktionierendes Trainings-Backend, keinen implementierten GPU-Compute-Shader und keine gemessenen Benchmark-Ergebnisse, die ich hier angeben könnte.
 

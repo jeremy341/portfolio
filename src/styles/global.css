@@ -1014,6 +1014,7 @@ html[data-row] .vim-status {
   gap: clamp(16px, 3svh, 28px);
   width: 100%;
   min-height: calc(100svh - 111px);
+  overflow-x: clip;
 }
 
 .dash-intro {

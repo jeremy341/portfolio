@@ -21,7 +21,7 @@ Als ich anfing, die Modelle unter weniger kontrollierten Bedingungen zu testen, 
 
 Wie kann ein Modell auf dem Papier *besser* werden und mich im Einsatz trotzdem weniger überzeugen? Genau diese Frage hat die nächsten Schritte bei MIRA bestimmt.
 
-### Vom Bild zum einzelnen Objekt
+### Vom Klassifikator zum Detektor
 
 MIRA steht für **Machine Intelligence for Recycling Automation**. Langfristig möchte ich mithilfe einer Kamera und eines kleinen Modells Müll sortieren. Bevor ich mir überhaupt Gedanken über eine Sortiermaschine machen konnte, musste ich allerdings herausfinden, ob die Software den Müll überhaupt erkennt.
 
@@ -31,7 +31,7 @@ Ein guter Anfang. Stell dir aber vor, vor der Kamera liegen zwei Flaschen und ei
 
 Also bin ich auf YOLOv8n und schließlich auf YOLO11n umgestiegen. Damit erkannte MIRA Glas, Metall, Papier, Plastik und die Klasse Trash. Das löste die Frage, welche Art von Problem mein Modell bearbeiten sollte. Nicht aber die wesentlich lästigere Frage, welchen Daten ich eigentlich trauen konnte.
 
-### Der Datensatz war selbst Teil des Experiments
+### Der Datensatz
 
 Meine Bilder kamen aus ganz unterschiedlichen Quellen: [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet), [Roboflow](https://roboflow.com/) und einem Datensatz von dmedhi. Auf manchen Bildern lagen einzelne Gegenstände vor sauberem Hintergrund, andere zeigten Müll mitten in unübersichtlichen Alltagssituationen.
 
@@ -47,7 +47,7 @@ Sieht nach einer enormen Verbesserung aus. Auf diesem Validierungssplit war es d
 
 Die Frage war also nicht mehr bloß, ob die Zahl gestiegen war. Ich wollte wissen, ob das Modell Müll besser erkannte oder ob es besonders gut geworden war, *solche Bilder* zu erkennen.
 
-### Zwei gute Ergebnisse. Aber was heißt eigentlich gut?
+### Was heißt gut?
 
 EXP-014 kam mit seinem älteren, vielfältigeren Datensatz auf **60,7 % mAP50** im damaligen Validierungssplit. Nach dem Neuaufbau erreichten EXP-018 und EXP-019 etwa **90,6 % mAP50** auf den 415 saubereren Bildern. Selbst beim zweiten Lauf kam fast dieselbe Zahl heraus.
 
@@ -63,7 +63,7 @@ Bei **mAP50** werden vorhergesagte Klassen und Bounding Boxes bei einem Intersec
 
 Ich habe also keinen fairen direkten Vergleich, der beweist, dass EXP-014 besser als EXP-019 ist. Dafür habe ich etwas weniger Befriedigendes, aber wesentlich Nützlicheres: einen Grund, daran zu zweifeln, ob mein sauberer Validierungssplit die Situationen abbildet, auf die es mir ankommt.
 
-### Hinter der Zahl steckte ein anderes Problem
+### Das eigentliche Problem
 
 Bei der Klasse Trash wird das besonders deutlich. Auf den sauberen Validierungsbildern erreichte sie **97,5 % mAP50**. Bei EXP-014 lag ihr F1-Wert in der separaten Feldauswertung bei **54 %**. Auch hier lassen sich die Zahlen nicht direkt vergleichen. Sie zeigen mir aber, wie unterschiedlich dieselbe Klasse unter anderen Bedingungen abschneiden kann.
 
@@ -85,7 +85,7 @@ Für den finalen Detektor habe ich bisher keine Messwerte aus einem Deployment a
 
 Und die über 9.000 „Downloads“ auf Hugging Face? Das sind Abrufe von Modelldateien seit der Veröffentlichung, **nicht** 9.000 verschiedene Personen. Warum diese Unterscheidung wichtig ist, habe ich in einem [eigenen Blogartikel](/blog/beyond-the-download-count/) erklärt. Offenbar hat sogar mein Downloadzähler ein Validierungsproblem.
 
-### Und was wird jetzt aus EXP-020?
+### Und jetzt: EXP-020
 
 Mit EXP-020 möchte ich die naheliegende nächste Hypothese testen: die ausgewogenen, saubereren Trainingsdaten hinter EXP-019 mit den abwechslungsreichen Hintergründen kombinieren, wegen derer EXP-014 überhaupt wieder interessant wurde. Danach sollen die Modelle unter tatsächlich vergleichbaren Bedingungen ausgewertet werden.
 
@@ -97,6 +97,7 @@ Würde ich mich über einen höheren Wert freuen? Natürlich. Aber ich möchte, 
 
 ## In Zahlen
 
+- Downloads: über 9.100 Modellabrufe insgesamt auf Hugging Face (Dateiabrufe, keine Anzahl von Personen)
 - Protokollierte Experimente: EXP-001 bis EXP-019; EXP-020 geplant/im Training, hier noch ohne Ergebnis
 - Bester dokumentierter Wert auf sauberen Validierungsdaten: 90,6 % mAP50 (EXP-018), 90,58 % beim zweiten Lauf (EXP-019), 415 Bilder
 - Feld-Benchmark: EXP-014, 85,8 % F1 für Klassenanwesenheit pro Bild (92,9 % Precision, 79,7 % Recall), 805 Bilder
@@ -105,7 +106,6 @@ Würde ich mich über einen höheren Wert freuen? Natürlich. Aber ich möchte, 
 - Modellgrößen: PyTorch 5,47 MB; LiteRT-Export mit 320 Pixeln 3,02 MB
 - Dokumentierter Validierungswert des 320-Pixel-LiteRT-Exports: 86,2 % mAP50
 - GPU-Inferenz: 1,5 bis 3,6 ms pro Bild auf einer T4 im dokumentierten Aufbau, keine Messung auf dem Raspberry Pi
-- Downloads: über 9.100 Modellabrufe insgesamt auf Hugging Face (Dateiabrufe, keine Anzahl von Personen)
 
 ## Abbildungen
 

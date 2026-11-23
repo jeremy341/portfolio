@@ -21,7 +21,7 @@ Genau da sollte AbiVault ansetzen.
 
 {{figure:0}}
 
-### Sagen wir, es fehlen 40 €
+### 40 € fehlen
 
 Ein Schüler stellt eine ziemlich berechtigte Frage: „Wo sind die 40 Euro hin?“
 
@@ -33,7 +33,7 @@ Natürlich garantiert das nicht, dass alle ehrlich sind. Aber wenn etwas schiefg
 
 Selbst hinter der ersten Anforderung steckt allerdings ein technisches Detail. Wie speichert man einen Betrag eigentlich *korrekt*?
 
-### Was nützt eine Prüfung, wenn schon die Zahl nicht stimmt?
+### Eine falsche Zahl
 
 Computer arbeiten bei vielen Berechnungen mit Gleitkommazahlen. Das funktioniert oft gut, nur lassen sich in binären Gleitkommaformaten nicht alle Dezimalbrüche exakt darstellen.
 
@@ -47,7 +47,7 @@ Deshalb verwendet das System ein **Buchungsjournal** und ausgeglichene Buchungen
 
 Das Journal kann intern konsistent sein. Es kann aber nicht beweisen, dass ein Einkauf berechtigt war oder ein Beleg echt ist. Bleibt also die Frage, wer diese Buchungen überhaupt eintragen, freigeben oder ändern darf.
 
-### Nicht jeder darf die Antwort nachträglich ändern
+### Wer darf ändern?
 
 AbiVault unterscheidet zwischen Administratoren, Aufsichtspersonen und Schülern. Schüler sehen einen eingeschränkten Ausschnitt der Finanzen, während die für das Komitee verantwortlichen Personen die zu ihrer Rolle passenden Berechtigungen bekommen.
 
@@ -61,7 +61,7 @@ Zugriffskontrolle beantwortet aber erst mal nur, wer *jetzt* etwas tun darf. Ang
 
 Wichtige Aktionen erzeugen deshalb Audit-Einträge, und abgeschlossene Buchungsperioden können gesperrt werden. Damit soll die Entstehung des Kontostands nachvollziehbar bleiben, statt durch die nächste Änderung stillschweigend überschrieben zu werden.
 
-### Irgendwann braucht man trotzdem einen Beleg
+### Der Beleg
 
 Zurück zu den 40 Euro. Wir können den Betrag jetzt korrekt speichern, einer ausgeglichenen Buchung zuordnen und kontrollieren, wer sie bearbeiten darf.
 
@@ -77,7 +77,7 @@ Auf dem Screenshot ist das **Demo-Dashboard** mit vorbereiteten Beispieldaten zu
 
 Die Unterscheidung ist wichtig. Ein Dashboard, das aussieht, als würde es funktionieren, ist noch kein Finanzsystem, das sich im Alltag einer Organisation bewährt hat.
 
-### Eine Demo ist kein Security-Audit
+### Demo ist kein Audit
 
 Das Projekt enthält Unit-Tests und einen separaten SQL-Test für die Row-Level-Security-Regeln. Gerade wenn Organisationsgrenzen und Berechtigungen zum Konzept gehören, sind solche Tests wichtig.
 

@@ -21,7 +21,7 @@ That's the problem I wanted AbiVault to address.
 
 {{figure:0}}
 
-### Let's say €40 is missing
+### €40 missing
 
 Imagine a student asks a fairly reasonable question: "Where did those €40 go?"
 
@@ -33,7 +33,7 @@ None of this guarantees that people will be honest. But if something goes wrong,
 
 There's a technical detail hidden even in the first requirement, though: what does it mean to record an amount *correctly*?
 
-### You can't audit a number that was stored badly
+### A bad number can't be audited
 
 Computers often represent numbers with floating-point arithmetic. That's useful for many calculations, but binary floating-point formats cannot represent every decimal fraction exactly.
 
@@ -47,7 +47,7 @@ That's why the system uses a **ledger** and balanced transactions. With double-e
 
 The ledger can ensure internal consistency. It cannot prove that a purchase was legitimate or that a receipt is genuine. Which leads to the next problem: who is allowed to enter, approve or change these records?
 
-### The wrong person shouldn't be able to rewrite the answer
+### Who can change the answer
 
 AbiVault has admin, supervisor and student roles. Students can inspect a restricted view of the finances, while the people responsible for managing the committee get permissions appropriate to their roles.
 
@@ -61,7 +61,7 @@ But access control only answers who can do something *now*. Suppose someone was 
 
 Important actions therefore create audit records, and accounting periods can be locked once they're closed. Those controls help preserve the history behind the balance instead of letting a later edit silently replace it.
 
-### The receipt is where the story becomes real
+### The receipt
 
 Back to the €40. We can now store the amount accurately, link it to a balanced transaction and control who is allowed to edit it.
 
@@ -77,7 +77,7 @@ That screenshot is the **demo dashboard**, with seeded example data. It demonstr
 
 And that distinction matters, because a working-looking dashboard is not the same as a financial system that has been tested in a real organization.
 
-### A demo is not a security audit
+### A demo is not an audit
 
 The project contains unit tests and a separate SQL test for its Row Level Security policies. Those checks are particularly relevant when organization boundaries and permissions are part of the design.
 

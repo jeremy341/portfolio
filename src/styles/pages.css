@@ -700,29 +700,38 @@ html:not([data-js]) .find-btn {
 }
 
 .pager {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--gap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
   margin-top: clamp(56px, 8vw, 96px);
-  padding-top: 20px;
+  padding-top: 28px;
   border-top: 1px dashed var(--line);
 }
 
+/* The two neighbours sit as centred buttons of one fixed width, not as edge-aligned text. */
 .pager-a {
   display: grid;
+  justify-items: center;
   align-content: start;
   gap: 2px;
-  margin-inline: -12px;
-  padding: 14px 12px;
-  transition: background-color 150ms var(--ease);
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  text-align: center;
+  transition: background-color 150ms var(--ease), border-color 150ms var(--ease);
 }
 
 .pager-a:is(:hover, :focus-visible) {
   background: var(--hover);
+  border-color: var(--accent);
 }
 
-.pager-next {
-  text-align: right;
+.summary-stat {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
 }
 
 .pager-k,
@@ -743,12 +752,14 @@ html:not([data-js]) .find-btn {
 
 @media (max-width: 559px) {
   .pager {
-    grid-template-columns: 1fr;
-    gap: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
   }
 
-  .pager-next {
-    text-align: left;
+  .pager-a {
+    flex: none;
+    width: 100%;
   }
 
   .link-row {

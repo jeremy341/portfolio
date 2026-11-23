@@ -23,7 +23,7 @@ And auctions turned out to be a particularly effective way of exposing that prob
 
 {{figure:0}}
 
-### One room needs one version of the truth
+### Shared game state
 
 A player can click a button to bid or buy something, but the browser is not supposed to make the final decision. It sends an **intent** to the Node.js server, which checks the current turn, the amount of money available and the game rules before changing the shared state.
 
@@ -37,7 +37,7 @@ So the server is **authoritative**: it validates the action, updates the room an
 
 Now, buying a property is one action. Auctions are different. They mix several players, changing bids and a deadline that everyone is watching. Which is where a seemingly harmless countdown becomes an engineering problem.
 
-### The countdown was not the real problem
+### Not really the countdown
 
 What happens if my phone says there are 80 milliseconds left, your laptop says 140 milliseconds, and both of us press Bid? Both screens could be telling the truth according to their own clocks, yet only one shared outcome is possible.
 
@@ -63,7 +63,7 @@ Great, so the server owns the clock. Problem solved?
 
 Only until a player disconnects.
 
-### Disconnecting is not the same as passing
+### Disconnects
 
 The awkward scenario I remember is someone leaving while an auction is still active. The server can no longer assume that every participant is connected, but it also can't pretend that a dropped connection was a deliberate decision to pass.
 
@@ -77,7 +77,7 @@ This is why the timer problem wasn't really about drawing five seconds on a scre
 
 The UI has to accept those decisions and recover when its local view is out of date. It cannot simply insist that the optimistic state it displayed a moment ago must be right.
 
-### Then I kept adding things
+### Then I added more
 
 Once multiplayer actions worked, there was a lot more room to experiment. Poorup now has Standard-40 and Metro-52 boards, public and private rooms, guest play, trading, property development, financing and fictional market events.
 
@@ -91,7 +91,7 @@ I also used GPT/Codex for debugging and implementation assistance, particularly 
 
 The important thing is that the extra features all have to operate on the same shared game state. It doesn't matter how nice a new auction animation looks if it breaks the rules everyone else is playing by.
 
-### What I still wouldn't call finished
+### Not finished yet
 
 A bigger codebase also brings more opportunities for things to go wrong.
 

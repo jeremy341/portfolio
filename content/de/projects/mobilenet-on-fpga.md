@@ -19,7 +19,7 @@ Das war die Ausgangsfrage meines MobileNet-Experiments im Rahmen der Projektarbe
 
 Die Ergebnisse waren etwas weniger vorhersehbar, als der Ausdruck „geringere Präzision“ vermuten lässt.
 
-### Erst mal Modelle, die ohnehin klein sein sollen
+### Kleine Modelle zuerst
 
 Ich habe MobileNetV1 und MobileNetV2 gewählt, weil beide Architekturen auf Effizienz ausgelegt sind.
 
@@ -31,7 +31,7 @@ Ich habe beide Netze in Keras implementiert, statt vortrainierte Gewichte zu lad
 
 Die Originalbilder von CIFAR-10 sind nur 32×32 Pixel groß. Durch das Hochskalieren auf 128×128 kommen keine neuen Details hinzu. Es ging um einen kontrollierten Softwarevergleich, nicht um den Nachweis, dass sich die Netze auf einer echten Kamera oder einem FPGA genauso verhalten.
 
-### Was passiert, wenn aus Float32 INT8 wird?
+### Von Float32 zu INT8
 
 Die Float32-Modelle stellen Werte als 32-Bit-Gleitkommazahlen dar. Das bietet einen großen Wertebereich und eine gewisse numerische Präzision, kostet aber Speicher und erfordert komplexere Rechenoperationen.
 
@@ -43,7 +43,7 @@ Um herauszufinden, ob das tatsächlich passiert, habe ich die Modelle zunächst 
 
 Der Plan war einfach: beide Versionen auf denselben 10.000 Testbildern vergleichen und schauen, wie viel uns die geringere Präzision kostet.
 
-### Bei der Genauigkeit passierte gar nicht so viel
+### Die Genauigkeit
 
 Die dokumentierten Ergebnisse:
 
@@ -75,7 +75,7 @@ Die Dateien waren damit etwa um den Faktor **3,34** bei V1 und **2,78** bei V2 k
 
 Eine kleinere Datei macht ein Netz aber nicht automatisch schneller.
 
-### Warum beim FPGA mehr als die Dateigröße zählt
+### Warum Größe nicht reicht
 
 Auf einem FPGA muss man entscheiden, mit welchen Rechenressourcen die einzelnen Operationen ausgeführt werden. Das Produkt zweier INT8-Werte kann bis zu **16 Bit inklusive Vorzeichen** benötigen. Bei einer Convolution werden anschließend viele solcher Produkte aufsummiert. Der Akkumulator braucht also ausreichend Bits, damit kein Überlauf entsteht.
 
@@ -87,7 +87,7 @@ Was ich damit nicht weiß: wie viele DSP-Blöcke die Implementierung braucht, wi
 
 Das Experiment beantwortet eine Frage zur *Darstellung des Modells*. Nicht die nächste Frage zur *Ausführung auf Hardware*.
 
-### Was ich testen würde, bevor ich mehr behaupte
+### Was ich als Nächstes testen würde
 
 Auch der Softwarevergleich selbst hat Grenzen. Ich habe mit **einem Trainings-Seed** gearbeitet und kenne deshalb die Streuung zwischen unabhängigen Läufen nicht. Bei der dokumentierten Auswahl der Kalibrierbilder überschnitten sich 25 Bilder mit dem Validierungssplit. Das würde ich korrigieren, indem ich ausschließlich aus dem Trainingssplit ziehe.
 

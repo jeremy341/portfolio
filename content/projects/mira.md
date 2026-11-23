@@ -21,7 +21,7 @@ Because the moment I started testing the models on less controlled images, that 
 
 So how does a model get *better* on paper while leaving me less convinced when I actually use it? That question ended up shaping the next stage of MIRA.
 
-### From recognizing an image to finding an object
+### From classifier to detector
 
 MIRA stands for **Machine Intelligence for Recycling Automation**. The long-term idea is waste sorting with a camera and a small model. Before I could think about building a sorter, though, I needed to find out whether the software could recognize the waste in the first place.
 
@@ -31,7 +31,7 @@ That was a useful start. But imagine putting two bottles and a piece of paper in
 
 So I moved to YOLOv8n and eventually YOLO11n, this time detecting glass, metal, paper, plastic and trash. That solved the *type* of problem I was asking the model to solve. It didn't yet solve the much more annoying question of what data I should trust.
 
-### The dataset was part of the experiment
+### The dataset
 
 My images didn't come from one neat source. I combined data from [TACO](https://tacodataset.org/), [TrashNet](https://github.com/garythung/trashnet), [Roboflow](https://roboflow.com/) and a dataset by dmedhi. Some images had clean backgrounds and isolated objects. Others showed actual litter in complicated scenes.
 
@@ -47,7 +47,7 @@ Looks like a huge improvement. And on the chosen validation set, it was. But the
 
 Which means the next question wasn't simply whether the score had increased. It was whether I'd made a model that understood waste better, or a model that had become particularly good at *that kind of image*.
 
-### Two good runs, but what does "good" mean?
+### What does good mean?
 
 Consider the numbers. EXP-014, trained with an older and more varied dataset mix, achieved **60.7% mAP50** on its recorded validation split. After the rebuild, EXP-018 and EXP-019 reached roughly **90.6% mAP50** on the cleaner 415-image split, with almost the same result on the repeat run.
 
@@ -63,7 +63,7 @@ To understand why, we need two definitions. **mAP50** evaluates predicted object
 
 So I don't have a fair head-to-head result proving EXP-014 beats EXP-019. I have something less satisfying, but much more useful: a reason to question whether my clean validation split reflects the situations that matter to me.
 
-### The number was hiding a different problem
+### The hidden problem
 
 The trash class illustrates the difficulty. On the clean validation data, the recorded mAP50 for trash reached **97.5%**. EXP-014's trash class scored **54% F1** in the separate field evaluation. Again, these aren't directly comparable scores. But they remind me how differently the same category behaves under different conditions.
 
@@ -71,7 +71,7 @@ In an actual scene, paper is crumpled, metal might only be visible from one angl
 
 That doesn't mean EXP-019 is worthless, or that EXP-014 is universally better. It means my evaluation still has a gap. And declaring a winner before testing both on the same independent data would be doing exactly what got me into this situation.
 
-### Getting the model out of the notebook
+### Leaving the notebook
 
 There was also a practical question I couldn't avoid: even if I trusted the model, how would someone actually use it?
 
@@ -85,7 +85,7 @@ I still don't have a measured deployment result for the final detector on a Rasp
 
 And regarding the 9,000-plus Hugging Face "downloads": those are lifetime model-file requests, **not** 9,000 unique people. I wrote [a separate blog post](/blog/beyond-the-download-count/) about why that distinction matters. Apparently even my download counter has a validation problem.
 
-### So where does that leave EXP-020?
+### Next: EXP-020
 
 EXP-020 is meant to test the obvious follow-up hypothesis: combine the balanced, cleaner training data behind EXP-019 with the varied backgrounds that made EXP-014 worth revisiting. Then evaluate the models under genuinely comparable conditions.
 
@@ -97,6 +97,7 @@ I was thrilled by that 90.6%. I still think it's a nice result. I just learned t
 
 ## In numbers
 
+- Downloads: 9.1K+ lifetime model downloads on Hugging Face (file requests, not unique people)
 - Logged experiments: EXP-001 to EXP-019; EXP-020 planned/in training, with no reported result here
 - Best recorded clean validation score: 90.6% mAP50 (EXP-018), 90.58% on repeat (EXP-019), 415 images
 - Field benchmark: EXP-014, 85.8% image-level class-presence F1 (92.9% precision, 79.7% recall), 805 images
@@ -105,7 +106,6 @@ I was thrilled by that 90.6%. I still think it's a nice result. I just learned t
 - Model sizes: PyTorch 5.47 MB; 320-pixel LiteRT export 3.02 MB
 - Recorded 320-pixel LiteRT validation: 86.2% mAP50
 - GPU inference: 1.5 to 3.6 ms/frame on a T4 in the recorded setup, not a Raspberry Pi measurement
-- Downloads: 9.1K+ lifetime model downloads on Hugging Face (file requests, not unique people)
 
 ## Figures
 

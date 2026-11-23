@@ -34,6 +34,8 @@ const lang: Lang = langOf(Astro.params.lang);
 const t = ui[lang];
 const { project, prev, next, number, total } = Astro.props;
 const [hero, ...more] = project.figures;
+// The download count is headline text in the summary, so it stays out of the numbers list.
+const shownFacts = project.facts.filter((fact) => !(project.slug === "mira" && fact.label === "Downloads"));
 const sections = [
   { id: "why", title: t.why, text: project.context },
   { id: "how", title: t.how, text: project.inside },
@@ -42,13 +44,13 @@ const sections = [
 const outline = project.story
   ? [
       ...project.story.sections.map((section) => ({ id: section.id, title: section.title })),
-      ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
+      ...(shownFacts.length ? [{ id: "numbers", title: t.numbers }] : []),
       { id: "links", title: t.links },
     ]
   : [
       { id: "why", title: t.why },
       { id: "how", title: t.how },
-      ...(project.facts.length ? [{ id: "numbers", title: t.numbers }] : []),
+      ...(shownFacts.length ? [{ id: "numbers", title: t.numbers }] : []),
       ...(more.length ? [{ id: "figures", title: t.figures }] : []),
       { id: "where", title: t.where },
       { id: "links", title: t.links },
@@ -87,7 +89,11 @@ const schema = [
 <Base title={project.name} description={t.projectDescription(project.name, project.summary, project.status)} schema={schema} lang={lang}>
   <div class="project">
     <h1 class="page-title">{project.name}</h1>
-    <p class="page-lead">{project.summary}</p>
+    <p class="page-lead">{project.summary}{project.slug === "mira" && (
+      <span class="summary-stat">
+        <span data-live-downloads="Jeremy341/MIRA-AI" data-lang={lang}>{lang === "de" ? "Heruntergeladen über 9.100 Mal auf Hugging Face" : "Downloaded 9.1K+ times on Hugging Face"}</span>
+      </span>
+)}</p>
 
     <aside class="rail" aria-label={t.projectRecord}>
       <p class="rail-n">{String(number).padStart(2, "0")} / {String(total).padStart(2, "0")}</p>
@@ -168,16 +174,15 @@ const schema = [
             </section>
           ))}
 
-          {project.facts.length > 0 && (
+          {shownFacts.length > 0 && (
             <section class="block work-reference" id="numbers" aria-labelledby="numbers-title">
               <h2 id="numbers-title">{t.numbers}</h2>
               <dl class="facts">
-                {project.facts.map((fact) => (
+                {shownFacts.map((fact) => (
                   <div>
                     <dt>{fact.label}</dt>
                     <dd
                       set:html={renderInline(fact.value, lang)}
-                      data-live-downloads={project.slug === "mira" && fact.label === "Downloads" ? "Jeremy341/MIRA-AI" : undefined}
                       data-lang={lang}
                     />
                   </div>
@@ -197,16 +202,15 @@ const schema = [
         </section>
       ))}
 
-      {project.facts.length > 0 && (
+      {shownFacts.length > 0 && (
         <section class="block" id="numbers" aria-labelledby="numbers-title">
           <h2 id="numbers-title">{t.numbers}</h2>
           <dl class="facts">
-            {project.facts.map((fact) => (
+            {shownFacts.map((fact) => (
               <div>
                 <dt>{fact.label}</dt>
                 <dd
                   set:html={renderInline(fact.value, lang)}
-                  data-live-downloads={project.slug === "mira" && fact.label === "Downloads" ? "Jeremy341/MIRA-AI" : undefined}
                   data-lang={lang}
                 />
               </div>

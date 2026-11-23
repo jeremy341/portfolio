@@ -19,7 +19,7 @@ That became the central question of my MobileNet experiment, part of project wor
 
 And the results were a little less predictable than the phrase "lower precision" might suggest.
 
-### Start with models built to be small
+### Small models first
 
 I chose MobileNetV1 and MobileNetV2 because both were designed with efficiency in mind.
 
@@ -31,7 +31,7 @@ I implemented the networks in Keras rather than loading ready-made pretrained we
 
 CIFAR-10's original images are only 32×32 pixels, so resizing them to 128×128 doesn't create any new detail. The purpose was a controlled software comparison, not proof that these networks would behave identically on a real camera or FPGA.
 
-### What changes when Float32 becomes INT8?
+### Float32 to INT8
 
 The Float32 versions represent values with 32-bit floating-point numbers. That gives a wide range of representable values and a certain numerical precision, but it also costs storage and more complex arithmetic.
 
@@ -43,7 +43,7 @@ To find out, I first trained the models in Float32, then converted them to full-
 
 The plan was straightforward: compare both versions on the same 10,000-image test set and see whether the reduction in precision cost too much.
 
-### The accuracy result wasn't the dramatic part
+### Accuracy was not the drama
 
 Here are the recorded results:
 
@@ -75,7 +75,7 @@ That's approximately **3.34 times smaller** for V1 and **2.78 times smaller** fo
 
 But a smaller file still isn't the same thing as a faster network.
 
-### Why an FPGA cares about more than file size
+### Why size is not enough
 
 On an FPGA, you have to choose the arithmetic resources that will carry out each operation. An INT8 multiplication can require up to **16 signed bits** for its result. A convolution then sums many products together, so its accumulator needs enough bits to avoid overflow.
 
@@ -87,7 +87,7 @@ What it doesn't tell me is how many DSP blocks an FPGA implementation would use,
 
 So the experiment answered one important question about the *model representation*. It didn't answer the next question about *execution on hardware*.
 
-### What I'd test before making a bigger claim
+### What I'd test next
 
 There are also limitations in the software comparison itself. I used **one training seed**, so I don't have a distribution of results across independent runs. The recorded calibration selection included 25 images overlapping the validation split, which I'd fix by sampling strictly from the training split.
 

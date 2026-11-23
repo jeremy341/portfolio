@@ -23,7 +23,7 @@ Auktionen haben sich als besonders gute Möglichkeit erwiesen, dieses Problem si
 
 {{figure:0}}
 
-### Ein Raum braucht einen gemeinsamen Spielstand
+### Ein gemeinsamer Spielstand
 
 Ein Spieler kann auf einen Button klicken, um zu bieten oder etwas zu kaufen. Aber sein Browser soll nicht die letzte Entscheidung treffen. Er schickt eine **Aktionsanfrage** an den Node.js-Server. Der prüft, wer am Zug ist, wie viel Geld zur Verfügung steht und was die Regeln erlauben, bevor er den gemeinsamen Spielzustand ändert.
 
@@ -39,7 +39,7 @@ Der Server ist deshalb **autoritativ**: Er prüft die Aktion, aktualisiert den R
 
 Ein Grundstück zu kaufen ist aber nur eine einzelne Aktion. Bei Auktionen kommen mehrere Spieler, sich ständig ändernde Gebote und eine Deadline zusammen, auf die alle schauen. Und plötzlich wird aus einem harmlosen Countdown ein Engineering-Problem.
 
-### Eigentlich ging es gar nicht um den Countdown
+### Nicht der Countdown
 
 Was passiert, wenn auf meinem Handy noch 80 Millisekunden übrig sind, auf deinem Laptop 140 und wir beide auf „Bid“ drücken? Gemessen an ihren eigenen Uhren könnten beide Geräte recht haben. Trotzdem kann es nur ein gemeinsames Ergebnis geben.
 
@@ -65,7 +65,7 @@ Super, die Uhr gehört also dem Server. Problem gelöst?
 
 Bis jemand die Verbindung verliert.
 
-### Wer die Verbindung verliert, hat nicht automatisch gepasst
+### Verbindungsabbruch
 
 Ich erinnere mich besonders an eine unangenehme Situation: Jemand verlässt den Raum mitten in einer Auktion. Der Server kann nicht mehr voraussetzen, dass alle Teilnehmer verbunden sind. Er kann aber auch nicht einfach so tun, als wäre ein Verbindungsabbruch eine bewusste Entscheidung gewesen, nicht weiterzubieten.
 
@@ -79,7 +79,7 @@ Deshalb ging es beim Timer im Grunde nie darum, fünf Sekunden auf einem Bildsch
 
 Die UI muss diese Entscheidungen übernehmen und sich wieder synchronisieren, wenn ihre lokale Ansicht veraltet ist. Sie kann nicht darauf bestehen, dass der optimistisch angezeigte Zustand von eben schon stimmen muss.
 
-### Und dann kamen immer mehr Dinge dazu
+### Dann kamen mehr Dinge
 
 Als die Multiplayer-Aktionen funktionierten, blieb viel Platz für Experimente. Poorup hat inzwischen die Bretter Standard-40 und Metro-52, öffentliche und private Räume, einen Gastmodus, Handel, Immobilienentwicklung, Finanzierung und fiktive Marktereignisse.
 
@@ -93,7 +93,7 @@ GPT/Codex habe ich auch beim Debugging und bei der Implementierung eingesetzt, i
 
 Alle zusätzlichen Features müssen mit demselben Spielzustand arbeiten. Eine schöne neue Auktionsanimation bringt nichts, wenn sie die Regeln durcheinanderbringt, nach denen alle anderen spielen.
 
-### Was ich noch nicht als fertig bezeichnen würde
+### Noch nicht fertig
 
 Mehr Code bedeutet auch mehr Gelegenheiten, dass irgendetwas schiefgeht.
 
