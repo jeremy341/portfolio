@@ -11,6 +11,8 @@ Meine Python-Desktop-App aus dem UDE-Praktikum vereint Pumpensteuerung, Durchflu
 
 ## Story
 
+**Mein Beitrag:** Ich habe die PyQt6-Desktop-App und die serielle Befehlsschicht gebaut und Pumpensteuerung, Durchflusssensoren, Mikroskopvideo und Tropfenanalyse zusammengeführt. [Quellcode: microdroplets-ui](https://github.com/jeremy341/microdroplets-ui)
+
 Als ich mein Praktikum an der Universität Duisburg-Essen anfing, hatte ich von Mikrofluidik so gut wie keine Ahnung. Die Geräte konnten winzige Flüssigkeitsmengen steuern, den Durchfluss messen und Tröpfchen aufnehmen, die sich durch kleine Kanäle bewegen. Meine Aufgabe war es, die einzelnen Komponenten in einer benutzbaren Desktop-App zusammenzubringen.
 
 Klang nach einem Softwareprojekt. War es technisch gesehen auch. Nur habe ich bei der Arbeit mit der Hardware gemerkt, dass einen Button mit der Aufschrift „Start pump“ zu zeichnen der einfachste Teil war.

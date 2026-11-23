@@ -11,6 +11,8 @@ I taught a camera to recognize waste, from a small classifier to YOLO detection.
 
 ## Story
 
+**My contribution:** I assembled the waste-image dataset, trained the object detector, and exported the model to LiteRT/TFLite. [Source: MIRA-AI](https://github.com/jeremy341/MIRA-AI)
+
 I remember seeing **90.6% mAP50** on MIRA's validation results and feeling genuinely excited. After all the training runs, dataset changes and failed ideas, there was finally a number that made the work look like it was paying off.
 
 At least, that's what I thought.

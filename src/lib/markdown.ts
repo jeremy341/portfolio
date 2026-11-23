@@ -1,5 +1,5 @@
 import MarkdownIt from "markdown-it";
-import { createHighlighter } from "shiki";
+import { bundledThemes, createHighlighter } from "shiki";
 import type { Lang } from "./i18n";
 
 // Raw HTML in Markdown is never rendered; it shows up as escaped text.
@@ -42,8 +42,18 @@ md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
  * The parser keeps raw HTML disabled and escapes all author-supplied labels.
  */
 const esc = (value: string) => md.utils.escapeHtml(value);
+const { default: githubLight } = await bundledThemes["github-light"]();
+const lightTheme = {
+  ...githubLight,
+  name: "portfolio-light",
+  tokenColors: githubLight.tokenColors?.map((token) =>
+    token.settings.foreground?.toLowerCase() === "#d73a49"
+      ? { ...token, settings: { ...token.settings, foreground: "#a8234a" } }
+      : token,
+  ),
+};
 const highlighter = await createHighlighter({
-  themes: ["tokyo-night", "github-light"],
+  themes: ["tokyo-night", lightTheme],
   langs: ["javascript", "typescript", "python", "bash", "json", "sql", "cpp", "yaml"],
 });
 
@@ -71,7 +81,7 @@ function editorCode(source: string, grammar: string | null, key: string): string
   if (grammar) {
     const highlighted = highlighter.codeToHtml(source, {
       lang: grammar,
-      themes: { dark: "tokyo-night", light: "github-light" },
+      themes: { dark: "tokyo-night", light: lightTheme.name },
       defaultColor: false,
     });
     // Add a stable language class to the known Shiki-generated code element.

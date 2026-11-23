@@ -58,7 +58,7 @@ Jan 2026 - Feb 2026 · Mülheim an der Ruhr
 
 2026 · Experiment · [Live](https://mira-vision.vercel.app/) · [Fallstudie](/de/work/mira/) · [Code](https://github.com/jeremy341/MIRA-AI)
 
-- Erkennt Glas, Metall, Papier, Plastik und Müll auf Bildern (YOLO11n); 90,6 % mAP50 (Trefferquote) auf getrennten Validierungsdaten
+- Erkennt Glas, Metall, Papier, Plastik und Müll auf Bildern (YOLO11n); 90,6 % mAP50 auf dem sauberen Validierungssplit mit 415 Bildern
 - Eigenen Datensatz mit 6.898 Bildern aufgebaut; Modell auf 3,02 MB verkleinert
 - Über 9.100 Modell-Downloads auf Hugging Face (Dateianfragen)
 - Als Python-Paket mira-ai auf PyPI veröffentlicht
