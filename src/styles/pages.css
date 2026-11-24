@@ -704,6 +704,9 @@ html:not([data-js]) .find-btn {
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
+  /* Match the reading column above (110ch at .block's 1.05rem) so the buttons line up with the text. */
+  font-size: 1.05rem;
+  max-width: 110ch;
   margin-top: clamp(56px, 8vw, 96px);
   padding-top: 28px;
   border-top: 1px dashed var(--line);
