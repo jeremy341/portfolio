@@ -552,7 +552,7 @@ test("German pages are described in German by the same structured data", () => {
   const home = jsonLd(page("de/index.html"))[0]["@graph"];
   const person = home.find((node) => node["@type"] === "Person");
   assert.match(person.description, /^Jeremy Darko ist ein Schüler/);
-  assert.match(page("de/index.html"), /<title>Jeremy Darko \| Computer Engineering, Machine Learning, GPU-Computing und Hardware<\/title>/);
+  assert.match(page("de/index.html"), /<title>Jeremy Darko \| Computer Engineering &amp; ML<\/title>/);
   assert.match(page("de/blog/index.html"), /"@type":"Blog"/);
 });
 
@@ -1046,4 +1046,40 @@ test("the former MIRA download article URLs redirect to the renamed article", ()
     assert.ok(legacy.includes(`url=/${prefix}blog/beyond-the-download-count/`), "redirect should preserve language");
     assert.ok(!page("sitemap.xml").includes(`/${prefix}blog/am-i-famous-now/`), "legacy route should stay out of the sitemap");
   }
+});
+
+
+test("SEO identity is stable across languages and author references", () => {
+  const origin = (process.env.PUBLIC_SITE_URL ?? "https://jeremydarko.me").replace(/\/$/, "");
+  if (!origin) return;
+  for (const prefix of ["", "de/"]) {
+    const graph = jsonLd(page(prefix + "index.html"))[0]["@graph"];
+    const person = graph.find(node => node["@type"] === "Person");
+    const website = graph.find(node => node["@type"] === "WebSite");
+    assert.equal(person["@id"], origin + "/#person");
+    assert.equal(website["@id"], origin + "/#website");
+    assert.equal(website.author["@id"], person["@id"]);
+    assert.deepEqual(website.inLanguage, ["en", "de"]);
+    const profile = jsonLd(page(prefix + "about/index.html"))[0]["@graph"].find(node => node["@type"] === "ProfilePage");
+    assert.equal(profile.mainEntity["@id"], person["@id"]);
+    for (const path of [...Object.keys(projects).map(slug => "work/" + slug + "/"), ...posts.map(slug => "blog/" + slug + "/")]) {
+      const nodes = jsonLd(page(prefix + path + "index.html"))[0]["@graph"];
+      const work = nodes.find(node => ["SoftwareSourceCode", "CreativeWork", "BlogPosting"].includes(node["@type"]));
+      assert.ok(work, path);
+      assert.equal(work.author["@id"], person["@id"], path);
+      assert.equal(work.url, origin + "/" + prefix + path, path);
+    }
+    const { window } = new JSDOM(page(prefix + "index.html"));
+    assert.ok(window.document.querySelector("main h1").textContent.includes("Jeremy Darko"));
+    assert.ok(window.document.querySelector("main p").textContent.trim());
+    assert.equal(window.document.querySelectorAll(".dash-rows a[href]").length, 5);
+    assert.ok(window.document.title.length <= 60);
+    assert.ok(window.document.querySelector('meta[name="description"]').content.length <= 155);
+    window.close();
+  }
+  const full = page("llms-full.txt");
+  for (const path of [...Object.keys(projects).map(slug => "work/" + slug + "/"), ...posts.map(slug => "blog/" + slug + "/"), "about/", "cv/", "certificates/"]) {
+    assert.ok(full.includes("Source page: " + origin + "/" + path), path);
+  }
+  assert.match(page("llms.txt"), /no measured Raspberry Pi deployment result/);
 });
