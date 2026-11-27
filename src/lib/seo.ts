@@ -13,7 +13,7 @@ export function profilesOf(lang: Lang): string[] {
 
 /** The person as a reference, for the author or publisher of a page. */
 export function personRef(lang: Lang) {
-  return { "@type": "Person", name: site.name, url: canonical(url(lang, "/")) };
+  return { "@type": "Person", "@id": canonical("/#person"), name: site.name, url: canonical(url(lang, "/about/")) };
 }
 
 /** The person in full. The About page carries it; the other pages refer to it by name. */
@@ -23,12 +23,12 @@ export function personNode(lang: Lang) {
   const email = contact.direct.find((row) => row.href.startsWith("mailto:"));
   return {
     "@type": "Person",
+    "@id": canonical("/#person"),
     name: site.name,
     alternateName: site.fullName,
     jobTitle: t.jobTitle,
     description: t.personDescription(site.name),
-    url: canonical(url(lang, "/")),
-    image: canonical("/favicon-512.png"),
+    url: canonical(url(lang, "/about/")),
     email: email?.href.slice("mailto:".length),
     address: { "@type": "PostalAddress", addressRegion: t.region, addressCountry: "DE" },
     knowsAbout: about.topics
@@ -44,10 +44,11 @@ export function websiteNode(lang: Lang) {
   const t = ui[lang];
   return {
     "@type": "WebSite",
+    "@id": canonical("/#website"),
     name: site.name,
     description: t.description,
-    url: canonical(url(lang, "/")),
-    inLanguage: t.htmlLang,
+    url: canonical("/"),
+    inLanguage: ["en", "de"],
     author: personRef(lang),
   };
 }
@@ -75,7 +76,7 @@ export function faqEntries(): { question: string; answer: string }[] {
   const qa: [string, string][] = [
     ["Who is Jeremy Darko?", `${site.fullName} is a student from North Rhine-Westphalia, Germany, who builds computer engineering and machine learning projects. Projects, articles and certificates are on this site.`],
     ["What is MIRA?", `MIRA (Machine Intelligence for Recycling Automation) is a computer vision project that tries to tell kinds of waste apart with a camera and a small model. It is an experiment, not a finished sorting robot.${downloads ? ` Its public number is ${plainText(downloads)}.` : ""}`],
-    ["Is MIRA finished?", "No. The sorting robot is not finished and nothing has run on a Raspberry Pi yet. The next model, EXP-020, is in training and has no logged results yet."],
+    ["Is MIRA finished?", "No. The sorting robot is unfinished. There is no measured Raspberry Pi deployment result for the final detector, and no verified EXP-020 result is reported."],
     ["What is Poorup?", summaryOf("poorup")],
     ["What is FluidicStudio?", summaryOf("fluidicstudio")],
     ["Does Jeremy work at the University of Duisburg-Essen?", "Not in a university role. He does project work with the Chair of Electronic Components and Circuits (EBS), and he spent four weeks at the chair from 3 to 28 August 2026 on FluidicStudio."],
