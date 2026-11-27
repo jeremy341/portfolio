@@ -1757,3 +1757,48 @@ html[data-theme="light"] .fig-img .chart-light { display: block; }
 .about-story-link {
   margin-top: 2.5em;
 }
+
+/* 88x31 buttons on About: shown at their real size, with the pixels left sharp. */
+.buttons {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.buttons h2 {
+  margin: 0 0 1em;
+  font-size: 1.1rem;
+}
+
+.button-wall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 1.8em;
+  padding: 0;
+  list-style: none;
+}
+
+/* A row of pictures, not a text list: no dashes, no list spacing. */
+.buttons .button-wall > li {
+  margin: 0;
+  padding: 0;
+}
+
+.buttons .button-wall > li::before {
+  content: none;
+}
+
+.button-wall a,
+.button-wall img {
+  display: block;
+}
+
+.button-wall img {
+  width: 88px;
+  height: 31px;
+  image-rendering: pixelated;
+}
+
+.buttons p {
+  margin-bottom: 0.9em;
+}

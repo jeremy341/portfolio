@@ -10,6 +10,16 @@ export const getStaticPaths = langParams;
 const lang = langOf(Astro.params.lang);
 const t = ui[lang];
 const { about } = getContent(lang);
+
+// 88x31 buttons. Other people's are loaded from their own sites, so they stay up to date.
+const coolPeople = [
+  { name: "stelle.codes", href: "https://stelle.codes/", image: "https://stelle.codes/button.png" },
+  { name: "3kh0.net", href: "https://3kh0.net/", image: "https://3kh0.net/button.png" },
+];
+// My button. public/buttons/yoshi-jerry.gif is the same one saying "jerry": it is hosted too, just not
+// shown. Change the file name here to switch.
+const mine = "/buttons/yoshi-jeremy.gif";
+
 const schema = [
   { "@type": "ProfilePage", name: t.aboutTitle, url: canonical(url(lang, "/about/")), inLanguage: t.htmlLang, mainEntity: personNode(lang) },
   breadcrumbs(lang, [{ name: t.aboutTitle, path: url(lang, "/about/") }]),
@@ -25,5 +35,28 @@ const schema = [
       <Fragment set:html={renderMarkdown(about.biography, lang)} />
     </div>
     <p class="about-story-link"><a href={url(lang, "/about/story/")}>{t.aboutStoryLink}</a></p>
+  </section>
+
+  <section class="index" aria-labelledby="buttons-title">
+    <div class="buttons block">
+      <h2 id="buttons-title">{t.coolPeopleTitle}</h2>
+      <ul class="button-wall">
+        {coolPeople.map((person) => (
+          <li>
+            <a href={person.href}>
+              <img src={person.image} width="88" height="31" alt={person.name} loading="lazy" referrerpolicy="no-referrer" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>{t.addMine}</p>
+      <ul class="button-wall">
+        <li>
+          <a href={mine}>
+            <img src={mine} width="88" height="31" alt={site.name} />
+          </a>
+        </li>
+      </ul>
+    </div>
   </section>
 </Base>

@@ -127,6 +127,8 @@ const en = {
 
   aboutTitle: "About",
   aboutStoryLink: "Read the longer story →",
+  coolPeopleTitle: "Cool people I don't know (yet)",
+  addMine: "If you want to add mine, here it is below:",
   aboutDescription: (name: string) => `About ${name}: ${summary.en}`,
   notes: {
     now: { title: "Now", description: "Dated notes on what Jeremy Darko is working on and writing about." },
@@ -286,6 +288,8 @@ const de: Strings = {
 
   aboutTitle: "Über mich",
   aboutStoryLink: "Die ganze Geschichte lesen →",
+  coolPeopleTitle: "Coole Leute, die ich (noch) nicht kenne",
+  addMine: "Wenn du meinen Button einbinden willst, hier ist er:",
   aboutDescription: (name) => `Über ${name}: ${summary.de}`,
   notes: {
     now: { title: "Aktuell", description: "Notizen dazu, woran Jeremy Darko gerade arbeitet und worüber er schreibt." },

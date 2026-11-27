@@ -297,7 +297,21 @@ test("Work lists all six projects and Writing lists every article", () => {
   for (const slug of posts) assert.match(blog, new RegExp(`href="/blog/${slug}/"`), `no link to ${slug}`);
 });
 
-test("only the theme icon ships, and pictures appear only on project pages and Certificates", () => {
+test("About shows the 88x31 buttons in both languages and ships its own", () => {
+  for (const prefix of ["", "de/"]) {
+    const html = page(prefix + "about/index.html");
+    for (const href of ["https://stelle.codes/", "https://3kh0.net/"]) assert.ok(html.includes(`href="${href}"`), href);
+    assert.ok(html.includes('src="/buttons/yoshi-jeremy.gif"'), "the jeremy button is shown");
+    assert.ok(!html.includes("yoshi-jerry"), "the jerry button is hosted but not shown");
+    for (const name of ["jeremy", "jerry"]) {
+      // GIF header: width and height are little-endian 16-bit numbers right after the signature.
+      const gif = readFileSync(`${dist}/buttons/yoshi-${name}.gif`);
+      assert.deepEqual([gif.readUInt16LE(6), gif.readUInt16LE(8)], [88, 31]);
+    }
+  }
+});
+
+test("only the theme icon ships, and pictures appear only on project pages, Certificates and About", () => {
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, "utf8");
     // The lost page has one intentional graphic: the interactive koi pond canvas.
@@ -308,7 +322,7 @@ test("only the theme icon ships, and pictures appear only on project pages and C
     if (file.endsWith("404.html")) assert.match(html, /<canvas class="koi-pond"/, "the 404 has its koi pond");
     const rel = file.slice(dist.length + 1).split("\\").join("/");
     if (/<img /.test(html)) {
-      assert.match(rel, /^(de\/)?(work\/[\w-]+|certificates)\/index\.html$/, `${rel} should not carry pictures`);
+      assert.match(rel, /^(de\/)?(work\/[\w-]+|certificates|about)\/index\.html$/, `${rel} should not carry pictures`);
     }
   }
 });
