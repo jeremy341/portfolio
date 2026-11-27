@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getContent, type Post, type Project } from "../lib/content";
 import { plainText } from "../lib/markdown";
-import { isoDate, site } from "../lib/site";
+import { canonical, isoDate, site } from "../lib/site";
 
 // Every project, article and page in full, as plain text, for language models that read one file.
 // The companion of llms.txt. English only.
@@ -14,6 +14,7 @@ const prose = (text: string) =>
 const project = (p: Project) =>
   [
     `## Project: ${p.name}`,
+    `Source page: ${canonical(`/work/${p.slug}/`) ?? `/work/${p.slug}/`}`,
     `Status: ${p.status}. Category: ${p.categoryLabel}. Built with: ${p.tech.join(", ")}.`,
     p.summary,
     p.facts.length ? `### In numbers\n\n${p.facts.map((f) => `- ${f.label}: ${plainText(f.value)}`).join("\n")}` : "",
@@ -29,7 +30,7 @@ const project = (p: Project) =>
     .join("\n\n");
 
 const article = (p: Post) =>
-  [`## Article: ${p.title}`, `Published ${isoDate(p.publishedAt)}. Tags: ${p.tags.join(", ")}.`, p.description, prose(p.markdown)].join("\n\n");
+  [`## Article: ${p.title}`, `Source page: ${canonical(`/blog/${p.slug}/`) ?? `/blog/${p.slug}/`}`, `Published ${isoDate(p.publishedAt)}. Tags: ${p.tags.join(", ")}.`, p.description, prose(p.markdown)].join("\n\n");
 
 export const GET: APIRoute = () => {
   const { about, certificates, certificatesIntro, cv, posts, projects } = getContent("en");
@@ -37,14 +38,17 @@ export const GET: APIRoute = () => {
     `# ${site.name}: full text`,
     `Projects, articles and pages by ${site.name}, in full. The short index is at /llms.txt. German versions are under /de/.`,
     `## About ${site.name}`,
+    `Source page: ${canonical("/about/") ?? "/about/"}`,
     prose(about.profile),
     prose(about.biography),
     `### What I keep exploring`,
     about.topics.trim(),
     `## ${cv.title}`,
+    `Source page: ${canonical("/cv/") ?? "/cv/"}`,
     `${site.fullName}. ${cv.tagline}`,
     prose(cv.body),
     `## Certificates`,
+    `Source page: ${canonical("/certificates/") ?? "/certificates/"}`,
     prose(certificatesIntro),
     ...certificates.map((cert) => `- ${cert.title}: ${plainText(cert.issuer)}, ${cert.date}. ${prose(cert.text)}`),
     ...projects.map(project),
