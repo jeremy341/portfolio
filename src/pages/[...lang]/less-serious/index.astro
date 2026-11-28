@@ -11,6 +11,14 @@ const title = de ? "In Arbeit" : "Work in Progress";
   <div class="teaser-screen">
     <h1 class="teaser-plaque">
       <span class="sr-only">{title}</span>
+      <svg class="teaser-ink" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="teaser-title-ink" color-interpolation-filters="sRGB">
+            <feFlood flood-color="#fccdc6" />
+            <feComposite in2="SourceAlpha" operator="in" />
+          </filter>
+        </defs>
+      </svg>
       <img src={`/less-serious/work-in-progress-${lang}.png`} width={de ? 86 : 126} height="86" alt="" />
     </h1>
   </div>
@@ -63,16 +71,17 @@ const title = de ? "In Arbeit" : "Work in Progress";
       #8a450c;
     box-shadow: inset 2px 2px #da9656, inset -2px -2px #653109, 4px 4px #492a15;
   }
+  .teaser-ink { position: absolute; }
   .teaser-plaque img {
     display: block;
     image-rendering: pixelated;
     width: auto;
     height: 172px;
-    filter: brightness(0) invert(1) sepia(1) drop-shadow(2px 2px #4f270a);
+    filter: url(#teaser-title-ink) drop-shadow(2px 2px #4f270a);
   }
   @media (min-width: 640px) and (min-height: 520px) {
     .teaser-plaque { padding: 24px 32px 28px; }
-    .teaser-plaque img { height: 258px; filter: brightness(0) invert(1) sepia(1) drop-shadow(3px 3px #4f270a); }
+    .teaser-plaque img { height: 258px; filter: url(#teaser-title-ink) drop-shadow(3px 3px #4f270a); }
   }
   @media (max-width: 359px) {
     .teaser-plaque { padding-inline: 10px; }
