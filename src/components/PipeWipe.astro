@@ -1,0 +1,132 @@
+---
+interface Props { arrival?: boolean; }
+const { arrival = false } = Astro.props;
+const delays = Array.from({ length: 12 }, (_, column) => column * 36);
+const closeMs = 480;
+const openMs = 380;
+const lastDelay = delays[delays.length - 1];
+---
+<div class="pipe-wipe" data-pipe-wipe data-receive={arrival ? "" : undefined}
+  data-close-ms={closeMs + lastDelay} data-open-ms={openMs + lastDelay}
+  style={{ "--pipe-close": closeMs + "ms", "--pipe-open": openMs + "ms" }} aria-hidden="true">
+  {delays.map((delay) => <span style={{ "--pipe-delay": `${delay}ms` }}></span>)}
+</div>
+
+<script is:inline>
+  (() => {
+    const curtain = document.querySelector("[data-pipe-wipe]");
+    if (!curtain || !window.matchMedia) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const ticketKey = "jd:pipe-wipe";
+    let nativeOptOut;
+    const reset = () => {
+      delete curtain.dataset.state;
+      nativeOptOut?.remove();
+      nativeOptOut = undefined;
+    };
+    const validTicket = () => {
+      try {
+        const ticket = JSON.parse(sessionStorage.getItem(ticketKey) || "null");
+        sessionStorage.removeItem(ticketKey);
+        return ticket && ticket.path === location.pathname && Date.now() - ticket.at < 6000;
+      } catch {
+        return false;
+      }
+    };
+
+    addEventListener("pageshow", (event) => { if (event.persisted) reset(); });
+
+    if (curtain.hasAttribute("data-receive")) {
+      if (validTicket() && !reduced.matches) {
+        curtain.dataset.state = "covered";
+        const reveal = () => {
+          if (curtain.dataset.state !== "covered") return;
+          if (reduced.matches) { reset(); return; }
+          curtain.dataset.state = "opening";
+          setTimeout(reset, Number(curtain.dataset.openMs) + 65);
+        };
+        const afterPaint = () => requestAnimationFrame(() => requestAnimationFrame(reveal));
+        if (document.readyState === "loading") addEventListener("DOMContentLoaded", afterPaint, { once: true });
+        else afterPaint();
+        setTimeout(reveal, 600);
+      }
+      return;
+    }
+
+    document.addEventListener("click", (event) => {
+      if (event.defaultPrevented || event.button !== 0 || reduced.matches ||
+          event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+      const link = event.target instanceof Element && event.target.closest("a[data-pipe-entry]");
+      if (!link || link.origin !== location.origin || link.target || link.hasAttribute("download")) return;
+      if (curtain.dataset.state) {
+        event.preventDefault();
+        return;
+      }
+      event.preventDefault();
+      curtain.dataset.state = "closing";
+      document.dispatchEvent(new Event("jd:pipe-start"));
+      const lastColumn = curtain.lastElementChild;
+      let timer;
+      const cleanup = () => {
+        clearTimeout(timer);
+        lastColumn.removeEventListener("animationend", navigate);
+        window.removeEventListener("keydown", cancel);
+      };
+      const navigate = () => {
+        cleanup();
+        try { sessionStorage.setItem(ticketKey, JSON.stringify({ path: link.pathname, at: Date.now() })); } catch {}
+        // This one route owns the wipe; keep the editor's native crossfade for other links.
+        nativeOptOut = document.createElement("style");
+        nativeOptOut.textContent = "@view-transition { navigation: none; }";
+        document.head.append(nativeOptOut);
+        setTimeout(reset, 1200);
+        location.assign(link.href);
+      };
+      const cancel = (key) => {
+        if (key.key !== "Escape") return;
+        cleanup();
+        reset();
+      };
+      lastColumn.addEventListener("animationend", navigate, { once: true });
+      addEventListener("keydown", cancel);
+      timer = setTimeout(navigate, Number(curtain.dataset.closeMs) + 80);
+    });
+  })();
+</script>
+
+<style>
+  .pipe-wipe {
+    position: fixed;
+    z-index: 2147483647;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    visibility: hidden;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .pipe-wipe span { background: #000; }
+  .pipe-wipe[data-state] { visibility: visible; }
+  .pipe-wipe[data-state="closing"] { pointer-events: auto; }
+  .pipe-wipe[data-state="closing"] span {
+    animation: pipe-close var(--pipe-close) steps(12, end) var(--pipe-delay) both;
+  }
+  .pipe-wipe[data-state="opening"] span {
+    animation: pipe-open var(--pipe-open) steps(12, end) var(--pipe-delay) both;
+  }
+
+  @keyframes pipe-close {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes pipe-open {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pipe-wipe[data-state] { visibility: hidden; pointer-events: none; }
+  }
+</style>

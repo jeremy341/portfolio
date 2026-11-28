@@ -5,6 +5,7 @@ import "../styles/global.css";
 import "../styles/pages.css";
 import "../styles/touch.css";
 import Header from "../components/Header.astro";
+import PipeWipe from "../components/PipeWipe.astro";
 import { getContent, routesFor } from "../lib/content";
 import { outsidePreviews } from "../lib/glossary";
 import { otherPath, ui, url as localizedUrl, type Lang } from "../lib/i18n";
@@ -19,11 +20,12 @@ interface Props {
   article?: { published: string; modified?: string; tags: string[] };
   schema?: (Record<string, unknown> | undefined)[] | Record<string, unknown>;
   home?: boolean;
+  teaser?: boolean;
   noindex?: boolean;
   lang: Lang;
 }
 
-const { title, description, type = "website", article, schema, home = false, noindex = false, lang } = Astro.props;
+const { title, description, type = "website", article, schema, home = false, teaser = false, noindex = false, lang } = Astro.props;
 const t = ui[lang];
 // Hover cards: a project's title and summary with its first figure, plus the outside links that have one.
 const { projects } = getContent(lang);
@@ -166,9 +168,11 @@ const speculation = {
     <script type="speculationrules" set:html={JSON.stringify(speculation)} />
     <script type="application/json" id="link-previews" set:html={JSON.stringify(previews).replace(/</g, "\\u003c")} />
   </head>
-  <body data-home={home ? "" : undefined}>
+  <body data-home={home ? "" : undefined} data-teaser={teaser ? "" : undefined}>
+    {teaser && <style is:inline>@view-transition { navigation: none; }</style>}
+    {home && <PipeWipe arrival={teaser} />}
     <a class="skip-link" href="#main">{t.skip}</a>
-    <Header home={home} lang={lang} />
+    <Header home={home} teaser={teaser} lang={lang} />
     <main id="main" class="frame" tabindex="-1">
       <slot />
     </main>

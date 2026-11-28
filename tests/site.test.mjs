@@ -311,7 +311,7 @@ test("About shows the 88x31 buttons in both languages and ships its own", () => 
   }
 });
 
-test("only the theme icon ships, and pictures appear only on project pages, Certificates and About", () => {
+test("only approved pages carry graphics and the Less Serious teaser carries only its title", () => {
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, "utf8");
     // The lost page has one intentional graphic: the interactive koi pond canvas.
@@ -321,7 +321,21 @@ test("only the theme icon ships, and pictures appear only on project pages, Cert
     assert.doesNotMatch(withoutLocalGraphics, /<svg|<canvas|<picture/, `${file} contains unexpected graphics`);
     if (file.endsWith("404.html")) assert.match(html, /<canvas class="koi-pond"/, "the 404 has its koi pond");
     const rel = file.slice(dist.length + 1).split("\\").join("/");
-    if (/<img /.test(html)) {
+    const images = [...html.matchAll(/<img [^>]*\bsrc="([^"]+)"/g)].map(([, src]) => src);
+    if (/^(de[/])?index[.]html$/.test(rel)) {
+      assert.deepEqual(images, ["/less-serious/wordmark.png"]);
+      assert.match(html, /data-pipe-entry/);
+      continue;
+    }
+    if (/^(de[/])?less-serious[/]index[.]html$/.test(rel)) {
+      const lang = rel.startsWith("de/") ? "de" : "en";
+      assert.deepEqual(images, ["/less-serious/work-in-progress-" + lang + ".png"]);
+      assert.match(html, /data-receive/);
+      assert.match(html, /content="noindex/);
+      assert.match(html, lang === "de" ? /In Arbeit/ : /Work in Progress/);
+      continue;
+    }
+    if (images.length) {
       assert.match(rel, /^(de\/)?(work\/[\w-]+|certificates|about)\/index\.html$/, `${rel} should not carry pictures`);
     }
   }

@@ -1,0 +1,96 @@
+---
+import { url, type Lang } from "../lib/i18n";
+interface Props { lang: Lang; classic?: boolean; }
+const { lang, classic = false } = Astro.props;
+---
+<a class:list={["less-serious-entry", { "entry-classic": classic }]} href={url(lang, classic ? "/" : "/less-serious/")} lang={classic ? lang : "en"} data-pipe-entry={classic ? undefined : ""}>
+  {classic ? (
+    <><span class="entry-cursor" aria-hidden="true"></span><span>{lang === "de" ? "Zum Portfolio" : "Main portfolio"}</span></>
+  ) : (
+    <>
+      <img class="entry-wordmark" src="/less-serious/wordmark.png" width="144" height="40" alt="For the less serious" />
+      <span class="entry-arrow" aria-hidden="true"></span>
+      <span class="entry-button" aria-hidden="true"><span class="entry-cap"></span></span>
+    </>
+  )}
+</a>
+<style>
+  .less-serious-entry {
+    --edge: #0e2b12;
+    --face: #fff06a;
+    --light: #fff8a8;
+    --depth: #c9812f;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    line-height: 1;
+  }
+  .entry-wordmark { display: block; image-rendering: pixelated; }
+  .entry-button {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    position: relative;
+    background: var(--edge);
+    clip-path: polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+      100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+      4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px));
+  }
+  .entry-button::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    clip-path: inherit;
+    background: var(--face);
+    box-shadow: inset 0 2px var(--light), inset 0 -4px var(--depth);
+  }
+  .entry-cap {
+    position: relative;
+    width: 24px;
+    height: 20px;
+    background: url("/less-serious/cap.svg") center / 24px 20px no-repeat;
+  }
+  .entry-arrow {
+    width: 14px;
+    height: 14px;
+    background: currentColor;
+    clip-path: polygon(6px 0, 8px 0, 8px 2px, 10px 2px, 10px 4px, 12px 4px, 12px 6px,
+      14px 6px, 14px 8px, 12px 8px, 12px 10px, 10px 10px, 10px 12px, 8px 12px, 8px 14px,
+      6px 14px, 6px 9px, 0 9px, 0 5px, 6px 5px);
+  }
+  .less-serious-entry:is(:hover, :focus-visible) .entry-button::before { background: var(--light); }
+  .less-serious-entry:active .entry-button::before { box-shadow: inset 0 3px var(--depth); }
+  .less-serious-entry:active .entry-cap { transform: translateY(2px); }
+  .entry-classic {
+    --editor-bg: #1a1b26;
+    --editor-fg: #c0caf5;
+    --editor-accent: #7aa2f7;
+    --editor-edge: #565f89;
+    gap: 9px;
+    padding-inline: 10px;
+    border: 1px solid var(--editor-edge);
+    background: var(--editor-bg);
+    color: var(--editor-fg);
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  :global(html[data-theme="light"]) .entry-classic {
+    --editor-bg: #e6e7ed;
+    --editor-fg: #1a1b26;
+    --editor-accent: #2552b8;
+    --editor-edge: #72798f;
+  }
+  .entry-cursor { width: 0.65em; height: 1em; background: var(--editor-accent); }
+  .entry-classic:is(:hover, :focus-visible) { color: var(--editor-accent); border-color: currentColor; }
+  @media (forced-colors: active) {
+    .entry-cursor { forced-color-adjust: none; background: LinkText; }
+  }
+  @media (forced-colors: active) {
+    .entry-arrow { forced-color-adjust: none; background: LinkText; }
+    .entry-button { border: 2px solid LinkText; clip-path: none; }
+    .entry-button::before, .entry-cap { forced-color-adjust: none; }
+  }
+</style>

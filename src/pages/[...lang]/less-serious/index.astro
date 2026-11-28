@@ -1,0 +1,48 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { langOf, langParams } from "../../../lib/i18n";
+
+export const getStaticPaths = langParams;
+const lang = langOf(Astro.params.lang);
+const de = lang === "de";
+const title = de ? "In Arbeit" : "Work in Progress";
+---
+<Base lang={lang} title={title} description={de ? "Die spielerische Version des Portfolios ist noch in Arbeit." : "The playful edition of this portfolio is still in progress."} home teaser noindex>
+  <div class="teaser-screen">
+    <h1>
+      <span class="sr-only">{title}</span>
+      <img src={`/less-serious/work-in-progress-${lang}.png`} width={de ? 86 : 126} height="86" alt="" />
+    </h1>
+  </div>
+</Base>
+
+<style>
+  :global(html:root:has(body[data-teaser])) {
+    --bg: #e9edff;
+    --fg: #212849;
+    --muted: #424b71;
+    --line: #59658f;
+    --accent: #294890;
+    --panel: #f5f5ff;
+    --hover: #dbe4fa;
+    --search: #294890;
+    color-scheme: light;
+  }
+  :global(body[data-teaser] .vim-status) { display: none; }
+  :global(body[data-teaser] main.frame) { padding-bottom: 0; }
+  .teaser-screen {
+    display: grid;
+    place-items: center;
+    min-height: clamp(280px, 68svh, 720px);
+    padding-block: 32px;
+    text-align: center;
+  }
+  h1 { margin: 0; }
+  h1 img { display: block; image-rendering: pixelated; width: auto; height: 172px; }
+  @media (min-width: 640px) {
+    h1 img { height: 258px; }
+  }
+  @media (max-width: 299px) {
+    h1 img { height: 86px; }
+  }
+</style>

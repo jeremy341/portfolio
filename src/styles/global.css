@@ -1668,3 +1668,11 @@ html[data-intro] .dash-hero .w {
     display: none;
   }
 }
+
+@media (min-width: 760px) {
+  .site-header--with-entry {
+    align-items: center;
+    flex-wrap: wrap;
+    padding-block: 20px;
+  }
+}

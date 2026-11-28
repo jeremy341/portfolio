@@ -1,24 +1,26 @@
 ---
 import { langs, otherPath, ui, url, type Lang } from "../lib/i18n";
 import { navFor, site } from "../lib/site";
+import LessSeriousEntry from "./LessSeriousEntry.astro";
 
 interface Props {
   home?: boolean;
+  teaser?: boolean;
   lang: Lang;
 }
 
-const { home = false, lang } = Astro.props;
+const { home = false, teaser = false, lang } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => path.startsWith(href);
 const switchUrl = (code: Lang) => /404(\.html|\/)$/.test(path) ? url(code, "/") : otherPath(path, code);
 ---
 
-<header class="site-header frame">
-  <a class="brand" href={url(lang, "/")} data-home={home ? "" : undefined} aria-label={site.name}>
+<header class:list={["site-header", "frame", { "site-header--with-entry": home }]}>
+  {home ? <LessSeriousEntry lang={lang} classic={teaser} /> : <a class="brand" href={url(lang, "/")} aria-label={site.name}>
     <span class="brand-full">{site.name}</span>
     <span class="brand-mobile" aria-hidden="true">Jeremy.</span>
-  </a>
+  </a>}
 
   <!-- Desktop retains the original editor-like navigation. -->
   <nav class="site-nav" aria-label={t.mainNav}>
