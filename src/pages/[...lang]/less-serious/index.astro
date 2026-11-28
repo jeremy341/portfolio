@@ -18,23 +18,36 @@ const title = de ? "In Arbeit" : "Work in Progress";
 
 <style>
   :global(html:root:has(body[data-teaser])) {
-    --bg: #e9edff;
-    --fg: #212849;
-    --muted: #424b71;
-    --line: #59658f;
-    --accent: #294890;
+    --bg: #5d93fd;
+    --fg: #182340;
+    --muted: #222f52;
+    --line: #364d81;
+    --accent: #15264c;
     --panel: #f5f5ff;
     --hover: #dbe4fa;
     --search: #294890;
     color-scheme: light;
   }
   :global(body[data-teaser] .vim-status) { display: none; }
-  :global(body[data-teaser] main.frame) { padding-bottom: 0; }
+  /* Balance the space above and below the plaque without overlaying the header. */
+  :global(body[data-teaser]) {
+    display: grid;
+    grid-template-rows: minmax(max-content, 1fr) auto minmax(0, 1fr);
+    min-height: 100dvh;
+    padding-bottom: 0;
+  }
+  :global(body[data-teaser] .site-header) {
+    grid-row: 1;
+    align-self: start;
+  }
+  :global(body[data-teaser] main.frame) {
+    grid-row: 2;
+    padding-bottom: 0;
+  }
   .teaser-screen {
     display: grid;
     place-items: center;
-    min-height: clamp(280px, 68svh, 720px);
-    padding-block: 32px;
+    padding-block: 12px;
     text-align: center;
   }
   .teaser-plaque {
@@ -57,14 +70,14 @@ const title = de ? "In Arbeit" : "Work in Progress";
     height: 172px;
     filter: brightness(0) invert(1) sepia(1) drop-shadow(2px 2px #4f270a);
   }
-  @media (min-width: 640px) {
+  @media (min-width: 640px) and (min-height: 520px) {
     .teaser-plaque { padding: 24px 32px 28px; }
     .teaser-plaque img { height: 258px; filter: brightness(0) invert(1) sepia(1) drop-shadow(3px 3px #4f270a); }
   }
   @media (max-width: 359px) {
     .teaser-plaque { padding-inline: 10px; }
   }
-  @media (max-width: 319px) {
+  @media (max-width: 319px), (max-height: 399px) {
     .teaser-plaque img { height: 86px; }
   }
   @media (forced-colors: active) {
