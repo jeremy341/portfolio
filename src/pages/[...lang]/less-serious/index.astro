@@ -9,7 +9,7 @@ const title = de ? "In Arbeit" : "Work in Progress";
 ---
 <Base lang={lang} title={title} description={de ? "Die spielerische Version des Portfolios ist noch in Arbeit." : "The playful edition of this portfolio is still in progress."} home teaser noindex>
   <div class="teaser-screen">
-    <h1>
+    <h1 class="teaser-plaque">
       <span class="sr-only">{title}</span>
       <img src={`/less-serious/work-in-progress-${lang}.png`} width={de ? 86 : 126} height="86" alt="" />
     </h1>
@@ -37,12 +37,47 @@ const title = de ? "In Arbeit" : "Work in Progress";
     padding-block: 32px;
     text-align: center;
   }
-  h1 { margin: 0; }
-  h1 img { display: block; image-rendering: pixelated; width: auto; height: 172px; }
-  @media (min-width: 640px) {
-    h1 img { height: 258px; }
+  .teaser-plaque {
+    --pin: linear-gradient(#ffe0af, #ffe0af);
+    margin: 0;
+    padding: 16px 18px 20px;
+    border: 2px solid #4f270a;
+    background:
+      var(--pin) left 5px top 5px / 2px 2px no-repeat,
+      var(--pin) right 5px top 5px / 2px 2px no-repeat,
+      var(--pin) left 5px bottom 5px / 2px 2px no-repeat,
+      var(--pin) right 5px bottom 5px / 2px 2px no-repeat,
+      #8a450c;
+    box-shadow: inset 2px 2px #da9656, inset -2px -2px #653109, 4px 4px #492a15;
   }
-  @media (max-width: 299px) {
-    h1 img { height: 86px; }
+  .teaser-plaque img {
+    display: block;
+    image-rendering: pixelated;
+    width: auto;
+    height: 172px;
+    filter: brightness(0) invert(1) sepia(1) drop-shadow(2px 2px #4f270a);
+  }
+  @media (min-width: 640px) {
+    .teaser-plaque { padding: 24px 32px 28px; }
+    .teaser-plaque img { height: 258px; filter: brightness(0) invert(1) sepia(1) drop-shadow(3px 3px #4f270a); }
+  }
+  @media (max-width: 359px) {
+    .teaser-plaque { padding-inline: 10px; }
+  }
+  @media (max-width: 319px) {
+    .teaser-plaque img { height: 86px; }
+  }
+  @media (forced-colors: active) {
+    .teaser-plaque { border-color: CanvasText; }
+    .teaser-plaque img { display: none; }
+    .teaser-plaque .sr-only {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      clip: auto;
+      clip-path: none;
+      white-space: normal;
+    }
   }
 </style>
